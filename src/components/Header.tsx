@@ -19,6 +19,7 @@ import {
   X
 } from "lucide-react";
 import { useState } from "react";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -132,6 +133,7 @@ const Header = () => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden lg:flex items-center space-x-4">
+            <LanguageSwitcher />
             <Button variant="ghost" className="text-foreground hover:text-primary">
               Sign In
             </Button>

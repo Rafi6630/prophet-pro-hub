@@ -40,11 +40,26 @@ const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-            <Button size="lg" className="bg-accent hover:bg-accent-glow text-accent-foreground font-semibold px-8 py-4 text-lg shadow-glow">
+            <Button 
+              size="lg" 
+              onClick={() => {
+                const searchSection = document.querySelector('#search-section');
+                searchSection?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="bg-accent hover:bg-accent-glow text-accent-foreground font-semibold px-8 py-4 text-lg shadow-glow"
+            >
               Explore Properties
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
-            <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary font-semibold px-8 py-4 text-lg">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              onClick={() => {
+                const aiSection = document.querySelector('#ai-analytics');
+                aiSection?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary font-semibold px-8 py-4 text-lg"
+            >
               AI Analytics Demo
             </Button>
           </div>

@@ -70,7 +70,7 @@ const AIShowcase = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-primary/5 to-accent/5">
+    <section id="ai-analytics" className="py-20 bg-gradient-to-br from-primary/5 to-accent/5">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <div className="flex items-center justify-center mb-4">

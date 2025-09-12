@@ -1,8 +1,10 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
+import SearchBar from "@/components/SearchBar";
 import Features from "@/components/Features";
-import AIShowcase from "@/components/AIShowcase";
 import UserTypes from "@/components/UserTypes";
+import AIShowcase from "@/components/AIShowcase";
+import CallToAction from "@/components/CallToAction";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -10,9 +12,11 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <Hero />
+      <SearchBar />
       <Features />
-      <AIShowcase />
       <UserTypes />
+      <AIShowcase />
+      <CallToAction />
       <Footer />
     </div>
   );
