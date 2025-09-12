@@ -19,22 +19,22 @@ const Features = () => {
     {
       icon: Home,
       title: "Smart Property Listings",
-      description: "AI-powered listing creation with automatic pricing suggestions and market positioning."
+      description: "AI-powered listing creation for residential, commercial, industrial, and land properties with automatic pricing suggestions."
     },
     {
       icon: MapPin,
       title: "Advanced Search & Discovery",
-      description: "Multi-criteria filtering with interactive maps, heatmaps, and saved search alerts."
+      description: "Multi-criteria filtering with interactive maps, clustering, heatmaps, and saved search alerts across all property types."
     },
     {
       icon: Shield,
-      title: "Secure Transactions",
-      description: "End-to-end encrypted communications, document management, and transaction facilitation."
+      title: "Secure Transaction Facilitation",
+      description: "End-to-end encrypted communications, digital contract management, and integrated escrow services."
     },
     {
       icon: Globe,
-      title: "Multi-Language Support",
-      description: "Full support for Arabic RTL, English LTR, Kurdish Sorani, and Turkish languages."
+      title: "Multilingual & Multi-Currency",
+      description: "Full support for Arabic RTL, English LTR, Kurdish Sorani, and Turkish with multi-currency transactions."
     }
   ];
 
@@ -42,32 +42,32 @@ const Features = () => {
     {
       icon: Brain,
       title: "AI Property Valuation",
-      description: "Automated valuation models with confidence scoring and comparative market analysis."
+      description: "Automated valuation models with confidence intervals, comparative market analysis, and value drivers explanation."
     },
     {
       icon: TrendingUp,
       title: "Predictive Market Forecasting",
-      description: "1-5 year market trend predictions with economic indicator integration and risk scoring."
+      description: "1-5 year market predictions with price appreciation, rental yield trends, and economic indicator integration."
     },
     {
       icon: Calculator,
       title: "Investment Analysis Tools",
-      description: "ROI/IRR calculations, cash flow projections, and comprehensive risk assessments."
+      description: "ROI/IRR forecasting, cash flow projections, risk assessments, and AI investment recommendations."
     },
     {
       icon: Target,
-      title: "Development Advisory",
-      description: "Optimal use recommendations, feasibility studies, and financial analysis for developers."
+      title: "Development Advisory System",
+      description: "Optimal use recommendations, design optimization, financial feasibility analysis, and NPV calculations."
     },
     {
       icon: PieChart,
-      title: "Portfolio Analysis",
-      description: "Track your real estate investments with performance metrics and growth insights."
+      title: "Portfolio Analysis & Tracking",
+      description: "Comprehensive analysis of real estate investments with performance metrics and growth insights."
     },
     {
       icon: FileText,
-      title: "Automated Reports",
-      description: "AI-generated reports in PDF/Excel formats with natural language summaries."
+      title: "Automated Report Generation",
+      description: "AI-generated reports in PDF/Excel formats with visual data representation and multi-language support."
     }
   ];
 
@@ -80,7 +80,7 @@ const Features = () => {
             Real Estate Marketplace
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            A comprehensive platform for listing, browsing, and transacting properties with intelligent tools and seamless user experience.
+            A comprehensive platform for listing, browsing, and transacting residential, commercial, industrial, and land properties with support for individual users, agents, and developers.
           </p>
         </div>
 

@@ -16,48 +16,48 @@ const UserTypes = () => {
     {
       icon: Users,
       title: "Buyers & Renters",
-      description: "Find your perfect property with AI-powered search, valuation tools, and personalized recommendations.",
-      features: ["Advanced property search", "AI valuation insights", "ROI calculator", "Saved searches & alerts"],
+      description: "Find your perfect property with AI-powered search, valuation tools, virtual tours, and personalized recommendations.",
+      features: ["Advanced search & filtering", "AI valuation insights", "ROI calculator", "Saved searches & alerts", "Virtual reality tours"],
       color: "bg-primary",
       textColor: "text-primary-foreground"
     },
     {
       icon: Home,
       title: "Individual Listers",
-      description: "List your property with AI pricing guidance and reach qualified buyers through our platform.",
-      features: ["Easy listing process", "AI pricing suggestions", "Communication tools", "Market insights"],
+      description: "List your property with AI pricing guidance, auto-generated descriptions, and reach qualified buyers.",
+      features: ["Easy listing process", "AI pricing suggestions", "Auto-generated descriptions", "Secure messaging", "Performance analytics"],
       color: "bg-accent",
       textColor: "text-accent-foreground"
     },
     {
       icon: Briefcase,
       title: "Real Estate Agents",
-      description: "Grow your business with professional tools, lead generation, and comprehensive market analytics.",
-      features: ["Lead generation", "Client management", "Market analytics", "Featured listings"],
+      description: "Grow your business with professional tools, lead generation, client management, and comprehensive market analytics.",
+      features: ["Lead generation", "Client management", "Market analytics", "Featured listings", "CRM integration"],
       color: "bg-success",
       textColor: "text-success-foreground"
     },
     {
       icon: TrendingUp,
       title: "Premium Investors",
-      description: "Access advanced AI analytics, unlimited reports, and sophisticated investment forecasting tools.",
-      features: ["Investment forecasting (ROI/IRR)", "Unlimited AI reports", "Portfolio analysis", "Market predictions"],
+      description: "Access advanced AI analytics, unlimited reports, sophisticated investment forecasting, and portfolio tracking tools.",
+      features: ["Investment forecasting (ROI/IRR)", "Unlimited AI reports", "Portfolio analysis", "Market predictions", "Risk scoring"],
       color: "bg-info",
       textColor: "text-info-foreground"
     },
     {
       icon: Building,
-      title: "Developers",
-      description: "Plan projects with AI-powered feasibility studies, market analysis, and optimal use recommendations.",
-      features: ["Project planning tools", "Feasibility studies", "Market analysis", "Unit management"],
+      title: "Developers & Development Firms",
+      description: "Plan large-scale projects with AI-powered feasibility studies, optimal use recommendations, and financial analysis.",
+      features: ["Project planning tools", "Feasibility studies", "Design optimization", "NPV analysis", "Unit management"],
       color: "bg-warning",
       textColor: "text-warning-foreground"
     },
     {
       icon: CreditCard,
       title: "Mortgage Advisors",
-      description: "Integrate with listing data, manage customers, and provide competitive rate comparisons.",
-      features: ["Listing integration", "Customer management", "Rate comparison", "Financial tools"],
+      description: "Integrate with listing data, manage customers, provide rate comparisons, and access AI valuation data for lending decisions.",
+      features: ["Listing integration", "Customer management", "Rate comparison", "Pre-approval process", "AI valuation access"],
       color: "bg-secondary",
       textColor: "text-secondary-foreground"
     }
@@ -71,7 +71,7 @@ const UserTypes = () => {
             Built for Every Real Estate Professional
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Our platform serves diverse user needs with specialized tools and features tailored for each type of real estate professional.
+            Specialized tools and features tailored for every real estate professional, from individual buyers to enterprise developers, with full compliance for Arab countries, Turkey, and Iraq.
           </p>
         </div>
 

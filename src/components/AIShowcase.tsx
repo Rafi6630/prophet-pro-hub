@@ -19,47 +19,51 @@ const AIShowcase = () => {
       icon: Brain,
       title: "Automated Valuation Models (AVM)",
       confidence: "95%",
-      description: "AI-driven price estimation using multiple data points with confidence scoring and reliability indicators.",
+      description: "AI-driven price estimation using multiple data points, government land registry data, and regional market indicators with confidence scoring.",
       benefits: [
         "Instant property valuations",
         "Confidence interval analysis",
         "Comparative market analysis",
-        "Value drivers explanation"
+        "Value drivers explanation",
+        "Regional compliance checks"
       ]
     },
     {
       icon: TrendingUp,
       title: "Predictive Market Forecasting",
       confidence: "92%",
-      description: "Advanced time-series analysis predicting market trends for the next 1-5 years with economic indicators.",
+      description: "Advanced time-series analysis predicting market trends for the next 1-5 years with macroeconomic indicators and regional data integration.",
       benefits: [
         "Price appreciation forecasts",
         "Rental yield predictions",
         "Supply & demand dynamics",
-        "Risk scoring & volatility analysis"
+        "Risk scoring & volatility analysis",
+        "Heatmaps of opportunity"
       ]
     },
     {
       icon: Calculator,
       title: "Investment Analysis Engine",
       confidence: "98%",
-      description: "Comprehensive ROI/IRR calculations, cash flow projections, and sophisticated risk assessments.",
+      description: "Comprehensive ROI/IRR calculations, cash flow projections, and sophisticated risk assessments with portfolio tracking capabilities.",
       benefits: [
         "ROI & IRR forecasting",
         "Cash flow projections",
         "Risk assessment models",
-        "Portfolio optimization"
+        "Portfolio optimization",
+        "AI investment recommendations"
       ]
     },
     {
       icon: Target,
       title: "Development Advisory AI",
       confidence: "89%",
-      description: "Optimal use recommendations for properties with feasibility studies and financial analysis.",
+      description: "Optimal use recommendations for properties with feasibility studies, design optimization, and comprehensive financial analysis for developers.",
       benefits: [
         "Optimal use suggestions",
         "Design optimization",
         "Financial feasibility (NPV)",
+        "Unit mix recommendations",
         "Project planning insights"
       ]
     }
@@ -78,7 +82,7 @@ const AIShowcase = () => {
             </h2>
           </div>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Our advanced AI systems process millions of data points to deliver accurate insights, predictions, and recommendations for smarter real estate decisions.
+            Our advanced AI systems process millions of data points from regional markets, government registries, and economic indicators to deliver accurate insights, predictions, and recommendations for smarter real estate decisions across Arab countries, Turkey, and Iraq.
           </p>
         </div>
 

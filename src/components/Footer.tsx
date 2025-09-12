@@ -56,7 +56,7 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-muted-foreground text-sm">
-              Revolutionizing real estate with AI-powered analytics, predictive market insights, and intelligent property valuations.
+              The region's most comprehensive real estate platform serving Arab countries, Turkey, and Iraq with AI-powered analytics, marketplace functionality, and enterprise-grade compliance.
             </p>
             <div className="flex space-x-3">
               <Button size="sm" variant="outline" className="w-10 h-10 p-0">
@@ -159,11 +159,11 @@ const Footer = () => {
               © {currentYear} AI Real Estate Scout. All rights reserved.
             </div>
             <div className="flex flex-wrap items-center space-x-6 text-sm text-muted-foreground">
-              <span>Multi-language support:</span>
-              <button className="hover:text-primary transition-colors">العربية</button>
-              <button className="hover:text-primary transition-colors">English</button>
-              <button className="hover:text-primary transition-colors">کوردی</button>
-              <button className="hover:text-primary transition-colors">Türkçe</button>
+              <span>Regional Coverage & Languages:</span>
+              <button className="hover:text-primary transition-colors">العربية (RTL)</button>
+              <button className="hover:text-primary transition-colors">English (LTR)</button>
+              <button className="hover:text-primary transition-colors">کوردی (RTL)</button>
+              <button className="hover:text-primary transition-colors">Türkçe (LTR)</button>
             </div>
           </div>
         </div>

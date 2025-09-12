@@ -29,15 +29,14 @@ const Hero = () => {
       <div className="container mx-auto px-4 text-center relative z-10">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 text-primary-foreground animate-fade-in">
-            AI Real Estate
+            The Region's Most
             <span className="block bg-gradient-to-r from-accent to-accent-glow bg-clip-text text-transparent">
-              Scout
+              Comprehensive Real Estate Platform
             </span>
           </h1>
           
           <p className="text-xl md:text-2xl text-primary-foreground/90 mb-8 leading-relaxed animate-fade-in" style={{ animationDelay: "0.2s" }}>
-            Revolutionizing real estate with AI-powered analytics, predictive market insights, and intelligent property valuations. 
-            Your gateway to smarter property investments and data-driven decisions.
+            Seamlessly integrating traditional property transactions with cutting-edge AI analytics, serving individual consumers and enterprise clients throughout Arab countries, Turkey, and Iraq.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in" style={{ animationDelay: "0.4s" }}>
@@ -51,18 +50,22 @@ const Hero = () => {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: "0.6s" }}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto animate-fade-in" style={{ animationDelay: "0.6s" }}>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-accent mb-2">10K+</div>
-              <div className="text-primary-foreground/80">Properties Analyzed</div>
+              <div className="text-3xl md:text-4xl font-bold text-accent mb-2">50K+</div>
+              <div className="text-primary-foreground/80">Properties Listed</div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold text-accent mb-2">95%</div>
-              <div className="text-primary-foreground/80">Valuation Accuracy</div>
+              <div className="text-primary-foreground/80">AI Valuation Accuracy</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-accent mb-2">4</div>
+              <div className="text-primary-foreground/80">Languages Supported</div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold text-accent mb-2">24/7</div>
-              <div className="text-primary-foreground/80">AI Market Monitoring</div>
+              <div className="text-primary-foreground/80">Market Intelligence</div>
             </div>
           </div>
         </div>
