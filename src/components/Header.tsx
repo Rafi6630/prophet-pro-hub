@@ -19,6 +19,7 @@ import {
   X
 } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 const Header = () => {
@@ -41,7 +42,7 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
             <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
               <Home className="w-6 h-6 text-primary-foreground" />
             </div>
@@ -49,7 +50,7 @@ const Header = () => {
               <div className="font-bold text-lg text-foreground">AI Real Estate</div>
               <div className="text-xs text-accent font-semibold">Scout</div>
             </div>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
@@ -69,15 +70,15 @@ const Header = () => {
                       </div>
                       {marketplaceItems.map((item) => (
                         <NavigationMenuLink key={item.href} asChild>
-                          <a
+                          <Link
+                            to={item.href}
                             className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent/10 transition-colors"
-                            href={item.href}
                           >
                             <item.icon className="w-5 h-5 text-primary" />
                             <div>
                               <div className="font-medium">{item.title}</div>
                             </div>
-                          </a>
+                          </Link>
                         </NavigationMenuLink>
                       ))}
                     </div>
@@ -101,15 +102,15 @@ const Header = () => {
                       </div>
                       {analyticsItems.map((item) => (
                         <NavigationMenuLink key={item.href} asChild>
-                          <a
+                          <Link
+                            to={item.href}
                             className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent/10 transition-colors"
-                            href={item.href}
                           >
                             <item.icon className="w-5 h-5 text-accent" />
                             <div>
                               <div className="font-medium">{item.title}</div>
                             </div>
-                          </a>
+                          </Link>
                         </NavigationMenuLink>
                       ))}
                     </div>
@@ -159,14 +160,14 @@ const Header = () => {
                 <div className="font-semibold text-foreground mb-2">Marketplace</div>
                 <div className="space-y-2 pl-4">
                   {marketplaceItems.map((item) => (
-                    <a
+                    <Link
                       key={item.href}
-                      href={item.href}
+                      to={item.href}
                       className="flex items-center space-x-3 p-2 text-muted-foreground hover:text-primary transition-colors"
                     >
                       <item.icon className="w-4 h-4" />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -180,25 +181,25 @@ const Header = () => {
                 </div>
                 <div className="space-y-2 pl-4">
                   {analyticsItems.map((item) => (
-                    <a
+                    <Link
                       key={item.href}
-                      href={item.href}
+                      to={item.href}
                       className="flex items-center space-x-3 p-2 text-muted-foreground hover:text-accent transition-colors"
                     >
                       <item.icon className="w-4 h-4" />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <a href="/about" className="block p-2 text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/about" className="block p-2 text-muted-foreground hover:text-primary transition-colors">
                   About
-                </a>
-                <a href="/contact" className="block p-2 text-muted-foreground hover:text-primary transition-colors">
+                </Link>
+                <Link to="/contact" className="block p-2 text-muted-foreground hover:text-primary transition-colors">
                   Contact
-                </a>
+                </Link>
               </div>
 
               <div className="flex flex-col space-y-2 pt-4 border-t border-border">
