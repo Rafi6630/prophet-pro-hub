@@ -8,6 +8,8 @@ import Properties from "./pages/Properties";
 import Search from "./pages/Search";
 import Analytics from "./pages/Analytics";
 import Valuation from "./pages/Valuation";
+import Investment from "./pages/Investment";
+import ListProperty from "./pages/ListProperty";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
           <Route path="/search" element={<Search />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/valuation" element={<Valuation />} />
+          <Route path="/investment" element={<Investment />} />
+          <Route path="/list" element={<ListProperty />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
