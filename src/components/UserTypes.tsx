@@ -14,52 +14,31 @@ import {
 const UserTypes = () => {
   const userTypes = [
     {
-      icon: Users,
-      title: "Buyers & Renters",
-      description: "Find your perfect property with AI-powered search, valuation tools, virtual tours, and personalized recommendations.",
-      features: ["Advanced search & filtering", "AI valuation insights", "ROI calculator", "Saved searches & alerts", "Virtual reality tours"],
-      color: "bg-primary",
-      textColor: "text-primary-foreground"
-    },
-    {
-      icon: Home,
-      title: "Individual Listers",
-      description: "List your property with AI pricing guidance, auto-generated descriptions, and reach qualified buyers.",
-      features: ["Easy listing process", "AI pricing suggestions", "Auto-generated descriptions", "Secure messaging", "Performance analytics"],
-      color: "bg-accent",
-      textColor: "text-accent-foreground"
-    },
-    {
-      icon: Briefcase,
-      title: "Real Estate Agents",
-      description: "Grow your business with professional tools, lead generation, client management, and comprehensive market analytics.",
-      features: ["Lead generation", "Client management", "Market analytics", "Featured listings", "CRM integration"],
-      color: "bg-success",
-      textColor: "text-success-foreground"
-    },
-    {
       icon: TrendingUp,
-      title: "Premium Investors",
-      description: "Access advanced AI analytics, unlimited reports, sophisticated investment forecasting, and portfolio tracking tools.",
-      features: ["Investment forecasting (ROI/IRR)", "Unlimited AI reports", "Portfolio analysis", "Market predictions", "Risk scoring"],
-      color: "bg-info",
-      textColor: "text-info-foreground"
+      title: "Individual Investors",
+      description: "Property Analysis, Market Trends, Investment Guidance with AI-powered recommendations, portfolio tracking and optimization, and risk assessment tools.",
+      features: ["Detailed property assessments", "Real-time market insights", "AI-powered recommendations", "Portfolio tracking", "Risk assessment tools"],
+      color: "bg-primary",
+      textColor: "text-primary-foreground",
+      tagline: "Make confident investment decisions with professional-grade tools!"
+    },
+    {
+      icon: Users,
+      title: "Property Owners",
+      description: "Property Valuation, SWOT Analysis, Development Advice with optimization recommendations, rental yield analysis, and maintenance tracking.",
+      features: ["Accurate market valuations", "Comprehensive property assessment", "Optimization recommendations", "Rental yield analysis", "Maintenance tracking"],
+      color: "bg-accent",
+      textColor: "text-accent-foreground",
+      tagline: "Maximize your property value with expert insights!"
     },
     {
       icon: Building,
-      title: "Developers & Development Firms",
-      description: "Plan large-scale projects with AI-powered feasibility studies, optimal use recommendations, and financial analysis.",
-      features: ["Project planning tools", "Feasibility studies", "Design optimization", "NPV analysis", "Unit management"],
-      color: "bg-warning",
-      textColor: "text-warning-foreground"
-    },
-    {
-      icon: CreditCard,
-      title: "Mortgage Advisors",
-      description: "Integrate with listing data, manage customers, provide rate comparisons, and access AI valuation data for lending decisions.",
-      features: ["Listing integration", "Customer management", "Rate comparison", "Pre-approval process", "AI valuation access"],
-      color: "bg-secondary",
-      textColor: "text-secondary-foreground"
+      title: "Developers",
+      description: "Project Planning for complete development lifecycle, Feasibility Studies with financial modeling, Unit Management for inventory and sales tracking.",
+      features: ["Complete development lifecycle", "Financial modeling", "Inventory and sales tracking", "Construction cost analysis", "Regulatory compliance"],
+      color: "bg-success",
+      textColor: "text-success-foreground",
+      tagline: "Streamline your development projects with AI insights!"
     }
   ];
 

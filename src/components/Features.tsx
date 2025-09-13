@@ -18,23 +18,23 @@ const Features = () => {
   const marketplaceFeatures = [
     {
       icon: Home,
-      title: "Smart Property Listings",
-      description: "AI-powered listing creation for residential, commercial, industrial, and land properties with automatic pricing suggestions."
+      title: "Advanced Property Search",
+      description: "AI-powered search algorithms with map-based discovery, smart filters, personalized recommendations, and price history analysis. Find your perfect property with intelligent search technology!"
     },
     {
       icon: MapPin,
-      title: "Advanced Search & Discovery",
-      description: "Multi-criteria filtering with interactive maps, clustering, heatmaps, and saved search alerts across all property types."
+      title: "Multi-Market Coverage",
+      description: "Comprehensive coverage across Saudi Arabia, UAE, Qatar, Bahrain, Kuwait with regional economic indicators and cross-border investment tools. Complete Gulf region coverage!"
     },
     {
       icon: Shield,
-      title: "Secure Transaction Facilitation",
-      description: "End-to-end encrypted communications, digital contract management, and integrated escrow services."
+      title: "Direct Communication",
+      description: "Secure in-app messaging, appointment scheduling, document sharing platform, video call integration with multi-language support. Connect directly with verified professionals!"
     },
     {
       icon: Globe,
-      title: "Multilingual & Multi-Currency",
-      description: "Full support for Arabic RTL, English LTR, Kurdish Sorani, and Turkish with multi-currency transactions."
+      title: "Automated Report Generation",
+      description: "PDF, Excel, PowerPoint formats with natural language summaries, custom branding, interactive visualizations, and multi-language support. Professional reports ready in seconds!"
     }
   ];
 
@@ -42,32 +42,17 @@ const Features = () => {
     {
       icon: Brain,
       title: "AI Property Valuation",
-      description: "Automated valuation models with confidence intervals, comparative market analysis, and value drivers explanation."
-    },
-    {
-      icon: TrendingUp,
-      title: "Predictive Market Forecasting",
-      description: "1-5 year market predictions with price appreciation, rental yield trends, and economic indicator integration."
+      description: "Instant valuations with 99.2% accuracy, confidence interval scoring, comparative market analysis, value drivers identification, and historical trend analysis. Get precise property valuations using advanced ML algorithms!"
     },
     {
       icon: Calculator,
-      title: "Investment Analysis Tools",
-      description: "ROI/IRR forecasting, cash flow projections, risk assessments, and AI investment recommendations."
+      title: "Investment Analysis",
+      description: "ROI forecasting & NPV calculations, cash flow projections, risk assessment matrices, portfolio optimization, tax implications analysis, and market sensitivity testing. Make data-driven investment decisions with comprehensive financial modeling!"
     },
     {
       icon: Target,
-      title: "Development Advisory System",
-      description: "Optimal use recommendations, design optimization, financial feasibility analysis, and NPV calculations."
-    },
-    {
-      icon: PieChart,
-      title: "Portfolio Analysis & Tracking",
-      description: "Comprehensive analysis of real estate investments with performance metrics and growth insights."
-    },
-    {
-      icon: FileText,
-      title: "Automated Report Generation",
-      description: "AI-generated reports in PDF/Excel formats with visual data representation and multi-language support."
+      title: "Development Advisory",
+      description: "Optimal use recommendations, design optimization suggestions, financial feasibility studies, unit mix optimization, construction cost analysis, and regulatory compliance checks. Transform your development projects with AI-powered advisory services!"
     }
   ];
 
