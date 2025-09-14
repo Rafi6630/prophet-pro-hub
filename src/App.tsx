@@ -10,6 +10,7 @@ import Analytics from "./pages/Analytics";
 import Valuation from "./pages/Valuation";
 import Investment from "./pages/Investment";
 import ListProperty from "./pages/ListProperty";
+import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/valuation" element={<Valuation />} />
           <Route path="/investment" element={<Investment />} />
           <Route path="/list" element={<ListProperty />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

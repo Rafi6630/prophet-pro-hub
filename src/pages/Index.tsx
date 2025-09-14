@@ -6,6 +6,8 @@ import UserTypes from "@/components/UserTypes";
 import AIShowcase from "@/components/AIShowcase";
 import CallToAction from "@/components/CallToAction";
 import Footer from "@/components/Footer";
+import MarketStats from "@/components/MarketStats";
+import PropertyShowcase from "@/components/PropertyShowcase";
 
 const Index = () => {
   return (
@@ -13,6 +15,8 @@ const Index = () => {
       <Header />
       <Hero />
       <SearchBar />
+      <MarketStats />
+      <PropertyShowcase />
       <Features />
       <UserTypes />
       <AIShowcase />
