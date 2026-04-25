@@ -1,19 +1,19 @@
-import { PropsWithChildren } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
-/**
- * Blocks access if user is not authenticated.
- * Redirects to /auth and preserves "redirect" query param.
- */
-export default function RequireAuth({ children }: PropsWithChildren) {
+export default function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="min-h-screen grid place-items-center">
+        <div className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
   if (!user) {
-    const redirect = encodeURIComponent(location.pathname + location.search);
-    return <Navigate to={`/auth?redirect=${redirect}`} replace />;
+    return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
   }
   return <>{children}</>;
 }

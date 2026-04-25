@@ -1,26 +1,14 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
 
-const NotFound = () => {
-  const location = useLocation();
+export default function NotFound() {
   const { t } = useTranslation();
-
-  useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
-  }, [location.pathname]);
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">{t("notFound.title")}</p>
-        <a href="/" className="text-primary underline hover:text-primary/90">
-          {t("notFound.goHome")}
-        </a>
-      </div>
+    <div className="container-app py-20 text-center">
+      <div className="text-7xl font-extrabold text-gradient-gold mb-4">404</div>
+      <p className="text-muted-foreground mb-6">{t("common.noResults")}</p>
+      <Link to="/"><Button>{t("nav.home")}</Button></Link>
     </div>
   );
-};
-
-export default NotFound;
+}

@@ -16,22 +16,14 @@ export default {
   		fontFamily: {
   			sans: [
   				'Inter',
-  				'Plus Jakarta Sans',
   				'ui-sans-serif',
   				'system-ui',
   				'-apple-system',
   				'sans-serif'
   			],
-  			display: [
-  				'Plus Jakarta Sans',
-  				'Inter',
-  				'ui-sans-serif',
-  				'system-ui',
-  				'sans-serif'
-  			],
   			arabic: [
+  				'Tajawal',
   				'IBM Plex Sans Arabic',
-  				'Noto Sans Arabic',
   				'ui-sans-serif',
   				'sans-serif'
   			],
@@ -84,17 +76,17 @@ export default {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
   			},
-  			success: {
-  				DEFAULT: 'hsl(var(--success))',
-  				foreground: 'hsl(var(--success-foreground))'
+  			success: { DEFAULT: 'hsl(var(--success))', foreground: 'hsl(0 0% 100%)' },
+  			warning: { DEFAULT: 'hsl(var(--warning))', foreground: 'hsl(28 80% 12%)' },
+  			info:    { DEFAULT: 'hsl(var(--info))',    foreground: 'hsl(0 0% 100%)' },
+  			gold: {
+  				DEFAULT: 'hsl(var(--gold))',
+  				soft: 'hsl(var(--gold-soft))',
   			},
-  			warning: {
-  				DEFAULT: 'hsl(var(--warning))',
-  				foreground: 'hsl(var(--warning-foreground))'
-  			},
-  			info: {
-  				DEFAULT: 'hsl(var(--info))',
-  				foreground: 'hsl(var(--info-foreground))'
+  			trust: {
+  				DEFAULT: 'hsl(var(--trust))',
+  				foreground: 'hsl(var(--trust-foreground))',
+  				soft: 'hsl(var(--trust-soft))',
   			},
   			sidebar: {
   				DEFAULT: 'hsl(var(--sidebar-background))',

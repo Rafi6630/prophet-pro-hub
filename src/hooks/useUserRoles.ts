@@ -1,35 +1,38 @@
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { AppRole } from "@/lib/property";
+import { useAuth } from "@/hooks/useAuth";
 
-export type AppRole = "buyer" | "seller" | "developer" | "admin";
-
-/**
- * Fetch all roles assigned to the current user.
- * Note: roles are stored as multiple rows (UNIQUE (user_id, role)).
- */
 export function useUserRoles() {
-  return useQuery({
-    queryKey: ["user-roles"],
-    queryFn: async (): Promise<AppRole[]> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
+  const { user } = useAuth();
+  const [roles, setRoles] = useState<AppRole[]>([]);
+  const [loading, setLoading] = useState(true);
 
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id);
+  useEffect(() => {
+    if (!user) { setRoles([]); setLoading(false); return; }
+    let cancelled = false;
+    setLoading(true);
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .then(({ data }) => {
+        if (cancelled) return;
+        setRoles((data ?? []).map(r => r.role));
+        setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [user]);
 
-      if (error) throw error;
-      return (data ?? []).map((r: any) => r.role) as AppRole[];
-    },
-    staleTime: 30_000,
-    gcTime: 5 * 60_000,
-  });
+  return {
+    roles,
+    loading,
+    isAdmin: roles.includes("admin"),
+    isSeller: roles.includes("seller"),
+    isBuyer: roles.includes("buyer"),
+  };
 }
 
-export function getBestHomeRoute(roles: AppRole[]) {
-  if (roles.includes("admin")) return "/admin";
-  if (roles.includes("developer")) return "/developer";
-  if (roles.includes("seller")) return "/seller";
-  return "/buyer";
+export async function addRole(userId: string, role: AppRole) {
+  return supabase.from("user_roles").insert({ user_id: userId, role });
 }
