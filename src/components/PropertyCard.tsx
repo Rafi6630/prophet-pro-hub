@@ -1,119 +1,109 @@
+import { useState } from "react";
+import { Heart, MapPin, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { Heart, MapPin, BedDouble, Bath, Maximize, ShieldCheck, TrendingUp } from "lucide-react";
-import {
-  type PropertyWithMedia, propertyImage, pricePerM2,
-  formatPrice, investmentScore, discountToFair, priceVerdict,
-} from "@/lib/property";
-import { useFavorites } from "@/hooks/useFavorites";
-import { useAuth } from "@/hooks/useAuth";
+import { type EnrichedProperty } from "@/lib/propertyMetrics";
+import { toggleFavorite } from "@/lib/favorites";
+import { trackSaveLead } from "@/lib/leads";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { OwnershipStatus } from "@/components/OwnershipStatus";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
-export default function PropertyCard({ p }: { p: PropertyWithMedia }) {
-  const { t } = useTranslation();
-  const { user } = useAuth();
-  const { isFavorite, toggle } = useFavorites();
-  const fav = user ? isFavorite(p.id) : false;
-  const score = investmentScore(p);
-  const verdict = priceVerdict(p);
-  const disc = discountToFair(p);
-
-  return (
-    <Link
-      to={`/property/${p.id}`}
-      className="block group bg-card rounded-2xl overflow-hidden shadow-card card-hover border border-border"
-    >
-      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-        <img
-          src={propertyImage(p)}
-          alt={p.title}
-          loading="lazy"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        {/* Top badges */}
-        <div className="absolute top-3 start-3 flex flex-col gap-1.5">
-          {p.verification_level === "verified" || p.verification_level === "premium" ? (
-            <span className="trust-badge bg-card/95 backdrop-blur">
-              <ShieldCheck className="w-3 h-3" />
-              {t("property.verified")}
-            </span>
-          ) : null}
-          {p.investment_deal && (
-            <span className="gold-badge bg-card/95 backdrop-blur">
-              <TrendingUp className="w-3 h-3" />
-              {t("property.investmentDeal")}
-            </span>
-          )}
-        </div>
-
-        {user && (
-          <button
-            onClick={(e) => { e.preventDefault(); toggle(p.id); }}
-            className="absolute top-3 end-3 w-9 h-9 rounded-full bg-card/95 backdrop-blur grid place-items-center hover:scale-110 transition shadow-soft"
-            aria-label={t("property.actions.save")}
-          >
-            <Heart className={`w-4 h-4 ${fav ? "fill-destructive text-destructive" : "text-foreground"}`} />
-          </button>
-        )}
-
-        {/* Bottom price strip */}
-        <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/75 to-transparent">
-          <div className="flex items-end justify-between gap-2">
-            <div className="text-white">
-              <div className="text-xl font-extrabold leading-none">{formatPrice(p.price)}</div>
-              <div className="text-[11px] opacity-80 mt-1">${pricePerM2(p)} {t("common.perM2")}</div>
-            </div>
-            {verdict === "under" && (
-              <span className="text-[11px] font-bold bg-trust text-trust-foreground px-2 py-1 rounded-full">
-                −{Math.round(disc)}%
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="p-4">
-        <h3 className="font-bold text-base line-clamp-1">{p.title_ar || p.title}</h3>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-          <MapPin className="w-3 h-3" />
-          <span className="truncate">{p.district ? `${p.district}، ` : ""}{p.city}</span>
-        </div>
-
-        <div className="flex items-center gap-3 mt-3 text-xs text-muted-foreground">
-          {p.bedrooms > 0 && (
-            <span className="flex items-center gap-1"><BedDouble className="w-3.5 h-3.5" />{p.bedrooms}</span>
-          )}
-          {p.bathrooms > 0 && (
-            <span className="flex items-center gap-1"><Bath className="w-3.5 h-3.5" />{p.bathrooms}</span>
-          )}
-          <span className="flex items-center gap-1"><Maximize className="w-3.5 h-3.5" />{p.area_m2} {t("common.m2")}</span>
-        </div>
-
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-          <span className="text-[11px] text-muted-foreground font-medium">{t("property.investmentScore")}</span>
-          <div className="flex items-center gap-1.5">
-            <div className="w-16 h-1.5 rounded-full bg-secondary overflow-hidden">
-              <div
-                className="h-full bg-gradient-gold"
-                style={{ width: `${score}%` }}
-              />
-            </div>
-            <span className="text-xs font-bold tabular-nums">{score}</span>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
+interface PropertyCardProps {
+  property: EnrichedProperty;
 }
 
-export function PropertyCardSkeleton() {
+export function PropertyCard({ property }: PropertyCardProps) {
+  const [favoriteCount, setFavoriteCount] = useState(0);
+
   return (
-    <div className="bg-card rounded-2xl overflow-hidden shadow-card border border-border">
-      <div className="aspect-[4/3] skeleton" />
-      <div className="p-4 space-y-3">
-        <div className="h-4 w-3/4 skeleton" />
-        <div className="h-3 w-1/2 skeleton" />
-        <div className="h-3 w-2/3 skeleton" />
+    <Card className="overflow-hidden border-white/10 bg-card/70">
+      <div className="relative">
+        <img src={property.image} alt={property.title} className="h-64 w-full object-cover" />
+        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+          <VerifiedBadge variant={property.seller.verification} />
+          {property.ownershipStatus === "verified" ? <VerifiedBadge variant="ownership" /> : null}
+        </div>
+        <button
+          type="button"
+          className="absolute right-4 top-4 rounded-full bg-slate-950/70 p-2 text-white backdrop-blur"
+          onClick={() => {
+            toggleFavorite(property.id);
+            trackSaveLead({
+              listingId: property.id,
+              sellerId: property.seller.id,
+              city: property.city.nameEn,
+              source: "property-card",
+            });
+            setFavoriteCount((count) => count + 1);
+          }}
+          aria-label="Save property"
+        >
+          <Heart className="h-4 w-4" />
+        </button>
       </div>
-    </div>
+
+      <CardContent className="p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm text-foreground/62">{property.city.nameAr}</p>
+            <h3 className="mt-1 text-2xl font-bold">{property.title}</h3>
+            <p className="mt-2 text-sm text-foreground/68">{property.titleAr}</p>
+          </div>
+          <div className="rounded-2xl bg-primary/10 px-3 py-2 text-center text-primary">
+            <p className="text-xs uppercase tracking-[0.18em]">Score</p>
+            <p className="text-xl font-bold">{property.investmentScore}</p>
+          </div>
+        </div>
+
+        <div className="mt-5 flex items-center gap-2 text-sm text-foreground/68">
+          <MapPin className="h-4 w-4 text-primary" />
+          <span>{property.area}, {property.city.nameEn}</span>
+        </div>
+
+        <div className="mt-6 grid grid-cols-2 gap-4 rounded-2xl bg-white/[0.03] p-4 text-sm">
+          <div>
+            <p className="text-foreground/62">Asking Price</p>
+            <p className="mt-1 text-lg font-bold">${property.priceUsd.toLocaleString()}</p>
+          </div>
+          <div>
+            <p className="text-foreground/62">Fair Price Estimate</p>
+            <p className="mt-1 text-lg font-bold">${property.fairPrice.toLocaleString()}</p>
+          </div>
+          <div>
+            <p className="text-foreground/62">Type</p>
+            <p className="mt-1 font-semibold">{property.propertyType.labelEn}</p>
+          </div>
+          <div>
+            <p className="text-foreground/62">Size</p>
+            <p className="mt-1 font-semibold">{property.sizeSqm} sqm</p>
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <OwnershipStatus status={property.ownershipStatus} />
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-1.5 text-xs text-foreground/72">
+            <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+            Risk {property.riskLevel}
+          </div>
+          {favoriteCount > 0 ? (
+            <div className="rounded-full bg-white/5 px-3 py-1.5 text-xs text-foreground/70">
+              Saved {favoriteCount}x this session
+            </div>
+          ) : null}
+        </div>
+
+        <p className="mt-5 text-sm leading-7 text-foreground/74">{property.description}</p>
+
+        <div className="mt-6 flex gap-3">
+          <Button asChild className="flex-1">
+            <Link to={`/property/${property.slug}`}>View Property</Link>
+          </Button>
+          <Button asChild variant="outline" className="flex-1 border-white/10 bg-white/5">
+            <Link to="/map-search">View on Map</Link>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
