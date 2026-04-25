@@ -5,7 +5,7 @@ import en from "./en.json";
 import ar from "./ar.json";
 import ku from "./ku.json";
 
-const RTL_LANGS = ["ar", "ku"];
+const RTL_LANGS = ["ar", "ku", "ckb"];
 
 i18n
   .use(LanguageDetector)
@@ -15,10 +15,11 @@ i18n
       en: { translation: en },
       ar: { translation: ar },
       ku: { translation: ku },
+      ckb: { translation: ku },
     },
     // Arabic-first per Iraq positioning
     fallbackLng: "ar",
-    supportedLngs: ["ar", "en", "ku"],
+    supportedLngs: ["ar", "en", "ku", "ckb"],
     interpolation: { escapeValue: false },
     detection: {
       order: ["localStorage", "navigator"],
@@ -34,7 +35,8 @@ if (!localStorage.getItem("i18nextLng")) {
 }
 
 function applyDirection(lng: string) {
-  const code = (lng || "ar").split("-")[0];
+  const rawCode = (lng || "ar").split("-")[0];
+  const code = rawCode === "ckb" ? "ckb" : rawCode;
   const isRTL = RTL_LANGS.includes(code);
   document.documentElement.dir = isRTL ? "rtl" : "ltr";
   document.documentElement.lang = code;
