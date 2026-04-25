@@ -1,27 +1,12 @@
-import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import SearchBar from "@/components/SearchBar";
-import Features from "@/components/Features";
-import UserTypes from "@/components/UserTypes";
-import AIShowcase from "@/components/AIShowcase";
-import CallToAction from "@/components/CallToAction";
-import Footer from "@/components/Footer";
-import MarketStats from "@/components/MarketStats";
-import PropertyShowcase from "@/components/PropertyShowcase";
+// Update this page (the content is just a fallback if you fail to update the page)
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <Hero />
-      <SearchBar />
-      <MarketStats />
-      <PropertyShowcase />
-      <Features />
-      <UserTypes />
-      <AIShowcase />
-      <CallToAction />
-      <Footer />
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="text-center">
+        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
+        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+      </div>
     </div>
   );
 };
