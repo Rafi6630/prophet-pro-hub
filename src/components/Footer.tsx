@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { MapPin, PhoneCall, ShieldCheck } from "lucide-react";
+import { iraqCities } from "@/data/iraqCities";
 import { useApp } from "@/contexts/AppContext";
 
 export function Footer() {
@@ -7,46 +7,56 @@ export function Footer() {
   const navigate = useNavigate();
 
   return (
-    <footer className="mt-14 border-t border-white/10 bg-secondary/85 py-14 text-secondary-foreground backdrop-blur-sm">
+    <footer className="mt-14 border-t border-slate-200 bg-white py-14 text-foreground">
       <div className="container mx-auto px-4">
-        <div className="grid gap-8 md:grid-cols-[1.25fr_0.9fr_0.9fr]">
+        <div className="grid gap-8 md:grid-cols-[1.1fr_0.8fr_0.8fr_0.8fr]">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">IraqProperty</p>
             <h3 className="mt-3 text-2xl font-bold">Know Everything Before You Buy</h3>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-secondary-foreground/76">
-              Serious Iraq-focused real estate research, trusted sellers, Fair Price Estimate, and ownership checks for confident buyers and investors.
+            <p className="mt-2 text-sm font-medium text-emerald-700">اعرف كل شيء قبل أن تشتري</p>
+            <p className="mt-4 max-w-xl text-sm leading-7 text-foreground/72">
+              Iraq’s trust-first property marketplace for buyers and investors: verified sellers, Fair Price Estimate, area intelligence, and market prices built for faster decisions.
             </p>
           </div>
 
           <div>
-            <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">Explore</h4>
-            <ul className="space-y-2 text-sm text-secondary-foreground/78">
-              <li><Link to="/buy">Buy</Link></li>
-              <li><Link to="/investment">Investment</Link></li>
-              <li><Link to="/market-prices">Market Prices</Link></li>
-              <li><Link to="/verified-sellers">Verified Sellers</Link></li>
-              <li><Link to="/dashboard">Dashboard</Link></li>
+            <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">Company</h4>
+            <ul className="space-y-2 text-sm text-foreground/72">
+              <li><Link to="/about">About</Link></li>
+              <li><Link to="/privacy">Privacy</Link></li>
+              <li><Link to="/terms">Terms</Link></li>
+              <li><Link to="/contact">Contact</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">Trust Signals</h4>
-            <ul className="space-y-3 text-sm text-secondary-foreground/78">
-              <li className="flex items-start gap-2"><ShieldCheck className="mt-0.5 h-4 w-4 text-primary" />Ownership review workflow for higher confidence</li>
-              <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-primary" />Coverage across Baghdad, Erbil, Basra, Najaf, and more</li>
-              <li className="flex items-start gap-2"><PhoneCall className="mt-0.5 h-4 w-4 text-primary" />Lead tracking for calls, WhatsApp, offers, and saves</li>
+            <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">Network</h4>
+            <ul className="space-y-2 text-sm text-foreground/72">
+              <li><Link to="/cities">Cities</Link></li>
+              <li><Link to="/agencies">Agencies</Link></li>
+              <li><Link to="/developers">Developers</Link></li>
+              <li><Link to="/verified-sellers">Verified Sellers</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">Cities</h4>
+            <ul className="space-y-2 text-sm text-foreground/72">
+              {iraqCities.slice(0, 6).map((city) => (
+                <li key={city.id}><Link to={`/${city.id}-properties`}>{city.nameEn}</Link></li>
+              ))}
             </ul>
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-secondary-foreground/20 pt-6 md:flex-row">
-          <p className="text-sm text-secondary-foreground/60">
+        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-6 md:flex-row">
+          <p className="text-sm text-foreground/56">
             © 2026 IraqProperty. All rights reserved.
           </p>
           <button
             type="button"
             onClick={() => navigate(isAuthenticated ? "/admin" : "/admin/login")}
-            className="text-xs text-secondary-foreground/20 transition-colors hover:text-secondary-foreground/45"
+            className="text-xs text-foreground/25 transition-colors hover:text-foreground/45"
           >
             admin
           </button>
