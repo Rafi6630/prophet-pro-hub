@@ -2,9 +2,12 @@ import type { ReactNode } from "react";
 import { HomePage } from "./pages/HomePage";
 import { PortalPage } from "./pages/PortalPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { MapSearchPage } from "./pages/MapSearchPage";
+import { PropertyDetailPage } from "./pages/PropertyDetailPage";
 import { AdminLoginPage } from "./pages/admin/AdminLoginPage";
 import { AdminAnalytics } from "./pages/AdminAnalytics";
 import { AdminModeration } from "./pages/AdminModeration";
+import { AdminReports } from "./pages/AdminReports";
 import { AdminVerification } from "./pages/AdminVerification";
 
 interface RouteConfig {
@@ -37,7 +40,7 @@ const routes: RouteConfig[] = [
   {
     name: "Map Search",
     path: "/map-search",
-    element: <PortalPage pageKey="map-search" />,
+    element: <MapSearchPage />,
     visible: true,
   },
   {
@@ -65,6 +68,11 @@ const routes: RouteConfig[] = [
     visible: true,
   },
   {
+    name: "Property Detail",
+    path: "/property/:slug",
+    element: <PropertyDetailPage />,
+  },
+  {
     name: "Admin Login",
     path: "/admin/login",
     element: <AdminLoginPage />,
@@ -85,6 +93,12 @@ const routes: RouteConfig[] = [
     name: "Admin Moderation",
     path: "/admin/moderation",
     element: <AdminModeration />,
+    protected: true,
+  },
+  {
+    name: "Admin Reports",
+    path: "/admin/reports",
+    element: <AdminReports />,
     protected: true,
   },
 ];
