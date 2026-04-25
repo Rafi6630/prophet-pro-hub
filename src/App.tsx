@@ -17,6 +17,10 @@ import Dashboard from "@/pages/Dashboard";
 import PropertyDetail from "@/pages/PropertyDetail";
 import CreateListing from "@/pages/CreateListing";
 import Verification from "@/pages/Verification";
+import { AdminAnalytics } from "@/pages/AdminAnalytics";
+import { AdminModeration } from "@/pages/AdminModeration";
+import { AdminReports } from "@/pages/AdminReports";
+import { AdminVerification } from "@/pages/AdminVerification";
 import Auth from "@/pages/Auth";
 import ResetPassword from "@/pages/ResetPassword";
 import NotFound from "@/pages/NotFound";
@@ -55,6 +59,10 @@ const App = () => (
           <Route path="/verification" element={
             <RequireAuth><Layout><Verification /></Layout></RequireAuth>
           } />
+          <Route path="/admin" element={<RequireAuth><AdminAnalytics /></RequireAuth>} />
+          <Route path="/admin/moderation" element={<RequireAuth><AdminModeration /></RequireAuth>} />
+          <Route path="/admin/reports" element={<RequireAuth><AdminReports /></RequireAuth>} />
+          <Route path="/admin/verification" element={<RequireAuth><AdminVerification /></RequireAuth>} />
 
           <Route path="*" element={<Layout><NotFound /></Layout>} />
         </Routes>
