@@ -1,1 +1,13 @@
-project_id = "dqylnmkmooabylidbisu"
+project_id = "ssgmckciqyahmdkiurbm"
+
+[functions.ai-property-analysis]
+verify_jwt = false
+
+[functions.planner-analyze]
+verify_jwt = false
+
+[functions.planner-plans]
+verify_jwt = false
+
+[functions.opportunity-ai]
+verify_jwt = false
