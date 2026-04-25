@@ -94,7 +94,8 @@
   }
 
   /* Kurdish Sorani Font Support - uses same Arabic script font */
-  [lang="kr"] {
+  [lang="ku"],
+  [lang="ckb"] {
     font-family: 'Noto Sans Arabic', 'Segoe UI', 'Geeza Pro', 'Arial Unicode MS', sans-serif;
     font-feature-settings: 'liga' 1, 'calt' 1;
   }

@@ -28,6 +28,9 @@ const CityLandingPage = lazy(() => import("@/pages/CityLandingPage").then((modul
 const StaticContentPage = lazy(() => import("@/pages/StaticContentPage").then((module) => ({ default: module.StaticContentPage })));
 const SellerDashboardPage = lazy(() => import("@/pages/SellerDashboardPage").then((module) => ({ default: module.SellerDashboardPage })));
 const SellerProfilePage = lazy(() => import("@/pages/SellerProfilePage").then((module) => ({ default: module.SellerProfilePage })));
+const DashboardProfilePage = lazy(() => import("@/pages/DashboardProfilePage"));
+const DashboardSettingsPage = lazy(() => import("@/pages/DashboardSettingsPage"));
+const DashboardSubscriptionPage = lazy(() => import("@/pages/DashboardSubscriptionPage"));
 const AdminAnalytics = lazy(() => import("@/pages/AdminAnalytics").then((module) => ({ default: module.AdminAnalytics })));
 const AdminModeration = lazy(() => import("@/pages/AdminModeration").then((module) => ({ default: module.AdminModeration })));
 const AdminReports = lazy(() => import("@/pages/AdminReports").then((module) => ({ default: module.AdminReports })));
@@ -78,6 +81,9 @@ const App = () => (
 
             <Route path="/favorites" element={<RequireAuth><Layout><Favorites /></Layout></RequireAuth>} />
             <Route path="/dashboard" element={<RequireAuth><Layout><Dashboard /></Layout></RequireAuth>} />
+            <Route path="/dashboard/profile" element={<RequireAuth><Layout><DashboardProfilePage /></Layout></RequireAuth>} />
+            <Route path="/dashboard/settings" element={<RequireAuth><Layout><DashboardSettingsPage /></Layout></RequireAuth>} />
+            <Route path="/dashboard/subscription" element={<RequireAuth><Layout><DashboardSubscriptionPage /></Layout></RequireAuth>} />
             <Route path="/seller/dashboard" element={<RequireAuth><Layout><SellerDashboardPage /></Layout></RequireAuth>} />
             <Route path="/listings/new" element={<RequireAuth><Layout><CreateListing /></Layout></RequireAuth>} />
             <Route path="/verification" element={<RequireAuth><Layout><Verification /></Layout></RequireAuth>} />
