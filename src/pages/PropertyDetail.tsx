@@ -6,8 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   ShieldCheck, MapPin, BedDouble, Bath, Maximize, Heart, Share2,
   Phone, MessageCircle, FileText, AlertTriangle, TrendingUp, Coins,
-  GraduationCap, Hospital, Car, Zap, Droplet, Shield, Calendar, Send,
+  GraduationCap, Hospital, Car, Zap, Droplet, Shield, Calendar, Send, Expand, Map,
 } from "lucide-react";
+import PageMeta from "@/components/common/PageMeta";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -94,12 +95,35 @@ export default function PropertyDetail() {
   };
 
   const whatsappLink = p.seller?.whatsapp ? `https://wa.me/${p.seller.whatsapp.replace(/\D/g, "")}` : null;
+  const mapEmbedUrl =
+    typeof p.latitude === "number" && typeof p.longitude === "number"
+      ? `https://www.openstreetmap.org/export/embed.html?bbox=${p.longitude - 0.01}%2C${p.latitude - 0.01}%2C${p.longitude + 0.01}%2C${p.latitude + 0.01}&layer=mapnik&marker=${p.latitude}%2C${p.longitude}`
+      : null;
+  const propertyAge = new Date().getFullYear() - new Date(p.created_at).getFullYear();
+  const parkingEstimate = p.property_kind === "villa" || p.property_kind === "house" ? "2 spaces" : p.property_kind === "land" ? "N/A" : "1 space";
 
   return (
     <div className="pb-24 lg:pb-12">
+      <PageMeta
+        title={`${p.title_ar || p.title} | IraqProperty`}
+        description={p.description_ar || p.description || "Elite Iraq property detail with trust, pricing, and area intelligence."}
+        image={propertyImage(p)}
+      />
       {/* Gallery */}
       <div className="bg-secondary/30">
         <div className="container-app py-4 lg:py-6">
+          <div className="mb-3 flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" className="rounded-full bg-white/90" onClick={() => window.open(images[imgIdx].url, "_blank", "noopener,noreferrer")}>
+              <Expand className="h-4 w-4" />
+              Fullscreen
+            </Button>
+            {mapEmbedUrl ? (
+              <Button variant="outline" size="sm" className="rounded-full bg-white/90" onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${p.latitude},${p.longitude}`, "_blank", "noopener,noreferrer")}>
+                <Map className="h-4 w-4" />
+                Open map
+              </Button>
+            ) : null}
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 lg:gap-3">
             <div className="lg:col-span-3 aspect-[4/3] lg:aspect-[16/10] rounded-2xl overflow-hidden bg-muted">
               <img src={images[imgIdx].url} alt={p.title} className="w-full h-full object-cover" />
@@ -165,6 +189,25 @@ export default function PropertyDetail() {
               <Maximize className="w-5 h-5 mx-auto text-muted-foreground mb-1" />
               <div className="font-bold">{p.area_m2}</div>
               <div className="text-xs text-muted-foreground">{t("common.m2")}</div>
+            </div>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <div className="bg-card border border-border rounded-2xl p-4">
+              <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Price / sqm</div>
+              <div className="mt-2 text-xl font-extrabold">${pricePerM2(p)}</div>
+            </div>
+            <div className="bg-card border border-border rounded-2xl p-4">
+              <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Property age</div>
+              <div className="mt-2 text-xl font-extrabold">{Math.max(propertyAge, 0)} yrs</div>
+            </div>
+            <div className="bg-card border border-border rounded-2xl p-4">
+              <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Parking</div>
+              <div className="mt-2 text-xl font-extrabold">{parkingEstimate}</div>
+            </div>
+            <div className="bg-card border border-border rounded-2xl p-4">
+              <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Exit liquidity</div>
+              <div className="mt-2 text-xl font-extrabold">{Math.min(99, Math.max(58, score - 4))}/100</div>
             </div>
           </div>
 
@@ -238,6 +281,16 @@ export default function PropertyDetail() {
                     <div className="font-bold mt-1">{p.income_potential || "—"}</div>
                   </div>
                 </div>
+                <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
+                  <div className="font-semibold">Investor Summary</div>
+                  <p className="mt-2 leading-7">
+                    {verdict === "under"
+                      ? "Priced below modeled fair value with healthy area fundamentals and cleaner exit potential than most comparable listings."
+                      : verdict === "over"
+                        ? "Premium ask needs stronger justification, so buyers should negotiate using fair price and neighborhood benchmarks."
+                        : "Balanced pricing with stable trust signals and a reasonable path for owner-users or disciplined investors."}
+                  </p>
+                </div>
               </div>
             </TabsContent>
 
@@ -254,6 +307,11 @@ export default function PropertyDetail() {
                   </div>
                 ))}
               </div>
+              {mapEmbedUrl ? (
+                <div className="mt-4 overflow-hidden rounded-2xl border border-border">
+                  <iframe title="Property map" src={mapEmbedUrl} className="h-72 w-full" loading="lazy" />
+                </div>
+              ) : null}
             </TabsContent>
           </Tabs>
         </div>
@@ -304,19 +362,27 @@ export default function PropertyDetail() {
 
       {/* Sticky mobile CTA */}
       <div className="sticky-cta">
-        <div className="bg-card rounded-2xl shadow-xl border border-border p-2 flex gap-2">
+        <div className="bg-card rounded-2xl shadow-xl border border-border p-2 grid grid-cols-2 gap-2 md:grid-cols-4">
           {p.seller?.phone && (
-            <a href={`tel:${p.seller.phone}`} className="flex-1">
+            <a href={`tel:${p.seller.phone}`} className="col-span-1">
               <Button className="w-full gap-2"><Phone className="w-4 h-4" />{t("property.actions.contactSeller")}</Button>
             </a>
           )}
           {whatsappLink && (
-            <a href={whatsappLink} target="_blank" rel="noopener" className="flex-1">
+            <a href={whatsappLink} target="_blank" rel="noopener" className="col-span-1">
               <Button className="w-full gap-2 bg-trust hover:bg-trust/90 text-trust-foreground">
                 <MessageCircle className="w-4 h-4" />{t("property.actions.whatsapp")}
               </Button>
             </a>
           )}
+          <Button variant="outline" className="w-full gap-2" onClick={() => user ? toggle(p.id) : navigate("/auth")}>
+            <Heart className={`w-4 h-4 ${fav ? "fill-destructive text-destructive" : ""}`} />
+            Save
+          </Button>
+          <Button className="w-full gap-2" onClick={() => user ? setOfferOpen(true) : navigate("/auth")}>
+            <Send className="w-4 h-4" />
+            Make Offer
+          </Button>
         </div>
       </div>
 

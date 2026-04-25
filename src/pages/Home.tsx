@@ -5,12 +5,14 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Search, Home as HomeIcon, TreePine, TrendingUp, Building2,
-  ShieldCheck, Coins, FileCheck, BarChart3, ArrowRight, BadgeCheck, MapPinned, Sparkles,
+  ShieldCheck, Coins, FileCheck, BarChart3, ArrowRight, BadgeCheck, MapPinned, Sparkles, Download, UserRoundPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PropertyCard, { PropertyCardSkeleton } from "@/components/PropertyCard";
 import type { PropertyWithMedia, PropertyKind } from "@/lib/property";
 import { featuredSeededProperties, getSeededPublicProperties, investmentSeededProperties } from "@/lib/sampleInventory";
+import { marketInsights } from "@/data/marketInsights";
+import { iraqCities } from "@/data/iraqCities";
 
 const QUICK = [
   { kind: "house" as PropertyKind, icon: HomeIcon, key: "buyHouse" },
@@ -38,6 +40,8 @@ export default function Home() {
   const [city, setCity] = useState("");
   const [kind, setKind] = useState<PropertyKind | "">("");
   const [budget, setBudget] = useState("");
+  const [area, setArea] = useState("");
+  const [bedrooms, setBedrooms] = useState("");
 
   useEffect(() => {
     document.title = `${t("common.appName")} — ${t("common.tagline")}`;
@@ -100,6 +104,8 @@ export default function Home() {
     if (city) params.set("city", city);
     if (kind) params.set("kind", kind);
     if (budget) params.set("max", budget);
+    if (area) params.set("district", area);
+    if (bedrooms) params.set("bedrooms", bedrooms);
     navigate(`/buy?${params.toString()}`);
   };
 
@@ -163,7 +169,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                     {t("home.hero.city")}
@@ -183,6 +189,17 @@ export default function Home() {
                 </div>
                 <div>
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    Area
+                  </label>
+                  <input
+                    value={area}
+                    onChange={e => setArea(e.target.value)}
+                    placeholder="Mansour, Ankawa, Jadriya"
+                    className="h-12 w-full rounded-2xl border border-border bg-background px-4 font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                     {t("home.hero.type")}
                   </label>
                   <select
@@ -196,7 +213,24 @@ export default function Home() {
                     ))}
                   </select>
                 </div>
-                <div className="sm:col-span-2 lg:col-span-1 xl:col-span-2">
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    Bedrooms
+                  </label>
+                  <select
+                    value={bedrooms}
+                    onChange={e => setBedrooms(e.target.value)}
+                    className="h-12 w-full rounded-2xl border border-border bg-background px-4 font-medium"
+                  >
+                    <option value="">Any bedrooms</option>
+                    <option value="1">1+</option>
+                    <option value="2">2+</option>
+                    <option value="3">3+</option>
+                    <option value="4">4+</option>
+                    <option value="5">5+</option>
+                  </select>
+                </div>
+                <div className="sm:col-span-2">
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                     {t("home.hero.budget")}
                   </label>
@@ -238,6 +272,100 @@ export default function Home() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="container-app py-12 lg:py-16">
+        <div className="mb-6 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Market Prices</p>
+            <h2 className="text-2xl lg:text-3xl font-extrabold">Latest market benchmarks by city</h2>
+            <p className="mt-1 text-muted-foreground">Read price-per-sqm context before you negotiate.</p>
+          </div>
+          <Link to="/market-prices" className="text-sm font-semibold text-primary hover:underline flex items-center gap-1">
+            View market prices <ArrowRight className="w-4 h-4 flip-rtl" />
+          </Link>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {marketInsights.slice(0, 6).map((market) => (
+            <div key={market.cityId} className="content-panel p-6">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm text-muted-foreground">{market.city}</p>
+                  <h3 className="mt-2 text-3xl font-extrabold">${market.averagePricePerSqm}</h3>
+                </div>
+                <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                  {market.demandTrend}
+                </span>
+              </div>
+              <p className="mt-4 text-sm leading-7 text-foreground/72">{market.growthOutlook}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {market.premiumDistricts.map((district) => (
+                  <span key={district} className="filter-pill">{district}</span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="container-app py-4 lg:py-8">
+        <div className="section-shell px-6 py-8 lg:px-8 lg:py-10">
+          <div className="mb-8 max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Why IraqProperty</p>
+            <h2 className="mt-2 text-2xl lg:text-3xl font-extrabold">
+              Built for Iraqi buyer psychology, not generic marketplace traffic
+            </h2>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {[
+              ["Verified Sellers", "Start from who deserves trust, then compare the asset."],
+              ["Fair Price Estimate", "See if the ask is grounded before you spend time negotiating."],
+              ["Ownership Confidence", "Catch title and legal gaps before they become expensive."],
+              ["Area Intelligence", "Understand schools, roads, hospitals, electricity, water, and safety fast."],
+            ].map(([title, description]) => (
+              <div key={title} className="content-panel p-5">
+                <h3 className="text-lg font-extrabold">{title}</h3>
+                <p className="mt-3 text-sm leading-7 text-muted-foreground">{description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="container-app py-12 lg:py-16">
+        <div className="content-panel p-6 lg:p-8">
+          <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">App & Agency Growth</p>
+              <h2 className="mt-2 text-2xl lg:text-4xl font-extrabold">Own the decision before the next buyer does</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground lg:text-base">
+                Get instant alerts on verified listings, or join as an agency to unlock premium placement, trust upgrades,
+                lead capture, and performance analytics across Iraq.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+              <Button asChild size="lg" className="rounded-2xl px-6">
+                <Link to="/dashboard">
+                  <Download className="h-4 w-4" />
+                  Download App
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="rounded-2xl border-slate-200 bg-white px-6">
+                <Link to="/seller/dashboard">
+                  <UserRoundPlus className="h-4 w-4" />
+                  Join as Agency
+                </Link>
+              </Button>
+            </div>
+          </div>
+          <div className="mt-6 grid gap-3 md:grid-cols-3">
+            {iraqCities.slice(0, 3).map((cityItem) => (
+              <Link key={cityItem.id} to={`/${cityItem.id}-properties`} className="rounded-2xl border border-border bg-secondary/40 px-4 py-3 text-sm font-medium transition hover:border-primary/30 hover:bg-primary/5">
+                {cityItem.nameAr} · {cityItem.nameEn}
+              </Link>
+            ))}
           </div>
         </div>
       </section>
