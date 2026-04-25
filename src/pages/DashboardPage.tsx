@@ -1,18 +1,31 @@
+import { useEffect, useMemo, useState } from "react";
 import { Bell, Building2, Heart, ShieldCheck, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { iraqCities } from "@/data/iraqCities";
+import { publicProperties } from "@/data/sampleProperties";
+import { getFavoriteIds } from "@/lib/favorites";
+import { enrichProperty } from "@/lib/propertyMetrics";
+import { getSavedSearches, getSearchAlerts, type SavedSearch, type SearchAlert } from "@/lib/savedSearches";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { OwnershipStatus } from "@/components/OwnershipStatus";
+import { PropertyCard } from "@/components/PropertyCard";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 
-const savedAlerts = [
-  { label: "Baghdad apartments under market average", value: "12 new matches" },
-  { label: "Erbil villas with verified ownership", value: "5 new matches" },
-  { label: "Basra commercial shops near main roads", value: "8 new matches" },
-];
-
 export function DashboardPage() {
+  const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
+  const [alerts, setAlerts] = useState<SearchAlert[]>([]);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+
+  const properties = useMemo(() => publicProperties.map(enrichProperty), []);
+  const favoriteProperties = properties.filter((property) => favoriteIds.includes(property.id));
+
+  useEffect(() => {
+    setSavedSearches(getSavedSearches());
+    setAlerts(getSearchAlerts());
+    setFavoriteIds(getFavoriteIds());
+  }, []);
+
   return (
     <div className="container mx-auto px-4 pb-24 pt-28">
       <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
@@ -30,10 +43,10 @@ export function DashboardPage() {
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               {[
-                { label: "Saved Listings", value: "24", icon: Heart },
-                { label: "Verified Sellers", value: "17", icon: ShieldCheck },
-                { label: "Active Alerts", value: "9", icon: Bell },
-                { label: "Growth Cities", value: "6", icon: TrendingUp },
+                { label: "Saved Listings", value: `${favoriteProperties.length}`, icon: Heart },
+                { label: "Verified Sellers", value: `${properties.filter((property) => property.seller.verified).length}`, icon: ShieldCheck },
+                { label: "Active Alerts", value: `${alerts.length}`, icon: Bell },
+                { label: "Saved Searches", value: `${savedSearches.length}`, icon: TrendingUp },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
@@ -60,7 +73,7 @@ export function DashboardPage() {
               <OwnershipStatus status="verified" />
             </div>
             <Button asChild className="mt-8 w-full">
-              <Link to="/verified-sellers">Explore Verified Sellers</Link>
+              <Link to="/map-search">Manage Searches</Link>
             </Button>
           </CardContent>
         </Card>
@@ -73,12 +86,23 @@ export function DashboardPage() {
               Alerts
             </p>
             <div className="mt-6 space-y-4">
-              {savedAlerts.map((alert) => (
-                <div key={alert.label} className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
-                  <p className="font-semibold">{alert.label}</p>
-                  <p className="mt-2 text-sm text-foreground/66">{alert.value}</p>
+              {alerts.length ? (
+                alerts.slice(0, 4).map((alert) => (
+                  <div key={alert.id} className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+                    <p className="font-semibold">{alert.title}</p>
+                    <p className="mt-2 text-sm text-foreground/66">
+                      {new Date(alert.createdAt).toLocaleDateString()} • Match ready for review
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+                  <p className="font-semibold">No alerts yet</p>
+                  <p className="mt-2 text-sm text-foreground/66">
+                    Save a search from Map Search to start getting notified when verified listings match.
+                  </p>
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>
@@ -109,6 +133,54 @@ export function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+      </section>
+
+      <section className="mt-10 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+        <Card className="border-white/10 bg-card/70">
+          <CardContent className="p-6">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Saved Searches</p>
+            <div className="mt-6 space-y-4">
+              {savedSearches.length ? (
+                savedSearches.map((search) => (
+                  <div key={search.id} className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+                    <p className="font-semibold">{search.name}</p>
+                    <p className="mt-2 text-sm text-foreground/66">
+                      Price range ${search.minPrice.toLocaleString()} - ${search.maxPrice.toLocaleString()}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+                  <p className="font-semibold">No saved searches</p>
+                  <p className="mt-2 text-sm text-foreground/66">
+                    Create a search in Map Search to keep watching new verified inventory.
+                  </p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid gap-6">
+          {favoriteProperties.length ? (
+            favoriteProperties.slice(0, 2).map((property) => (
+              <PropertyCard key={property.id} property={property} />
+            ))
+          ) : (
+            <Card className="border-white/10 bg-card/70">
+              <CardContent className="p-6">
+                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Saved Listings</p>
+                <p className="mt-4 text-lg font-semibold">No saved listings yet</p>
+                <p className="mt-2 text-sm leading-7 text-foreground/68">
+                  Save any listing from Buy or Property Detail and it will appear here with trust and pricing metrics.
+                </p>
+                <Button asChild className="mt-6">
+                  <Link to="/buy">Explore Listings</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </section>
     </div>
   );

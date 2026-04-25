@@ -1,32 +1,39 @@
 import { AlertTriangle, Copy, ShieldAlert, Tags } from "lucide-react";
+import { sampleProperties } from "@/data/sampleProperties";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-const moderationQueues = [
-  {
-    title: "Flagged listings",
-    icon: AlertTriangle,
-    items: ["Karrada apartment with inconsistent deed scan", "Basra office tower with unverifiable floor plan"],
-  },
-  {
-    title: "Fake prices",
-    icon: Tags,
-    items: ["Erbil villa priced 38% below market average", "Mosul land listing under local benchmark without legal note"],
-  },
-  {
-    title: "Duplicate properties",
-    icon: Copy,
-    items: ["Najaf duplex posted by two agencies", "Sulaymaniyah farm parcel repeated with different photos"],
-  },
-  {
-    title: "Suspicious sellers",
-    icon: ShieldAlert,
-    items: ["Seller ID mismatch on Baghdad commercial shop", "Agency account with repeated WhatsApp-only listings"],
-  },
-];
-
 export function AdminModeration() {
+  const moderationQueues = [
+    {
+      title: "Flagged listings",
+      icon: AlertTriangle,
+      items: sampleProperties
+        .filter((property) => property.reports.length > 0)
+        .map((property) => `${property.title} • ${property.reports[0]?.reason ?? "Report pending"}`),
+    },
+    {
+      title: "Fake prices",
+      icon: Tags,
+      items: sampleProperties
+        .filter((property) => property.suspiciouslyLowPrice)
+        .map((property) => `${property.title} priced far below ${property.marketAverage}/sqm market average`),
+    },
+    {
+      title: "Duplicate properties",
+      icon: Copy,
+      items: ["Najaf duplex posted by two agencies", "Sulaymaniyah farm parcel repeated with different photos"],
+    },
+    {
+      title: "Suspicious sellers",
+      icon: ShieldAlert,
+      items: sampleProperties
+        .filter((property) => !property.seller.verified || property.hasLegalIssues)
+        .map((property) => `${property.seller.name} • ${property.title}`),
+    },
+  ];
+
   return (
     <AdminLayout title="Admin Moderation" breadcrumb="Safety and quality control">
       <div className="grid gap-6 lg:grid-cols-2">

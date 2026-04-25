@@ -1,23 +1,22 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
   BadgeDollarSign,
   BarChart3,
-  Heart,
   Map,
   Search,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import { iraqCities } from "@/data/iraqCities";
-import { propertyTypes } from "@/data/propertyTypes";
-import { estimateFairPrice } from "@/lib/fairPrice";
-import { calculateInvestmentScore } from "@/lib/investmentScore";
-import { calculateRiskScore } from "@/lib/riskScore";
+import { publicProperties } from "@/data/sampleProperties";
+import { getFavoriteIds } from "@/lib/favorites";
+import { enrichProperty } from "@/lib/propertyMetrics";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { OwnershipStatus } from "@/components/OwnershipStatus";
+import { PropertyCard } from "@/components/PropertyCard";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 type PortalPageKey =
@@ -77,56 +76,40 @@ const pageContent: Record<
     icon: ShieldCheck,
   },
   favorites: {
-    title: "Save the right listings and compare them like an investor",
-    titleAr: "احفظ العقارات المناسبة وقارنها بعقلية المستثمر",
+    title: "Saved properties and alert-driven shortlists",
+    titleAr: "العقارات المحفوظة والقوائم المختصرة المبنية على التنبيهات",
     description:
-      "Keep all shortlisted properties in one place with fair price and risk level side by side.",
-    icon: Heart,
+      "Track your best matches and compare them with pricing, trust, and investment metrics side by side.",
+    icon: BadgeDollarSign,
   },
 };
 
 export function PortalPage({ pageKey }: PortalPageProps) {
   const content = pageContent[pageKey];
   const Icon = content.icon;
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
 
-  const sampleCards = useMemo(
-    () =>
-      iraqCities.slice(0, 3).map((city, index) => {
-        const marketAverage = 1180 + index * 140;
-        const size = 180 + index * 35;
-        const fairPrice = estimateFairPrice({
-          size,
-          marketAverage,
-          condition: index === 0 ? "excellent" : index === 1 ? "good" : "average",
-          areaDemand: city.growthScore,
-        });
-        const score = calculateInvestmentScore({
-          pricePerSqm: marketAverage - 60 + index * 20,
-          marketAverage,
-          locationGrowth: city.growthScore,
-          liquidity: 76 + index * 6,
-          condition: 72 + index * 10,
-        });
+  useEffect(() => {
+    if (pageKey === "favorites") {
+      setFavoriteIds(getFavoriteIds());
+    }
+  }, [pageKey]);
 
-        const risk = calculateRiskScore({
-          hasMissingDocuments: index === 2,
-          sellerVerified: index !== 2,
-          suspiciouslyLowPrice: index === 2,
-          hasLegalIssues: false,
-        });
-
-        return {
-          id: `${pageKey}-${city.id}`,
-          city,
-          score,
-          fairPrice,
-          risk,
-          size,
-          type: propertyTypes[index].labelEn,
-        };
-      }),
-    [pageKey]
-  );
+  const sampleCards = useMemo(() => {
+    const base = publicProperties.map(enrichProperty);
+    switch (pageKey) {
+      case "investment":
+        return base.sort((a, b) => b.investmentScore - a.investmentScore).slice(0, 4);
+      case "market-prices":
+        return base.sort((a, b) => Math.abs(a.priceDelta) - Math.abs(b.priceDelta)).slice(0, 4);
+      case "verified-sellers":
+        return base.filter((property) => property.seller.verified).slice(0, 4);
+      case "favorites":
+        return base.filter((property) => favoriteIds.includes(property.id));
+      default:
+        return base.slice(0, 4);
+    }
+  }, [pageKey, favoriteIds]);
 
   return (
     <div className="container mx-auto px-4 pb-24 pt-28">
@@ -191,62 +174,24 @@ export function PortalPage({ pageKey }: PortalPageProps) {
         </div>
       </section>
 
-      <section className="mt-10 grid gap-6 lg:grid-cols-3">
-        {sampleCards.map((card) => (
-          <Card key={card.id} className="border-white/10 bg-card/70">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm text-foreground/60">{card.city.nameAr}</p>
-                  <h2 className="mt-1 text-2xl font-bold">{card.city.nameEn}</h2>
-                </div>
-                <VerifiedBadge variant={pageKey === "verified-sellers" ? "agency" : "seller"} />
-              </div>
-
-              <div className="mt-6 space-y-3 text-sm text-foreground/78">
-                <div className="flex items-center justify-between">
-                  <span>Property Type</span>
-                  <span>{card.type}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Size</span>
-                  <span>{card.size} sqm</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Fair Price Estimate</span>
-                  <span>${card.fairPrice.toLocaleString()}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Investment Score</span>
-                  <span className="font-semibold text-emerald-300">{card.score}/100</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Risk Level</span>
-                  <span className="font-semibold">{card.risk}</span>
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <OwnershipStatus
-                  status={
-                    card.risk === "Low"
-                      ? "verified"
-                      : card.risk === "Medium"
-                        ? "pending"
-                        : "missing-documents"
-                  }
-                />
-              </div>
-
-              <div className="mt-6 rounded-2xl bg-white/[0.03] p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-primary">Popular Areas</p>
-                <p className="mt-2 text-sm leading-7 text-foreground/76">
-                  {card.city.popularAreas.join(" • ")}
-                </p>
-              </div>
+      <section className="mt-10 grid gap-6 lg:grid-cols-2 2xl:grid-cols-4">
+        {sampleCards.length ? (
+          sampleCards.map((card) => (
+            <PropertyCard key={card.id} property={card} />
+          ))
+        ) : (
+          <Card className="border-white/10 bg-card/70 lg:col-span-2 2xl:col-span-4">
+            <CardContent className="p-8">
+              <h2 className="text-2xl font-bold">No saved properties yet</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-foreground/70">
+                Save listings from Buy, Map Search, or Property Detail and they will appear here with pricing, trust, and investment metrics.
+              </p>
+              <Button asChild className="mt-6">
+                <Link to="/buy">Explore Listings</Link>
+              </Button>
             </CardContent>
           </Card>
-        ))}
+        )}
       </section>
 
       <section className="mt-10 rounded-[2rem] border border-white/10 bg-white/[0.03] px-6 py-8">

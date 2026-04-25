@@ -2,51 +2,18 @@ import { ArrowRight, Building2, ChartColumnBig, Heart, MapPinned, ShieldCheck, S
 import { Link } from "react-router-dom";
 import { iraqCities } from "@/data/iraqCities";
 import { propertyTypes } from "@/data/propertyTypes";
-import { estimateFairPrice } from "@/lib/fairPrice";
-import { calculateInvestmentScore } from "@/lib/investmentScore";
-import { calculateRiskScore } from "@/lib/riskScore";
+import { publicProperties } from "@/data/sampleProperties";
+import { enrichProperty } from "@/lib/propertyMetrics";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { OwnershipStatus } from "@/components/OwnershipStatus";
+import { PropertyCard } from "@/components/PropertyCard";
 import { StickyMobileContact } from "@/components/StickyMobileContact";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { WhatsAppCTA } from "@/components/WhatsAppCTA";
 
-const featuredProperty = {
-  id: "baghdad-jadriya-villa-001",
-  title: "Waterfront family villa in Al Jadriya",
-  titleAr: "فيلا عائلية مطلة على الواجهة في الجادرية",
-  city: iraqCities[0],
-  sellerPhone: "+9647701234567",
-  sellerId: "seller-baghdad-001",
-  type: propertyTypes[6],
-  size: 420,
-  marketAverage: 1650,
-  condition: "excellent" as const,
-  areaDemand: 92,
-};
-
-const fairPrice = estimateFairPrice({
-  size: featuredProperty.size,
-  marketAverage: featuredProperty.marketAverage,
-  condition: featuredProperty.condition,
-  areaDemand: featuredProperty.areaDemand,
-});
-
-const investmentScore = calculateInvestmentScore({
-  pricePerSqm: 1580,
-  marketAverage: featuredProperty.marketAverage,
-  locationGrowth: featuredProperty.city.growthScore,
-  liquidity: 82,
-  condition: 91,
-});
-
-const riskLevel = calculateRiskScore({
-  hasMissingDocuments: false,
-  sellerVerified: true,
-  suspiciouslyLowPrice: false,
-  hasLegalIssues: false,
-});
+const featuredProperty = enrichProperty(publicProperties[0]);
+const latestProperties = publicProperties.slice(0, 3).map(enrichProperty);
 
 export function HomePage() {
   return (
@@ -117,7 +84,7 @@ export function HomePage() {
               <Card className="glass absolute bottom-8 left-8 right-8 border-white/15">
                 <CardContent className="p-6">
                   <div className="flex flex-wrap gap-2">
-                    <VerifiedBadge variant="seller" />
+                    <VerifiedBadge variant={featuredProperty.seller.verification} />
                     <VerifiedBadge variant="ownership" />
                   </div>
                   <h2 className="mt-4 text-2xl font-bold">{featuredProperty.title}</h2>
@@ -126,22 +93,41 @@ export function HomePage() {
                   <div className="mt-5 grid gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl bg-white/5 p-4">
                       <p className="text-sm text-foreground/64">Fair Price Estimate</p>
-                      <p className="mt-2 text-2xl font-bold">${fairPrice.toLocaleString()}</p>
+                      <p className="mt-2 text-2xl font-bold">${featuredProperty.fairPrice.toLocaleString()}</p>
                     </div>
                     <div className="rounded-2xl bg-white/5 p-4">
                       <p className="text-sm text-foreground/64">Investment Score</p>
-                      <p className="mt-2 text-2xl font-bold text-emerald-300">{investmentScore}/100</p>
+                      <p className="mt-2 text-2xl font-bold text-emerald-300">{featuredProperty.investmentScore}/100</p>
                     </div>
                   </div>
 
                   <div className="mt-4 flex items-center justify-between gap-3">
-                    <OwnershipStatus status={riskLevel === "Low" ? "verified" : "pending"} />
-                    <span className="text-sm font-semibold text-amber-200">Risk: {riskLevel}</span>
+                    <OwnershipStatus status={featuredProperty.ownershipStatus} />
+                    <span className="text-sm font-semibold text-amber-200">Risk: {featuredProperty.riskLevel}</span>
                   </div>
                 </CardContent>
               </Card>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="container mx-auto px-4 pb-6">
+        <div className="mb-10 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Featured inventory</p>
+            <h2 className="mt-4 text-4xl font-bold text-foreground md:text-5xl">
+              Seeded listings with pricing, trust, and investment signals
+            </h2>
+          </div>
+          <Button asChild variant="outline" className="hidden border-white/10 bg-white/5 md:inline-flex">
+            <Link to="/buy">See All Listings</Link>
+          </Button>
+        </div>
+        <div className="grid gap-6 lg:grid-cols-3">
+          {latestProperties.map((property) => (
+            <PropertyCard key={property.id} property={property} />
+          ))}
         </div>
       </section>
 
@@ -297,16 +283,16 @@ export function HomePage() {
       </section>
 
       <WhatsAppCTA
-        phoneNumber={featuredProperty.sellerPhone}
+        phoneNumber={featuredProperty.seller.whatsapp}
         listingId={featuredProperty.id}
-        sellerId={featuredProperty.sellerId}
+        sellerId={featuredProperty.seller.id}
         city={featuredProperty.city.nameEn}
       />
       <StickyMobileContact
         listingId={featuredProperty.id}
-        phoneNumber={featuredProperty.sellerPhone}
-        whatsappNumber={featuredProperty.sellerPhone}
-        sellerId={featuredProperty.sellerId}
+        phoneNumber={featuredProperty.seller.phone}
+        whatsappNumber={featuredProperty.seller.whatsapp}
+        sellerId={featuredProperty.seller.id}
         city={featuredProperty.city.nameEn}
       />
     </div>
