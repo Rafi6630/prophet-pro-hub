@@ -58,16 +58,17 @@ export function PropertyCard({ property, p }: PropertyCardProps) {
   const sellerVerification = isEnrichedProperty(data) ? data.seller.verification : null;
 
   return (
-    <Card className="overflow-hidden border-white/10 bg-card/70">
+    <Card className="card-spotlight overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-card/95 shadow-[0_18px_55px_rgba(15,23,42,0.08)]">
       <div className="relative">
         <img src={image} alt={title} className="h-64 w-full object-cover" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-950/35 to-transparent" />
         <div className="absolute left-4 top-4 flex flex-wrap gap-2">
           {sellerVerification ? <VerifiedBadge variant={sellerVerification} /> : null}
           {ownershipStatus === "verified" ? <VerifiedBadge variant="ownership" /> : null}
         </div>
         <button
           type="button"
-          className="absolute right-4 top-4 rounded-full bg-slate-950/70 p-2 text-white backdrop-blur"
+          className="absolute right-4 top-4 rounded-full border border-white/10 bg-slate-950/70 p-2 text-white backdrop-blur"
           onClick={() => {
             toggleFavorite(data.id);
             trackSaveLead({
@@ -87,11 +88,11 @@ export function PropertyCard({ property, p }: PropertyCardProps) {
       <CardContent className="p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-sm text-foreground/62">{citySecondary ?? cityLabel}</p>
-            <h3 className="mt-1 text-2xl font-bold">{title}</h3>
+            <p className="text-sm font-medium text-foreground/58">{citySecondary ?? cityLabel}</p>
+            <h3 className="mt-1 text-[1.55rem] font-extrabold leading-tight tracking-tight">{title}</h3>
             {titleAr ? <p className="mt-2 text-sm text-foreground/68">{titleAr}</p> : null}
           </div>
-          <div className="rounded-2xl bg-primary/10 px-3 py-2 text-center text-primary">
+          <div className="rounded-2xl border border-primary/15 bg-primary/10 px-3 py-2 text-center text-primary">
             <p className="text-xs uppercase tracking-[0.18em]">Score</p>
             <p className="text-xl font-bold">{investmentScore}</p>
           </div>
@@ -102,7 +103,7 @@ export function PropertyCard({ property, p }: PropertyCardProps) {
           <span>{area}, {cityLabel}</span>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-4 rounded-2xl bg-white/[0.03] p-4 text-sm">
+        <div className="mt-6 grid grid-cols-2 gap-4 rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 text-sm">
           <div>
             <p className="text-foreground/62">Asking Price</p>
             <p className="mt-1 text-lg font-bold">${price.toLocaleString()}</p>
@@ -134,13 +135,13 @@ export function PropertyCard({ property, p }: PropertyCardProps) {
           ) : null}
         </div>
 
-        <p className="mt-5 text-sm leading-7 text-foreground/74">{description}</p>
+        <p className="mt-5 min-h-[5.25rem] text-sm leading-7 text-foreground/74">{description}</p>
 
         <div className="mt-6 flex gap-3">
-          <Button asChild className="flex-1">
+          <Button asChild className="flex-1 rounded-xl">
             <Link to={`/property/${data.id}`}>View Property</Link>
           </Button>
-          <Button asChild variant="outline" className="flex-1 border-white/10 bg-white/5">
+          <Button asChild variant="outline" className="flex-1 rounded-xl border-slate-200 bg-white">
             <Link to="/map">View on Map</Link>
           </Button>
         </div>
