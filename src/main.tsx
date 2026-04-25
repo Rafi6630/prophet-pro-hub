@@ -7,6 +7,7 @@ createRoot(document.getElementById("root")!).render(<App />);
 
 // ── Register Service Worker (PWA) ──
 const hostname = window.location.hostname;
+const baseUrl = import.meta.env.BASE_URL;
 const isPreviewHost =
   hostname === "localhost" ||
   hostname === "127.0.0.1" ||
@@ -30,7 +31,7 @@ if ("serviceWorker" in navigator) {
     }
 
     navigator.serviceWorker
-      .register("/sw.js", { scope: "/" })
+      .register(`${baseUrl}sw.js`, { scope: baseUrl })
       .then((registration) => {
         console.log("[AqarAI] SW registered:", registration.scope);
 
