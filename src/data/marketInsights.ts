@@ -1,0 +1,59 @@
+export interface MarketPriceRow {
+  cityId: string;
+  city: string;
+  averagePricePerSqm: number;
+  premiumDistricts: string[];
+  demandTrend: "Rising" | "Stable" | "Selective";
+  growthOutlook: string;
+}
+
+export const marketInsights: MarketPriceRow[] = [
+  {
+    cityId: "baghdad",
+    city: "Baghdad",
+    averagePricePerSqm: 1480,
+    premiumDistricts: ["Al Jadriya", "Mansour", "Karrada"],
+    demandTrend: "Rising",
+    growthOutlook: "Prime family and embassy corridors continue to attract premium buyers.",
+  },
+  {
+    cityId: "erbil",
+    city: "Erbil",
+    averagePricePerSqm: 1260,
+    premiumDistricts: ["Ankawa", "Empire World", "Gulan"],
+    demandTrend: "Rising",
+    growthOutlook: "Verified stock is moving quickly in expat and upper-middle income zones.",
+  },
+  {
+    cityId: "mosul",
+    city: "Mosul",
+    averagePricePerSqm: 710,
+    premiumDistricts: ["Al Hadbaa", "Al Zuhour"],
+    demandTrend: "Selective",
+    growthOutlook: "Recovery-led demand favors clean-title mixed-use and rebuilding corridors.",
+  },
+  {
+    cityId: "basra",
+    city: "Basra",
+    averagePricePerSqm: 1325,
+    premiumDistricts: ["Al Ashar", "Hayy Al Jazaer"],
+    demandTrend: "Rising",
+    growthOutlook: "Commercial corridors and logistics-linked assets remain the strongest draws.",
+  },
+  {
+    cityId: "najaf",
+    city: "Najaf",
+    averagePricePerSqm: 390,
+    premiumDistricts: ["Kufa Road", "Al Ghadeer"],
+    demandTrend: "Stable",
+    growthOutlook: "Roadside development land and pilgrim-linked housing remain active.",
+  },
+  {
+    cityId: "sulaymaniyah",
+    city: "Sulaymaniyah",
+    averagePricePerSqm: 845,
+    premiumDistricts: ["Goizha", "Raparin"],
+    demandTrend: "Stable",
+    growthOutlook: "Lifestyle and hillside stock performs best when documentation is complete.",
+  },
+];

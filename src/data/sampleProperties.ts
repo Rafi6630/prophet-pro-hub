@@ -153,7 +153,7 @@ export const sampleProperties: SampleProperty[] = [
       "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
     ],
-    highlights: ["Move-in ready", "Strong rental demand", "Airport access", "Verified agency"],
+    highlights: ["Move-in ready", "Strong buyer demand", "Airport access", "Verified agency"],
     description:
       "Modern Ankawa apartment with clean title, efficient layout, and reliable demand from professionals and returning buyers seeking premium Erbil stock.",
     listedAt: "2026-04-22T12:00:00.000Z",
