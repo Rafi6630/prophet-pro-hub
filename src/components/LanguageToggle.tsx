@@ -7,7 +7,7 @@ import {
 const LANGS = [
   { code: "ar", label: "العربية" },
   { code: "en", label: "English" },
-  { code: "ku", label: "کوردی" },
+  { code: "ckb", label: "کوردی سۆرانی" },
 ];
 
 export default function LanguageToggle({ compact = false }: { compact?: boolean }) {

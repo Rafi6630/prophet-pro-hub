@@ -23,7 +23,7 @@ export function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const isRtl = currentLanguage === "ar" || currentLanguage === "kr";
+  const isRtl = currentLanguage === "ar" || currentLanguage === "ku" || currentLanguage === "ckb";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 18);
