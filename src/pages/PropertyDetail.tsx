@@ -22,6 +22,7 @@ import {
   fairPrice, discountToFair, priceVerdict, investmentScore,
   fraudRisk, legalStatus, areaGrowthPct, areaScore,
 } from "@/lib/property";
+import { seededPropertyById } from "@/lib/sampleInventory";
 
 const AREA = [
   { key: "schools", icon: GraduationCap, field: "schools_score" as const },
@@ -61,8 +62,8 @@ export default function PropertyDetail() {
         .from("properties")
         .select("*, property_images(*)")
         .eq("id", id!)
-        .single();
-      if (!data) return null;
+        .maybeSingle();
+      if (!data) return seededPropertyById(id! as string) ?? null;
       const { data: seller } = await supabase
         .from("profiles").select("display_name, avatar_url, phone, whatsapp, user_id")
         .eq("user_id", data.user_id).maybeSingle();

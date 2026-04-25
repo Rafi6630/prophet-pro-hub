@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import PropertyCard, { PropertyCardSkeleton } from "@/components/PropertyCard";
 import type { PropertyWithMedia, PropertyKind } from "@/lib/property";
+import { featuredSeededProperties, getSeededPublicProperties, investmentSeededProperties } from "@/lib/sampleInventory";
 
 const QUICK = [
   { kind: "house" as PropertyKind, icon: HomeIcon, key: "buyHouse" },
@@ -60,7 +61,7 @@ export default function Home() {
         .eq("featured", true)
         .order("created_at", { ascending: false })
         .limit(6);
-      return (data ?? []) as PropertyWithMedia[];
+      return ((data?.length ? data : featuredSeededProperties()) ?? []) as PropertyWithMedia[];
     },
   });
 
@@ -74,7 +75,7 @@ export default function Home() {
         .eq("investment_deal", true)
         .order("created_at", { ascending: false })
         .limit(6);
-      return (data ?? []) as PropertyWithMedia[];
+      return ((data?.length ? data : investmentSeededProperties()) ?? []) as PropertyWithMedia[];
     },
   });
 
@@ -88,8 +89,8 @@ export default function Home() {
         supabase.from("cities").select("id", { count: "exact", head: true }).eq("active", true),
       ]);
       return {
-        verifiedListings: verified.count ?? 0,
-        citiesCovered: citiesCount.count ?? 0,
+        verifiedListings: verified.count ?? getSeededPublicProperties().filter((property) => ["verified", "premium"].includes(property.verification_level)).length,
+        citiesCovered: citiesCount.count ?? new Set(getSeededPublicProperties().map((property) => property.city)).size,
       };
     },
   });

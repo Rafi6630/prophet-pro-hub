@@ -5,13 +5,16 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Heart, Send, Eye, Bell, Building2, Plus, ShieldCheck,
-  Users, BarChart3, FileCheck, LogOut,
+  Users, BarChart3, FileCheck, LogOut, Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRoles, addRole } from "@/hooks/useUserRoles";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { getSearchAlerts, getSavedSearches, type SavedSearch, type SearchAlert } from "@/lib/savedSearches";
+import { useMemo, useState } from "react";
+import { getSeededPublicProperties } from "@/lib/sampleInventory";
 
 function StatCard({ icon: Icon, label, value, to }: {
   icon: React.ElementType; label: string; value: number | string; to?: string;
@@ -31,7 +34,25 @@ export default function Dashboard() {
   const { user, signOut } = useAuth();
   const { isAdmin, isSeller, isBuyer } = useUserRoles();
   const { toast } = useToast();
+  const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
+  const [alerts, setAlerts] = useState<SearchAlert[]>([]);
   useEffect(() => { document.title = `${t("dashboard.title")} — ${t("common.appName")}`; }, [t]);
+  useEffect(() => {
+    setSavedSearches(getSavedSearches());
+    setAlerts(getSearchAlerts());
+  }, []);
+
+  const recommendedMatches = useMemo(() => {
+    const seeded = getSeededPublicProperties();
+    return savedSearches.flatMap((search) =>
+      seeded.filter((property) => {
+        const cityMatch = search.cityId === "all" || property.city === search.cityId;
+        const priceMatch = property.price >= search.minPrice && property.price <= search.maxPrice;
+        const verifiedMatch = !search.verifiedOnly || ["verified", "premium"].includes(property.verification_level);
+        return cityMatch && priceMatch && verifiedMatch;
+      }).slice(0, 2),
+    );
+  }, [savedSearches]);
 
   const { data: counts } = useQuery({
     queryKey: ["dashboard-counts", user?.id],
@@ -96,8 +117,65 @@ export default function Dashboard() {
             <StatCard icon={Heart} label={t("dashboard.buyer.saved")} value={counts?.favs ?? 0} to="/favorites" />
             <StatCard icon={Send} label={t("dashboard.buyer.offers")} value={counts?.offersBuyer ?? 0} />
             <StatCard icon={Eye} label={t("dashboard.buyer.viewed")} value={"—"} />
-            <StatCard icon={Bell} label={t("dashboard.buyer.alerts")} value={"—"} />
+            <StatCard icon={Bell} label={t("dashboard.buyer.alerts")} value={alerts.length} />
           </div>
+          <div className="mt-8 grid gap-6 lg:grid-cols-2">
+            <div className="content-panel p-5">
+              <div className="flex items-center gap-2 text-primary">
+                <Search className="h-4 w-4" />
+                <p className="text-sm font-semibold uppercase tracking-[0.24em]">Saved Searches</p>
+              </div>
+              <div className="mt-5 space-y-3">
+                {savedSearches.length ? savedSearches.map((search) => (
+                  <div key={search.id} className="rounded-2xl border border-border bg-secondary/30 p-4">
+                    <p className="font-semibold">{search.name}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {search.verifiedOnly ? "Verified only" : "All listings"} • {new Date(search.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                )) : (
+                  <div className="rounded-2xl border border-border bg-secondary/30 p-4 text-sm text-muted-foreground">
+                    No saved searches yet. Create one from Map Search to start tracking verified inventory.
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="content-panel p-5">
+              <div className="flex items-center gap-2 text-primary">
+                <Bell className="h-4 w-4" />
+                <p className="text-sm font-semibold uppercase tracking-[0.24em]">Alerts</p>
+              </div>
+              <div className="mt-5 space-y-3">
+                {alerts.length ? alerts.map((alert) => (
+                  <div key={alert.id} className="rounded-2xl border border-border bg-secondary/30 p-4">
+                    <p className="font-semibold">{alert.title}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{new Date(alert.createdAt).toLocaleDateString()}</p>
+                  </div>
+                )) : (
+                  <div className="rounded-2xl border border-border bg-secondary/30 p-4 text-sm text-muted-foreground">
+                    No alerts yet. Save a verified search to start receiving match notifications.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          {recommendedMatches.length > 0 && (
+            <div className="content-panel mt-6 p-5">
+              <div className="flex items-center gap-2 text-primary">
+                <ShieldCheck className="h-4 w-4" />
+                <p className="text-sm font-semibold uppercase tracking-[0.24em]">New verified matches</p>
+              </div>
+              <div className="mt-5 grid gap-3 md:grid-cols-2">
+                {recommendedMatches.slice(0, 4).map((property) => (
+                  <Link key={`${property.id}-match`} to={`/property/${property.id}`} className="rounded-2xl border border-border bg-secondary/30 p-4">
+                    <p className="font-semibold">{property.title}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{property.city}{property.district ? ` • ${property.district}` : ""}</p>
+                    <p className="mt-2 text-sm font-bold text-primary">${property.price.toLocaleString()}</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
           {!isSeller && (
             <div className="mt-8 bg-gradient-navy text-white rounded-2xl p-6 lg:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>

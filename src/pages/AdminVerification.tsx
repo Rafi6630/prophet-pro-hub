@@ -1,13 +1,18 @@
+import { useState } from "react";
 import { CheckCircle2, FileBadge2, Shield } from "lucide-react";
-import { sampleProperties } from "@/data/sampleProperties";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { OwnershipStatus } from "@/components/OwnershipStatus";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
+import { getSeededModerationInventory, updateSeededReviewOverride } from "@/lib/sampleInventory";
 
 export function AdminVerification() {
-  const sellerReviews = sampleProperties.slice(0, 4).map((property) => ({
+  const [refreshKey, setRefreshKey] = useState(0);
+  const properties = getSeededModerationInventory();
+
+  const sellerReviews = properties.slice(0, 5).map((property) => ({
+    propertyId: property.id,
     seller: property.seller.name,
     city: property.address,
     documents: property.hasMissingDocuments
@@ -24,13 +29,11 @@ export function AdminVerification() {
           <CardContent className="p-6">
             <div className="flex items-center gap-2 text-primary">
               <Shield className="h-5 w-5" />
-              <p className="text-sm font-semibold uppercase tracking-[0.24em]">
-                Approve sellers
-              </p>
+              <p className="text-sm font-semibold uppercase tracking-[0.24em]">Approve sellers</p>
             </div>
             <div className="mt-6 space-y-4">
               {sellerReviews.map((review) => (
-                <div key={review.seller} className="rounded-2xl border border-white/8 bg-white/[0.03] p-5">
+                <div key={review.propertyId} className="rounded-2xl border border-white/8 bg-white/[0.03] p-5">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <h3 className="text-lg font-semibold">{review.seller}</h3>
@@ -41,8 +44,31 @@ export function AdminVerification() {
                   <p className="mt-4 text-sm leading-7 text-foreground/72">{review.documents}</p>
                   <div className="mt-4 flex flex-wrap items-center gap-3">
                     <OwnershipStatus status={review.status} />
-                    <Button size="sm">Approve</Button>
-                    <Button size="sm" variant="outline">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        updateSeededReviewOverride(review.propertyId, {
+                          sellerVerified: true,
+                          sellerVerification: "agency",
+                          ownershipStatus: "verified",
+                        });
+                        setRefreshKey((value) => value + 1);
+                      }}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        updateSeededReviewOverride(review.propertyId, {
+                          hasMissingDocuments: true,
+                          ownershipStatus: "pending",
+                          visibility: "review",
+                        });
+                        setRefreshKey((value) => value + 1);
+                      }}
+                    >
                       Request More Documents
                     </Button>
                   </div>
@@ -57,12 +83,10 @@ export function AdminVerification() {
             <CardContent className="p-6">
               <div className="flex items-center gap-2 text-primary">
                 <FileBadge2 className="h-5 w-5" />
-                <p className="text-sm font-semibold uppercase tracking-[0.24em]">
-                  Review documents
-                </p>
+                <p className="text-sm font-semibold uppercase tracking-[0.24em]">Review documents</p>
               </div>
               <div className="mt-6 space-y-4 text-sm text-foreground/72">
-                {sampleProperties.slice(0, 3).map((property) => (
+                {properties.slice(0, 4).map((property) => (
                   <div key={property.id} className="rounded-2xl bg-slate-950/35 p-4">
                     {property.title}: {property.hasMissingDocuments
                       ? "missing supporting file before public approval."
@@ -77,20 +101,37 @@ export function AdminVerification() {
             <CardContent className="p-6">
               <div className="flex items-center gap-2 text-primary">
                 <CheckCircle2 className="h-5 w-5" />
-                <p className="text-sm font-semibold uppercase tracking-[0.24em]">
-                  Approve listings
-                </p>
+                <p className="text-sm font-semibold uppercase tracking-[0.24em]">Approve listings</p>
               </div>
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                {sampleProperties.slice(0, 4).map((property) => (
+                {properties.slice(0, 6).map((property) => (
                   <div key={property.id} className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
                     <p className="font-medium">{property.title}</p>
                     <p className="mt-1 text-sm text-foreground/64">
                       Visibility: {property.visibility} • Seller verified: {property.seller.verified ? "Yes" : "No"}
                     </p>
                     <div className="mt-4 flex gap-2">
-                      <Button size="sm">Publish</Button>
-                      <Button size="sm" variant="outline">
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          updateSeededReviewOverride(property.id, {
+                            visibility: "public",
+                            approved: true,
+                            ownershipStatus: "verified",
+                          });
+                          setRefreshKey((value) => value + 1);
+                        }}
+                      >
+                        Publish
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          updateSeededReviewOverride(property.id, { visibility: "review", approved: false });
+                          setRefreshKey((value) => value + 1);
+                        }}
+                      >
                         Hold
                       </Button>
                     </div>

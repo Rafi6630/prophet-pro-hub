@@ -1,11 +1,14 @@
-import { Flag, MessageSquareWarning, ShieldCheck, EyeOff } from "lucide-react";
-import { sampleProperties } from "@/data/sampleProperties";
+import { useState } from "react";
+import { EyeOff, Flag, MessageSquareWarning, ShieldCheck } from "lucide-react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { getSeededModerationInventory, updateSeededReviewOverride } from "@/lib/sampleInventory";
 
 export function AdminReports() {
-  const reported = sampleProperties.filter((property) => property.reports.length > 0);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const properties = getSeededModerationInventory();
+  const reported = properties.filter((property) => property.reports.length > 0);
 
   return (
     <AdminLayout title="Admin Reports" breadcrumb="Reports and public visibility">
@@ -30,8 +33,25 @@ export function AdminReports() {
                     ))}
                   </div>
                   <div className="mt-4 flex gap-2">
-                    <Button size="sm">Resolve</Button>
-                    <Button size="sm" variant="outline">Escalate</Button>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        updateSeededReviewOverride(property.id, { extraReports: [] });
+                        setRefreshKey((value) => value + 1);
+                      }}
+                    >
+                      Resolve
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        updateSeededReviewOverride(property.id, { visibility: "review", ownershipStatus: "pending" });
+                        setRefreshKey((value) => value + 1);
+                      }}
+                    >
+                      Escalate
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -47,7 +67,7 @@ export function AdminReports() {
                 <p className="text-sm font-semibold uppercase tracking-[0.24em]">Approve public visibility</p>
               </div>
               <div className="mt-6 space-y-4">
-                {sampleProperties
+                {properties
                   .filter((property) => property.visibility !== "public")
                   .map((property) => (
                     <div key={property.id} className="rounded-2xl bg-white/[0.03] p-4">
@@ -56,8 +76,25 @@ export function AdminReports() {
                         Status: {property.visibility} • Ownership: {property.ownershipStatus}
                       </p>
                       <div className="mt-4 flex gap-2">
-                        <Button size="sm">Approve for Public</Button>
-                        <Button size="sm" variant="outline">Keep in Review</Button>
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            updateSeededReviewOverride(property.id, { visibility: "public", approved: true });
+                            setRefreshKey((value) => value + 1);
+                          }}
+                        >
+                          Approve for Public
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            updateSeededReviewOverride(property.id, { visibility: "review" });
+                            setRefreshKey((value) => value + 1);
+                          }}
+                        >
+                          Keep in Review
+                        </Button>
                       </div>
                     </div>
                   ))}
