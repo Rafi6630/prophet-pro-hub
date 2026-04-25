@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, BarChart3, Flag, LogOut, ShieldCheck, ShieldEllipsis } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useApp } from "@/contexts/AppContext";
+import { useAuth } from "@/hooks/useAuth";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -14,7 +14,7 @@ interface AdminLayoutProps {
 export function AdminLayout({ children, title, breadcrumb }: AdminLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useApp();
+  const { signOut } = useAuth();
 
   const navItems = [
     { path: "/admin", label: "Analytics", icon: BarChart3 },
@@ -28,7 +28,7 @@ export function AdminLayout({ children, title, breadcrumb }: AdminLayoutProps) {
       <aside className="hidden w-[264px] shrink-0 border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:block">
         <div className="p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">IraqProperty Admin</p>
-          <h2 className="mt-3 text-2xl font-bold">Prophet Pro Hub</h2>
+          <h2 className="mt-3 text-2xl font-bold">Trust Operations</h2>
 
           <nav className="mt-10 space-y-2">
             {navItems.map((item) => {
@@ -62,8 +62,8 @@ export function AdminLayout({ children, title, breadcrumb }: AdminLayoutProps) {
               variant="ghost"
               className="w-full justify-start text-sidebar-foreground/65 hover:text-destructive"
               onClick={() => {
-                logout();
-                navigate("/admin/login");
+                void signOut();
+                navigate("/auth");
               }}
             >
               <LogOut className="mr-2 h-4 w-4" />
