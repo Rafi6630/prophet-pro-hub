@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { Bell, Building2, Heart, ShieldCheck, TrendingUp } from "lucide-react";
+import { Bell, Building2, GitCompareArrows, Heart, History, ReceiptText, ShieldCheck, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { iraqCities } from "@/data/iraqCities";
 import { publicProperties } from "@/data/sampleProperties";
 import { getFavoriteIds } from "@/lib/favorites";
 import { enrichProperty } from "@/lib/propertyMetrics";
+import { getRecommendedDeals } from "@/lib/recommendationEngine";
 import { getSavedSearches, getSearchAlerts, type SavedSearch, type SearchAlert } from "@/lib/savedSearches";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,6 +19,7 @@ export function DashboardPage() {
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
 
   const properties = useMemo(() => publicProperties.map(enrichProperty), []);
+  const recommendedDeals = useMemo(() => getRecommendedDeals(undefined, 80), []);
   const favoriteProperties = properties.filter((property) => favoriteIds.includes(property.id));
 
   useEffect(() => {
@@ -180,6 +182,63 @@ export function DashboardPage() {
               </CardContent>
             </Card>
           )}
+        </div>
+      </section>
+
+      <section className="mt-10 grid gap-6 lg:grid-cols-3">
+        <Card className="premium-card">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 text-primary">
+              <ReceiptText className="h-5 w-5" />
+              <p className="text-sm font-semibold uppercase tracking-[0.24em]">Offers sent</p>
+            </div>
+            <div className="mt-6 space-y-3 text-sm text-foreground/72">
+              <div className="rounded-2xl bg-slate-50 p-4">Jadriya River Villa • $612,000 submitted</div>
+              <div className="rounded-2xl bg-slate-50 p-4">Ankawa Premium Apartment • $184,000 under review</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="premium-card">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 text-primary">
+              <History className="h-5 w-5" />
+              <p className="text-sm font-semibold uppercase tracking-[0.24em]">Viewed history</p>
+            </div>
+            <div className="mt-6 space-y-3 text-sm text-foreground/72">
+              {properties.slice(0, 3).map((property) => (
+                <div key={property.id} className="rounded-2xl bg-slate-50 p-4">{property.title}</div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="premium-card">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 text-primary">
+              <GitCompareArrows className="h-5 w-5" />
+              <p className="text-sm font-semibold uppercase tracking-[0.24em]">Compare properties</p>
+            </div>
+            <div className="mt-6 space-y-3 text-sm text-foreground/72">
+              <div className="rounded-2xl bg-slate-50 p-4">Compare Jadriya Villa vs Ankawa Apartment</div>
+              <div className="rounded-2xl bg-slate-50 p-4">Compare Basra Shop vs Najaf Land Parcel</div>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="mt-10">
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Recommended deals</p>
+            <h2 className="mt-3 text-3xl font-bold">Deals worth a second look</h2>
+          </div>
+          <Button asChild variant="outline" className="border-slate-200 bg-white">
+            <Link to="/investment">Explore Investment Deals</Link>
+          </Button>
+        </div>
+        <div className="grid gap-6 lg:grid-cols-2">
+          {recommendedDeals.slice(0, 2).map((property) => (
+            <PropertyCard key={property.id} property={property} />
+          ))}
         </div>
       </section>
     </div>

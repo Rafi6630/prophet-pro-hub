@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Bath, BedDouble, Building2, Calendar1, CircleAlert, Heart, MapPin, Ruler, ShieldCheck } from "lucide-react";
+import { Bath, BedDouble, Building2, Calendar1, CarFront, CircleAlert, Heart, MapPin, PlayCircle, Ruler, ShieldCheck } from "lucide-react";
+import PageMeta from "@/components/common/PageMeta";
+import { propertyIntelligence } from "@/data/propertyIntelligence";
+import { getAreaGrowthOutlook } from "@/lib/areaGrowth";
+import { getFraudRiskLevel } from "@/lib/fraudRisk";
 import { publicProperties } from "@/data/sampleProperties";
 import { enrichProperty } from "@/lib/propertyMetrics";
 import { toggleFavorite } from "@/lib/favorites";
@@ -18,6 +22,16 @@ export function PropertyDetailPage() {
     () => publicProperties.map(enrichProperty).find((item) => item.slug === slug),
     [slug]
   );
+  const intelligence = property ? propertyIntelligence[property.id] : undefined;
+  const areaGrowth = property ? getAreaGrowthOutlook(property.cityId, property.areaDemand) : undefined;
+  const fraudRisk = property
+    ? getFraudRiskLevel({
+        hasMissingDocuments: property.hasMissingDocuments,
+        sellerVerified: property.seller.verified,
+        suspiciouslyLowPrice: property.suspiciouslyLowPrice,
+        hasLegalIssues: property.hasLegalIssues,
+      })
+    : undefined;
   const [activeImage, setActiveImage] = useState(property?.image ?? "");
 
   useEffect(() => {
@@ -39,6 +53,7 @@ export function PropertyDetailPage() {
 
   return (
     <div className="container mx-auto px-4 pb-28 pt-28">
+      <PageMeta title={`${property.title} | IraqProperty`} description={property.description} image={property.image} />
       <section className="grid gap-8 xl:grid-cols-[1.15fr_0.85fr]">
         <div>
           <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-card/70">
@@ -56,6 +71,18 @@ export function PropertyDetailPage() {
               </button>
             ))}
           </div>
+          {intelligence ? (
+            <div className="mt-4 overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-950">
+              <div className="aspect-video">
+                <iframe
+                  src={intelligence.videoUrl}
+                  title={`${property.title} video`}
+                  className="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                />
+              </div>
+            </div>
+          ) : null}
         </div>
 
         <div className="space-y-6">
@@ -77,6 +104,8 @@ export function PropertyDetailPage() {
                 <Metric icon={Ruler} label="Size" value={`${property.sizeSqm} sqm`} />
                 <Metric icon={BedDouble} label="Bedrooms" value={`${property.bedrooms}`} />
                 <Metric icon={Bath} label="Bathrooms" value={`${property.bathrooms}`} />
+                {intelligence ? <Metric icon={CarFront} label="Parking" value={`${intelligence.parking}`} /> : null}
+                {intelligence ? <Metric icon={Calendar1} label="Property Age" value={`${intelligence.propertyAge} yrs`} /> : null}
               </div>
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -96,7 +125,7 @@ export function PropertyDetailPage() {
                   Investment Score {property.investmentScore}/100
                 </div>
                 <div className="rounded-full border border-amber-400/20 bg-amber-500/10 px-4 py-2 text-sm font-semibold text-amber-100">
-                  Risk {property.riskLevel}
+                  Fraud Risk {fraudRisk?.riskLevel ?? property.riskLevel}
                 </div>
               </div>
 
@@ -136,15 +165,25 @@ export function PropertyDetailPage() {
                 <div className="rounded-2xl bg-white/[0.03] p-4">
                   <p>Price per sqm: <span className="font-semibold text-foreground">${property.pricePerSqm.toLocaleString()}</span></p>
                   <p className="mt-2">Market average: <span className="font-semibold text-foreground">${property.marketAverage.toLocaleString()}</span></p>
+                  <p className="mt-2">Under / over priced: <span className="font-semibold text-foreground">{Math.round(((property.priceUsd - property.fairPrice) / property.fairPrice) * 100)}%</span></p>
                 </div>
                 <div className="rounded-2xl bg-white/[0.03] p-4">
-                  <p>Location growth score: <span className="font-semibold text-foreground">{property.locationGrowth}</span></p>
-                  <p className="mt-2">Liquidity score: <span className="font-semibold text-foreground">{property.liquidity}</span></p>
+                  <p>Growth Outlook: <span className="font-semibold text-foreground">{areaGrowth?.demandTier}</span></p>
+                  <p className="mt-2">Exit Liquidity Score: <span className="font-semibold text-foreground">{intelligence?.exitLiquidityScore ?? property.liquidity}</span></p>
                 </div>
                 <div className="rounded-2xl bg-white/[0.03] p-4">
                   <p>Condition score: <span className="font-semibold text-foreground">{property.conditionScore}</span></p>
                   <p className="mt-2">Area demand: <span className="font-semibold text-foreground">{property.areaDemand}</span></p>
                 </div>
+                {intelligence ? (
+                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-900">
+                    <div className="flex items-center gap-2 font-semibold">
+                      <PlayCircle className="h-4 w-4" />
+                      Investor Summary
+                    </div>
+                    <p className="mt-3 leading-7">{intelligence.investorSummary}</p>
+                  </div>
+                ) : null}
                 {property.reports.length ? (
                   <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 p-4 text-amber-100">
                     <div className="flex items-center gap-2 font-semibold">
@@ -190,6 +229,24 @@ export function PropertyDetailPage() {
               </div>
             </CardContent>
           </Card>
+          {intelligence ? (
+            <Card className="border-white/10 bg-card/70">
+              <CardContent className="p-6">
+                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Area Intelligence</p>
+                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                  <IntelligenceBlock title="Schools" items={intelligence.schools} />
+                  <IntelligenceBlock title="Hospitals" items={intelligence.hospitals} />
+                  <IntelligenceBlock title="Roads" items={intelligence.roads} />
+                  <div className="rounded-2xl bg-white/[0.03] p-4 text-sm leading-7 text-foreground/72">
+                    <p><span className="font-semibold text-foreground">Electricity:</span> {intelligence.electricity}</p>
+                    <p><span className="font-semibold text-foreground">Water:</span> {intelligence.water}</p>
+                    <p><span className="font-semibold text-foreground">Safety:</span> {intelligence.safety}</p>
+                    <p><span className="font-semibold text-foreground">Legal Check:</span> {intelligence.legalCheckStatus}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : null}
         </div>
       </section>
 
@@ -207,6 +264,19 @@ export function PropertyDetailPage() {
         sellerId={property.seller.id}
         city={property.city.nameEn}
       />
+    </div>
+  );
+}
+
+function IntelligenceBlock({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div className="rounded-2xl bg-white/[0.03] p-4">
+      <p className="font-semibold">{title}</p>
+      <div className="mt-3 space-y-2 text-sm text-foreground/72">
+        {items.map((item) => (
+          <p key={item}>{item}</p>
+        ))}
+      </div>
     </div>
   );
 }

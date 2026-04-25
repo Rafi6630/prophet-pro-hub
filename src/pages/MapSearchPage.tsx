@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { MapPin, Search } from "lucide-react";
+import { MapPin, PencilRuler, School, Search, ShieldPlus } from "lucide-react";
+import PageMeta from "@/components/common/PageMeta";
 import { iraqCities } from "@/data/iraqCities";
+import { propertyIntelligence } from "@/data/propertyIntelligence";
 import { publicProperties } from "@/data/sampleProperties";
 import { geocodeIraqQuery, projectIraqCoordinates } from "@/lib/geocoding";
 import { enrichProperty } from "@/lib/propertyMetrics";
@@ -76,6 +78,7 @@ export function MapSearchPage() {
 
   return (
     <div className="container mx-auto px-4 pb-24 pt-28">
+      <PageMeta title="Map Search | IraqProperty" description="Interactive Iraq property map with filters, split view, and verified alerts." />
       <section className="section-shell px-6 py-10 md:px-8">
         <div className="grid gap-8 xl:grid-cols-[0.85fr_1.15fr]">
           <div className="space-y-6">
@@ -165,6 +168,16 @@ export function MapSearchPage() {
                       />
                       <p className="mt-2 text-sm text-foreground/66">${maxPrice.toLocaleString()}</p>
                     </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-foreground/70">
+                    <div className="flex items-center gap-2 font-semibold text-foreground">
+                      <PencilRuler className="h-4 w-4 text-primary" />
+                      Draw area search
+                    </div>
+                    <p className="mt-2 leading-7">
+                      Use the city filter plus price range to narrow the map, then click markers to inspect nearby infrastructure and trust signals.
+                    </p>
                   </div>
 
                   <Button onClick={handleSaveSearch} className="w-full">
@@ -270,6 +283,37 @@ export function MapSearchPage() {
                 </Card>
               )}
             </div>
+            {selectedProperty ? (
+              <Card className="premium-card">
+                <CardContent className="p-6">
+                  <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Nearby schools and hospitals</p>
+                  <div className="mt-6 grid gap-4 md:grid-cols-2">
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                      <div className="flex items-center gap-2 font-semibold">
+                        <School className="h-4 w-4 text-primary" />
+                        Schools
+                      </div>
+                      <div className="mt-3 space-y-2 text-sm text-foreground/72">
+                        {(propertyIntelligence[selectedProperty.id]?.schools ?? ["Local schools"]).map((item) => (
+                          <p key={item}>{item}</p>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                      <div className="flex items-center gap-2 font-semibold">
+                        <ShieldPlus className="h-4 w-4 text-primary" />
+                        Hospitals
+                      </div>
+                      <div className="mt-3 space-y-2 text-sm text-foreground/72">
+                        {(propertyIntelligence[selectedProperty.id]?.hospitals ?? ["Local hospitals"]).map((item) => (
+                          <p key={item}>{item}</p>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : null}
           </div>
         </div>
       </section>
