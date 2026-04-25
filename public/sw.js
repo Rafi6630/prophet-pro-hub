@@ -10,11 +10,12 @@ const CACHE_VERSION = "terravista-v2";
 const STATIC_CACHE  = `${CACHE_VERSION}-static`;
 const IMAGE_CACHE   = `${CACHE_VERSION}-images`;
 const API_CACHE     = `${CACHE_VERSION}-api`;
+const BASE_PATH = new URL(self.registration.scope).pathname;
 
 const STATIC_ASSETS = [
-  "/",
-  "/index.html",
-  "/manifest.json",
+  BASE_PATH,
+  `${BASE_PATH}index.html`,
+  `${BASE_PATH}manifest.json`,
 ];
 
 const API_DOMAINS = ["supabase.co", "supabase.in", "functions.supabase.co"];
@@ -108,7 +109,7 @@ async function networkFirst(request, cacheName, timeoutMs = 3000) {
     if (cached) return cached;
     // For HTML pages, return the cached index as fallback shell
     if (request.destination === "document") {
-      return caches.match("/index.html") || new Response("Offline", { status: 503 });
+      return caches.match(`${BASE_PATH}index.html`) || new Response("Offline", { status: 503 });
     }
     return new Response("Offline", { status: 503 });
   }
@@ -133,9 +134,9 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title || "TerraVista", {
       body: data.body || "",
-      icon: "/icons/icon-192.png",
-      badge: "/icons/icon-72.png",
-      data: { url: data.url || "/" },
+      icon: `${BASE_PATH}favicon.ico`,
+      badge: `${BASE_PATH}favicon.ico`,
+      data: { url: data.url || BASE_PATH },
       vibrate: [100, 50, 100],
     })
   );
@@ -145,7 +146,7 @@ self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   event.waitUntil(
     clients.matchAll({ type: "window" }).then((clientList) => {
-      const url = event.notification.data?.url || "/";
+      const url = event.notification.data?.url || BASE_PATH;
       for (const client of clientList) {
         if (client.url === url && "focus" in client) return client.focus();
       }
