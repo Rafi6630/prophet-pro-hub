@@ -15,36 +15,38 @@ export default {
   	extend: {
   		fontFamily: {
   			sans: [
-  				'DM Sans',
+  				'Inter',
+  				'Plus Jakarta Sans',
   				'ui-sans-serif',
   				'system-ui',
   				'-apple-system',
   				'sans-serif'
   			],
   			display: [
-  				'Sora',
-  				'DM Sans',
+  				'Plus Jakarta Sans',
+  				'Inter',
+  				'ui-sans-serif',
+  				'system-ui',
+  				'sans-serif'
+  			],
+  			arabic: [
+  				'IBM Plex Sans Arabic',
+  				'Noto Sans Arabic',
   				'ui-sans-serif',
   				'sans-serif'
   			],
   			serif: [
-  				'Lora',
   				'ui-serif',
   				'Georgia',
   				'Cambria',
-  				'Times New Roman',
-  				'Times',
   				'serif'
   			],
   			mono: [
-  				'Space Mono',
   				'ui-monospace',
   				'SFMono-Regular',
   				'Menlo',
   				'Monaco',
   				'Consolas',
-  				'Liberation Mono',
-  				'Courier New',
   				'monospace'
   			]
   		},
@@ -112,67 +114,58 @@ export default {
   		},
   		keyframes: {
   			'accordion-down': {
-  				from: {
-  					height: '0'
-  				},
-  				to: {
-  					height: 'var(--radix-accordion-content-height)'
-  				}
+  				from: { height: '0' },
+  				to:   { height: 'var(--radix-accordion-content-height)' }
   			},
   			'accordion-up': {
-  				from: {
-  					height: 'var(--radix-accordion-content-height)'
-  				},
-  				to: {
-  					height: '0'
-  				}
+  				from: { height: 'var(--radix-accordion-content-height)' },
+  				to:   { height: '0' }
   			},
   			'fade-in': {
-  				from: {
-  					opacity: '0',
-  					transform: 'translateY(8px)'
-  				},
-  				to: {
-  					opacity: '1',
-  					transform: 'translateY(0)'
-  				}
+  				from: { opacity: '0', transform: 'translateY(10px)' },
+  				to:   { opacity: '1', transform: 'translateY(0)' }
   			},
   			'slide-in': {
-  				from: {
-  					opacity: '0',
-  					transform: 'translateX(-12px)'
-  				},
-  				to: {
-  					opacity: '1',
-  					transform: 'translateX(0)'
-  				}
+  				from: { opacity: '0', transform: 'translateX(-14px)' },
+  				to:   { opacity: '1', transform: 'translateX(0)' }
+  			},
+  			'slide-in-rtl': {
+  				from: { opacity: '0', transform: 'translateX(14px)' },
+  				to:   { opacity: '1', transform: 'translateX(0)' }
   			},
   			'scale-in': {
-  				from: {
-  					opacity: '0',
-  					transform: 'scale(0.95)'
-  				},
-  				to: {
-  					opacity: '1',
-  					transform: 'scale(1)'
-  				}
+  				from: { opacity: '0', transform: 'scale(0.94)' },
+  				to:   { opacity: '1', transform: 'scale(1)' }
+  			},
+  			'pop-in': {
+  				'0%':   { opacity: '0', transform: 'scale(0.88) translateY(6px)' },
+  				'60%':  { transform: 'scale(1.02) translateY(-1px)' },
+  				'100%': { opacity: '1', transform: 'scale(1) translateY(0)' }
   			},
   			'pulse-gold': {
-  				'0%, 100%': {
-  					boxShadow: '0 0 0 0 hsl(42 90% 55% / 0.3)'
-  				},
-  				'50%': {
-  					boxShadow: '0 0 0 8px hsl(42 90% 55% / 0)'
-  				}
+  				'0%, 100%': { boxShadow: '0 0 0 0 hsl(35 95% 54% / 0.30)' },
+  				'50%':      { boxShadow: '0 0 0 9px hsl(35 95% 54% / 0)' }
+  			},
+  			'pulse-primary': {
+  				'0%, 100%': { boxShadow: '0 0 0 0 hsl(243 85% 62% / 0.28)' },
+  				'50%':      { boxShadow: '0 0 0 9px hsl(243 85% 62% / 0)' }
+  			},
+  			'shimmer-move': {
+  				'0%':   { backgroundPosition: '-300% 0' },
+  				'100%': { backgroundPosition: '300% 0' }
   			}
   		},
   		animation: {
-  			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out',
-  			'fade-in': 'fade-in 0.4s ease-out',
-  			'slide-in': 'slide-in 0.3s ease-out',
-  			'scale-in': 'scale-in 0.3s ease-out',
-  			'pulse-gold': 'pulse-gold 2s infinite'
+  			'accordion-down':  'accordion-down 0.22s ease-out',
+  			'accordion-up':    'accordion-up 0.22s ease-out',
+  			'fade-in':         'fade-in 0.38s cubic-bezier(0.22, 1, 0.36, 1)',
+  			'slide-in':        'slide-in 0.32s cubic-bezier(0.22, 1, 0.36, 1)',
+  			'slide-in-rtl':    'slide-in-rtl 0.32s cubic-bezier(0.22, 1, 0.36, 1)',
+  			'scale-in':        'scale-in 0.28s cubic-bezier(0.22, 1, 0.36, 1)',
+  			'pop-in':          'pop-in 0.38s cubic-bezier(0.22, 1, 0.36, 1)',
+  			'pulse-gold':      'pulse-gold 2.2s ease-in-out infinite',
+  			'pulse-primary':   'pulse-primary 2.2s ease-in-out infinite',
+  			'shimmer-move':    'shimmer-move 1.8s ease-in-out infinite'
   		},
   		boxShadow: {
   			'2xs': 'var(--shadow-2xs)',
