@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Search, Home as HomeIcon, TreePine, TrendingUp, Building2,
-  ShieldCheck, Coins, FileCheck, BarChart3, ArrowRight,
+  ShieldCheck, Coins, FileCheck, BarChart3, ArrowRight, BadgeCheck, MapPinned, Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PropertyCard, { PropertyCardSkeleton } from "@/components/PropertyCard";
@@ -23,6 +23,12 @@ const TRUST_ITEMS = [
   { icon: Coins, key: "fairPrice", color: "text-gold" },
   { icon: FileCheck, key: "ownership", color: "text-info" },
   { icon: BarChart3, key: "intelligence", color: "text-primary" },
+] as const;
+
+const HERO_BENEFITS = [
+  { icon: BadgeCheck, label: "Verified sellers first" },
+  { icon: Coins, label: "Fair-price context" },
+  { icon: MapPinned, label: "Area intelligence" },
 ] as const;
 
 export default function Home() {
@@ -106,100 +112,140 @@ export default function Home() {
   return (
     <div className="animate-fade-in">
       {/* ── Hero ── */}
-      <section className="relative bg-gradient-hero text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-20"
-          style={{ background: "radial-gradient(circle at 20% 30%, hsl(var(--gold) / 0.5), transparent 50%), radial-gradient(circle at 80% 70%, hsl(var(--trust) / 0.4), transparent 50%)" }} />
-        <div className="container-app relative pt-12 pb-8 lg:pt-20 lg:pb-16">
-          <div className="max-w-3xl">
-            <span className="gold-badge mb-4">{t("common.appName")}</span>
-            <h1 className="text-hero text-gradient-gold mb-4">
-              {t("home.tagline")}
-            </h1>
-            <p className="text-base sm:text-lg text-white/80 mb-8 max-w-2xl">
-              {t("home.subtitle")}
-            </p>
-          </div>
-
-          {/* Search bar */}
-          <div className="bg-card text-foreground rounded-2xl shadow-xl p-3 lg:p-4 max-w-5xl">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-              <select
-                value={city}
-                onChange={e => setCity(e.target.value)}
-                className="h-12 px-3 rounded-xl bg-secondary border-0 font-medium"
-              >
-                <option value="">{t("home.hero.anyCity")}</option>
-                {cities.map(c => (
-                  <option key={c.id} value={c.name_en}>
-                    {c.name_ar} · {c.name_en}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={kind}
-                onChange={e => setKind(e.target.value as PropertyKind)}
-                className="h-12 px-3 rounded-xl bg-secondary border-0 font-medium"
-              >
-                <option value="">{t("home.hero.anyType")}</option>
-                {(["house","apartment","villa","land","commercial","office","shop"] as const).map(k => (
-                  <option key={k} value={k}>{t(`property.kind.${k}`)}</option>
-                ))}
-              </select>
-              <select
-                value={budget}
-                onChange={e => setBudget(e.target.value)}
-                className="h-12 px-3 rounded-xl bg-secondary border-0 font-medium"
-              >
-                <option value="">{t("home.hero.anyBudget")}</option>
-                <option value="50000">$50K</option>
-                <option value="100000">$100K</option>
-                <option value="250000">$250K</option>
-                <option value="500000">$500K</option>
-                <option value="1000000">$1M</option>
-              </select>
-              <Button
-                onClick={handleSearch}
-                size="lg"
-                className="h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-bold gap-2"
-              >
-                <Search className="w-4 h-4" />
-                {t("home.hero.search")}
-              </Button>
-            </div>
-
-            {/* Quick action chips */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
-              {QUICK.map(q => (
-                <button
-                  key={q.key}
-                  onClick={() => q.route ? navigate(q.route) : navigate(`/buy?kind=${q.kind}`)}
-                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-secondary hover:bg-gold/10 hover:text-gold border border-transparent hover:border-gold/20 text-sm font-semibold transition"
-                >
-                  <q.icon className="w-4 h-4" />
-                  {t(`home.hero.${q.key}`)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-8 lg:mt-12">
-            {statValues.map(s => (
-              <div key={s.key} className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-4 lg:p-5">
-                <div className="text-2xl lg:text-3xl font-extrabold text-gold-soft">
-                  {s.value.toLocaleString()}{s.suffix}
-                </div>
-                <div className="text-xs lg:text-sm text-white/70 mt-1">{t(`home.stats.${s.key}`)}</div>
+      <section className="hero-shell relative overflow-hidden text-white">
+        <div className="absolute inset-0 opacity-60 [background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:56px_56px]" />
+        <div className="container-app relative py-10 lg:py-16">
+          <div className="grid items-start gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+            <div className="pt-4 lg:pt-8">
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-semibold text-white/88 backdrop-blur">
+                <Sparkles className="h-4 w-4 text-amber-300" />
+                Iraq property decisions with trust signals built in
               </div>
-            ))}
+              <div className="max-w-3xl">
+                <span className="gold-badge mb-4">{t("common.appName")}</span>
+                <h1 className="mb-4 text-hero text-gradient-gold">{t("home.tagline")}</h1>
+                <p className="mb-8 max-w-2xl text-base text-white/78 sm:text-lg">{t("home.subtitle")}</p>
+              </div>
+
+              <div className="mb-8 flex flex-wrap gap-3">
+                {HERO_BENEFITS.map((item) => (
+                  <div key={item.label} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm text-white/88 backdrop-blur">
+                    <item.icon className="h-4 w-4 text-amber-300" />
+                    {item.label}
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                {statValues.map(s => (
+                  <div key={s.key} className="soft-panel p-4 lg:p-5">
+                    <div className="text-2xl font-extrabold text-white lg:text-3xl">
+                      {s.value.toLocaleString()}{s.suffix}
+                    </div>
+                    <div className="mt-1 text-xs text-white/66 lg:text-sm">{t(`home.stats.${s.key}`)}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="content-panel p-4 text-foreground lg:p-5">
+              <div className="mb-4 flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold text-primary">{t("home.hero.search")}</p>
+                  <h2 className="mt-1 text-2xl font-extrabold tracking-tight">Start with the right shortlist</h2>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Narrow by city, property type, and budget, then move into verified results.
+                  </p>
+                </div>
+                <div className="hidden rounded-2xl bg-primary/10 px-3 py-2 text-xs font-semibold text-primary sm:block">
+                  Buyer-first flow
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    {t("home.hero.city")}
+                  </label>
+                  <select
+                    value={city}
+                    onChange={e => setCity(e.target.value)}
+                    className="h-12 w-full rounded-2xl border border-border bg-background px-4 font-medium"
+                  >
+                    <option value="">{t("home.hero.anyCity")}</option>
+                    {cities.map(c => (
+                      <option key={c.id} value={c.name_en}>
+                        {c.name_ar} · {c.name_en}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    {t("home.hero.type")}
+                  </label>
+                  <select
+                    value={kind}
+                    onChange={e => setKind(e.target.value as PropertyKind)}
+                    className="h-12 w-full rounded-2xl border border-border bg-background px-4 font-medium"
+                  >
+                    <option value="">{t("home.hero.anyType")}</option>
+                    {(["house","apartment","villa","land","commercial","office","shop"] as const).map(k => (
+                      <option key={k} value={k}>{t(`property.kind.${k}`)}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="sm:col-span-2 lg:col-span-1 xl:col-span-2">
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    {t("home.hero.budget")}
+                  </label>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
+                    <select
+                      value={budget}
+                      onChange={e => setBudget(e.target.value)}
+                      className="h-12 w-full rounded-2xl border border-border bg-background px-4 font-medium"
+                    >
+                      <option value="">{t("home.hero.anyBudget")}</option>
+                      <option value="50000">$50K</option>
+                      <option value="100000">$100K</option>
+                      <option value="250000">$250K</option>
+                      <option value="500000">$500K</option>
+                      <option value="1000000">$1M</option>
+                    </select>
+                    <Button
+                      onClick={handleSearch}
+                      size="lg"
+                      className="h-12 rounded-2xl px-6 font-bold shadow-[0_14px_36px_rgba(245,158,11,0.28)]"
+                    >
+                      <Search className="w-4 h-4" />
+                      {t("home.hero.search")}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {QUICK.map(q => (
+                  <button
+                    key={q.key}
+                    onClick={() => q.route ? navigate(q.route) : navigate(`/buy?kind=${q.kind}`)}
+                    className="flex items-center gap-2 rounded-2xl border border-border bg-white px-3 py-3 text-left text-sm font-semibold transition hover:border-primary/25 hover:bg-primary/5 hover:text-primary"
+                  >
+                    <q.icon className="h-4 w-4" />
+                    {t(`home.hero.${q.key}`)}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── Featured ── */}
       <section className="container-app py-12 lg:py-16">
-        <div className="flex items-end justify-between mb-6">
+        <div className="mb-6 flex items-end justify-between gap-4">
           <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Curated now</p>
             <h2 className="text-2xl lg:text-3xl font-extrabold">{t("home.featured.title")}</h2>
             <p className="text-muted-foreground mt-1">{t("home.featured.subtitle")}</p>
           </div>
@@ -218,9 +264,9 @@ export default function Home() {
       </section>
 
       {/* ── Investment deals ── */}
-      <section className="bg-secondary/40 py-12 lg:py-16">
+      <section className="bg-secondary/30 py-12 lg:py-16">
         <div className="container-app">
-          <div className="flex items-end justify-between mb-6">
+          <div className="mb-6 flex items-end justify-between gap-4">
             <div>
               <span className="gold-badge mb-2">{t("nav.investment")}</span>
               <h2 className="text-2xl lg:text-3xl font-extrabold mt-2">{t("home.investment.title")}</h2>
@@ -244,12 +290,13 @@ export default function Home() {
       {/* ── Why trust us ── */}
       <section className="container-app py-12 lg:py-20">
         <div className="text-center max-w-2xl mx-auto mb-10">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary">Why buyers trust it</p>
           <h2 className="text-2xl lg:text-3xl font-extrabold">{t("home.trust.title")}</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {TRUST_ITEMS.map(item => (
-            <div key={item.key} className="bg-card rounded-2xl p-6 shadow-card border border-border card-hover">
-              <div className={`w-12 h-12 rounded-xl bg-secondary grid place-items-center mb-4 ${item.color}`}>
+            <div key={item.key} className="content-panel card-spotlight p-6">
+              <div className={`mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-secondary ${item.color}`}>
                 <item.icon className="w-6 h-6" />
               </div>
               <h3 className="font-bold mb-2">{t(`home.trust.${item.key}.title`)}</h3>
@@ -260,7 +307,7 @@ export default function Home() {
       </section>
 
       {/* ── CTA strip ── */}
-      <section className="bg-gradient-navy text-white py-12 lg:py-16">
+      <section className="hero-shell text-white py-12 lg:py-16">
         <div className="container-app text-center">
           <h2 className="text-2xl lg:text-4xl font-extrabold mb-3">{t("home.cta.title")}</h2>
           <p className="text-white/75 mb-6 max-w-xl mx-auto">{t("home.cta.subtitle")}</p>
