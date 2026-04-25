@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, BarChart3, LogOut, ShieldCheck, ShieldEllipsis } from "lucide-react";
+import { ArrowLeft, BarChart3, Flag, LogOut, ShieldCheck, ShieldEllipsis } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/contexts/AppContext";
@@ -20,6 +20,7 @@ export function AdminLayout({ children, title, breadcrumb }: AdminLayoutProps) {
     { path: "/admin", label: "Analytics", icon: BarChart3 },
     { path: "/admin/verification", label: "Verification", icon: ShieldCheck },
     { path: "/admin/moderation", label: "Moderation", icon: ShieldEllipsis },
+    { path: "/admin/reports", label: "Reports", icon: Flag },
   ];
 
   return (
