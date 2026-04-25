@@ -1,11 +1,11 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Heart, Send, Eye, Bell, Building2, Plus, ShieldCheck,
-  Users, BarChart3, FileCheck, LogOut, Search,
+  Users, BarChart3, FileCheck, LogOut, Search, Settings, UserCircle2, CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -32,8 +32,9 @@ function StatCard({ icon: Icon, label, value, to }: {
 export default function Dashboard() {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
-  const { isAdmin, isSeller, isBuyer } = useUserRoles();
+  const { isAdmin, isSeller } = useUserRoles();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
   const [alerts, setAlerts] = useState<SearchAlert[]>([]);
   useEffect(() => { document.title = `${t("dashboard.title")} — ${t("common.appName")}`; }, [t]);
@@ -83,8 +84,8 @@ export default function Dashboard() {
     if (error && !error.message.includes("duplicate")) {
       toast({ title: t("common.error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: t("common.success") });
-      window.location.reload();
+      toast({ title: t("dashboard.sellerActivated") });
+      navigate("/seller/dashboard");
     }
   };
 
@@ -118,6 +119,23 @@ export default function Dashboard() {
             <StatCard icon={Send} label={t("dashboard.buyer.offers")} value={counts?.offersBuyer ?? 0} />
             <StatCard icon={Eye} label={t("dashboard.buyer.viewed")} value={"—"} />
             <StatCard icon={Bell} label={t("dashboard.buyer.alerts")} value={alerts.length} />
+          </div>
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <Link to="/dashboard/profile" className="content-panel p-5">
+              <UserCircle2 className="h-6 w-6 text-primary" />
+              <h3 className="mt-4 text-lg font-bold">{t("dashboard.profile")}</h3>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">{t("dashboard.profileDesc")}</p>
+            </Link>
+            <Link to="/dashboard/settings" className="content-panel p-5">
+              <Settings className="h-6 w-6 text-primary" />
+              <h3 className="mt-4 text-lg font-bold">{t("dashboard.settings")}</h3>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">{t("dashboard.settingsDesc")}</p>
+            </Link>
+            <Link to="/dashboard/subscription" className="content-panel p-5">
+              <CreditCard className="h-6 w-6 text-primary" />
+              <h3 className="mt-4 text-lg font-bold">{t("dashboard.subscription")}</h3>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">{t("dashboard.subscriptionDesc")}</p>
+            </Link>
           </div>
           <div className="mt-8 grid gap-6 lg:grid-cols-2">
             <div className="content-panel p-5">
@@ -180,7 +198,7 @@ export default function Dashboard() {
             <div className="mt-8 bg-gradient-navy text-white rounded-2xl p-6 lg:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <h3 className="font-bold text-lg">{t("dashboard.becomeSeller")}</h3>
-                <p className="text-white/70 text-sm mt-1">{t("home.cta.list")}</p>
+                <p className="text-white/70 text-sm mt-1">{t("dashboard.becomeSellerDesc")}</p>
               </div>
               <Button onClick={becomeSeller} className="bg-gold text-accent-foreground hover:bg-gold/90">{t("dashboard.becomeSeller")}</Button>
             </div>
@@ -189,10 +207,19 @@ export default function Dashboard() {
 
         {isSeller && (
           <TabsContent value="seller">
-            <div className="flex justify-end mb-4">
-              <Link to="/listings/new">
-                <Button className="gap-2"><Plus className="w-4 h-4" />{t("dashboard.seller.newListing")}</Button>
-              </Link>
+            <div className="mb-4 grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+              <div className="content-panel p-5">
+                <h3 className="text-lg font-bold">{t("dashboard.subscription")}</h3>
+                <p className="mt-2 text-sm leading-7 text-muted-foreground">{t("dashboard.subscriptionDesc")}</p>
+              </div>
+              <div className="flex gap-3">
+                <Link to="/dashboard/subscription">
+                  <Button variant="outline" className="gap-2"><CreditCard className="w-4 h-4" />{t("dashboard.viewPlans")}</Button>
+                </Link>
+                <Link to="/listings/new">
+                  <Button className="gap-2"><Plus className="w-4 h-4" />{t("dashboard.seller.newListing")}</Button>
+                </Link>
+              </div>
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard icon={Building2} label={t("dashboard.seller.listings")} value={counts?.listings ?? 0} />
