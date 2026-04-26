@@ -18,6 +18,7 @@ const MarketPrices = lazy(() => import("@/pages/MarketPrices"));
 const VerifiedSellers = lazy(() => import("@/pages/VerifiedSellers"));
 const Favorites = lazy(() => import("@/pages/Favorites"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const BuyerDashboard = lazy(() => import("@/pages/BuyerDashboard"));
 const PropertyDetail = lazy(() => import("@/pages/PropertyDetail"));
 const CreateListing = lazy(() => import("@/pages/CreateListing"));
 const Verification = lazy(() => import("@/pages/Verification"));
@@ -27,7 +28,10 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const CityLandingPage = lazy(() => import("@/pages/CityLandingPage").then((module) => ({ default: module.CityLandingPage })));
 const StaticContentPage = lazy(() => import("@/pages/StaticContentPage").then((module) => ({ default: module.StaticContentPage })));
 const SellerDashboardPage = lazy(() => import("@/pages/SellerDashboardPage").then((module) => ({ default: module.SellerDashboardPage })));
+const SellerLeadsPage = lazy(() => import("@/pages/SellerLeadsPage").then((module) => ({ default: module.SellerLeadsPage })));
+const SellerMessagesPage = lazy(() => import("@/pages/SellerMessagesPage").then((module) => ({ default: module.SellerMessagesPage })));
 const SellerProfilePage = lazy(() => import("@/pages/SellerProfilePage").then((module) => ({ default: module.SellerProfilePage })));
+const SellerLayout = lazy(() => import("@/components/layouts/SellerLayout"));
 const DashboardProfilePage = lazy(() => import("@/pages/DashboardProfilePage"));
 const DashboardSettingsPage = lazy(() => import("@/pages/DashboardSettingsPage"));
 const DashboardSubscriptionPage = lazy(() => import("@/pages/DashboardSubscriptionPage"));
@@ -80,14 +84,24 @@ const App = () => (
             <Route path="/developers" element={<Layout><StaticContentPage title="Developers" description="Developer promotions and project visibility on IraqProperty." body={["Developers can promote new projects through premium placements, launch storytelling, and targeted visibility for serious Iraqi buyers and investors.", "Enterprise sponsorships, banner placements, and premium investor memberships support project discovery at scale."]} /></Layout>} />
 
             <Route path="/favorites" element={<RequireAuth><Layout><Favorites /></Layout></RequireAuth>} />
-            <Route path="/dashboard" element={<RequireAuth><Layout><Dashboard /></Layout></RequireAuth>} />
+            <Route path="/dashboard" element={<RequireAuth><Layout><BuyerDashboard /></Layout></RequireAuth>} />
             <Route path="/dashboard/profile" element={<RequireAuth><Layout><DashboardProfilePage /></Layout></RequireAuth>} />
             <Route path="/dashboard/settings" element={<RequireAuth><Layout><DashboardSettingsPage /></Layout></RequireAuth>} />
             <Route path="/dashboard/subscription" element={<RequireAuth><Layout><DashboardSubscriptionPage /></Layout></RequireAuth>} />
-            {/* /seller is a common bookmark — redirect to the real dashboard */}
-            <Route path="/seller" element={<Navigate to="/seller/dashboard" replace />} />
-            <Route path="/seller/dashboard" element={<RequireAuth><Layout><SellerDashboardPage /></Layout></RequireAuth>} />
-            <Route path="/listings/new" element={<RequireAuth><Layout><CreateListing /></Layout></RequireAuth>} />
+
+            {/* Isolated seller portal — SellerLayout handles its own nav/chrome */}
+            <Route path="/seller" element={<RequireAuth><SellerLayout /></RequireAuth>}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<SellerDashboardPage />} />
+              <Route path="listings/new" element={<CreateListing />} />
+              <Route path="leads" element={<SellerLeadsPage />} />
+              <Route path="messages" element={<SellerMessagesPage />} />
+              <Route path="verification" element={<Verification />} />
+              <Route path="settings" element={<DashboardSettingsPage />} />
+            </Route>
+
+            {/* Legacy routes — keep working as redirects */}
+            <Route path="/listings/new" element={<Navigate to="/seller/listings/new" replace />} />
             <Route path="/verification" element={<RequireAuth><Layout><Verification /></Layout></RequireAuth>} />
 
             <Route path="/admin" element={<RequireAuth><AdminAnalytics /></RequireAuth>} />
