@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRoles, addRole } from "@/hooks/useUserRoles";
+import { useActiveRole } from "@/hooks/useActiveRole";
 import { useToast } from "@/hooks/use-toast";
 import PageMeta from "@/components/common/PageMeta";
 import { getSearchAlerts, getSavedSearches } from "@/lib/savedSearches";
@@ -56,6 +57,7 @@ export default function BuyerDashboard() {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
   const { isSeller, loading: rolesLoading, refetchRoles } = useUserRoles();
+  const { switchRole } = useActiveRole();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [savedSearches, setSavedSearches] = useState<ReturnType<typeof getSavedSearches>>([]);
@@ -98,8 +100,9 @@ export default function BuyerDashboard() {
       toast({ title: t("common.error"), description: error.message, variant: "destructive" });
       return;
     }
+    await refetchRoles();
+    switchRole("seller");
     toast({ title: t("dashboard.sellerActivated") });
-    refetchRoles();
     navigate("/seller/dashboard");
   };
 

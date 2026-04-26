@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRoles, addRole } from "@/hooks/useUserRoles";
+import { useActiveRole } from "@/hooks/useActiveRole";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { getSearchAlerts, getSavedSearches, type SavedSearch, type SearchAlert } from "@/lib/savedSearches";
@@ -32,7 +33,8 @@ function StatCard({ icon: Icon, label, value, to }: {
 export default function Dashboard() {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
-  const { isAdmin, isSeller } = useUserRoles();
+  const { isAdmin, isSeller, refetchRoles } = useUserRoles();
+  const { switchRole } = useActiveRole();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
@@ -81,12 +83,14 @@ export default function Dashboard() {
   const becomeSeller = async () => {
     if (!user) return;
     const { error } = await addRole(user.id, "seller");
-    if (error && !error.message.includes("duplicate")) {
+    if (error) {
       toast({ title: t("common.error"), description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: t("dashboard.sellerActivated") });
-      navigate("/seller/dashboard");
+      return;
     }
+    await refetchRoles();
+    switchRole("seller");
+    toast({ title: t("dashboard.sellerActivated") });
+    navigate("/seller/dashboard");
   };
 
   const tabs = [
