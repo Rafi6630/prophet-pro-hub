@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { AppRole } from "@/lib/property";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,8 +8,22 @@ export function useUserRoles() {
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchRoles = useCallback(async (userId: string) => {
+    setLoading(true);
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+    setRoles((data ?? []).map(r => r.role));
+    setLoading(false);
+  }, []);
+
   useEffect(() => {
-    if (!user) { setRoles([]); setLoading(false); return; }
+    if (!user) {
+      setRoles([]);
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
     setLoading(true);
     supabase
@@ -24,12 +38,18 @@ export function useUserRoles() {
     return () => { cancelled = true; };
   }, [user]);
 
+  // Call after addRole to avoid a full page reload
+  const refetchRoles = useCallback(() => {
+    if (user) fetchRoles(user.id);
+  }, [user, fetchRoles]);
+
   return {
     roles,
     loading,
     isAdmin: roles.includes("admin"),
     isSeller: roles.includes("seller"),
     isBuyer: roles.includes("buyer"),
+    refetchRoles,
   };
 }
 
