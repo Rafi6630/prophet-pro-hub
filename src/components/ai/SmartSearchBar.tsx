@@ -54,7 +54,7 @@ export function SmartSearchBar({
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      const filters = parsedQuery ? buildFilterFromParsedQuery(parsed) : {};
+      const filters = parsedQuery ? buildFilterFromParsedQuery(parsedQuery) : {};
       onSearch(query, filters);
       setIsFocused(false);
     }
