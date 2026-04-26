@@ -53,6 +53,19 @@ export function useUserRoles() {
   };
 }
 
-export async function addRole(userId: string, role: AppRole) {
-  return supabase.from("user_roles").insert({ user_id: userId, role });
+/**
+ * Grant a role to the currently signed-in user via a SECURITY DEFINER
+ * RPC function. This bypasses the RLS INSERT restriction on user_roles
+ * while still preventing self-assignment of the admin role server-side.
+ *
+ * The `userId` param is kept for call-site compatibility but the actual
+ * identity is always taken from auth.uid() inside the DB function.
+ */
+export async function addRole(_userId: string, role: AppRole) {
+  const { error } = await supabase.rpc("grant_self_role", { _role: role });
+  // Treat "duplicate" / unique-violation as success (role already exists)
+  if (error && !error.message.includes("duplicate") && !error.code?.includes("23505")) {
+    return { error };
+  }
+  return { error: null };
 }
