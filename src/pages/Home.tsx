@@ -203,14 +203,14 @@ export default function Home() {
         </section>
       ) : null}
 
-      <section className="container-app py-12 lg:py-16">
-        <div className="mb-6 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Featured Listings</p>
-            <h2 className="text-2xl lg:text-3xl font-extrabold">High-trust properties buyers can act on faster</h2>
+      <section className="container-app py-10 sm:py-12 lg:py-16">
+        <div className="mb-5 flex items-end justify-between gap-4 sm:mb-6">
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">Featured Listings</p>
+            <h2 className="mt-1.5 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-3xl">High-trust properties buyers can act on faster</h2>
           </div>
-          <Link to="/buy" className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-            Browse Properties <ArrowRight className="h-4 w-4" />
+          <Link to="/buy" className="hidden items-center gap-1 text-sm font-semibold text-primary hover:underline sm:flex shrink-0">
+            Browse <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -218,17 +218,22 @@ export default function Home() {
             ? Array.from({ length: 3 }).map((_, index) => <PropertyCardSkeleton key={index} />)
             : featured.slice(0, 3).map((property) => <PropertyCard key={property.id} p={property} />)}
         </div>
+        <div className="mt-5 sm:hidden">
+          <Button asChild variant="outline" className="w-full rounded-xl border-slate-200 bg-white">
+            <Link to="/buy">Browse all properties <ArrowRight className="h-4 w-4" /></Link>
+          </Button>
+        </div>
       </section>
 
-      <section className="bg-secondary/30 py-12 lg:py-16">
+      <section className="bg-muted/60 py-10 sm:py-12 lg:py-16">
         <div className="container-app">
-          <div className="mb-6 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Investment Deals</p>
-              <h2 className="text-2xl lg:text-3xl font-extrabold">Ranked opportunities with stronger exit logic</h2>
+          <div className="mb-5 flex items-end justify-between gap-4 sm:mb-6">
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">Investment Deals</p>
+              <h2 className="mt-1.5 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-3xl">Ranked opportunities with stronger exit logic</h2>
             </div>
-            <Link to="/investment" className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-              View all deals <ArrowRight className="h-4 w-4" />
+            <Link to="/investment" className="hidden items-center gap-1 text-sm font-semibold text-primary hover:underline sm:flex shrink-0">
+              View all <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -239,29 +244,30 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="container-app py-12 lg:py-16">
-        <div className="mb-6 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Market Prices</p>
-            <h2 className="text-2xl lg:text-3xl font-extrabold">Latest benchmarks by city</h2>
+      <section className="container-app py-10 sm:py-12 lg:py-16">
+        <div className="mb-5 flex items-end justify-between gap-4 sm:mb-6">
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">Market Prices</p>
+            <h2 className="mt-1.5 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-3xl">Latest benchmarks by city</h2>
           </div>
-          <Link to="/market-prices" className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-            View market prices <ArrowRight className="h-4 w-4" />
+          <Link to="/market-prices" className="hidden items-center gap-1 text-sm font-semibold text-primary hover:underline sm:flex shrink-0">
+            View all <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-3">
           {marketInsights.slice(0, 6).map((market) => (
-            <div key={market.cityId} className="content-panel p-6">
+            <div key={market.cityId} className="content-panel p-5 sm:p-6 transition hover:-translate-y-0.5 hover:shadow-[0_16px_50px_rgba(15,23,42,0.10)]">
               <div className="flex items-start justify-between gap-3">
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm text-muted-foreground">{market.city}</p>
-                  <h3 className="mt-2 text-3xl font-extrabold">${market.averagePricePerSqm}</h3>
+                  <h3 className="mt-1.5 text-2xl font-extrabold sm:text-3xl">${market.averagePricePerSqm}</h3>
+                  <p className="mt-0.5 text-[11px] uppercase tracking-wider text-muted-foreground">USD / m²</p>
                 </div>
-                <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">{market.demandTrend}</span>
+                <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 sm:text-xs">{market.demandTrend}</span>
               </div>
-              <p className="mt-4 text-sm leading-7 text-foreground/72">{market.growthOutlook}</p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {market.premiumDistricts.map((district) => (
+              <p className="mt-3 text-sm leading-6 text-foreground/72 line-clamp-3">{market.growthOutlook}</p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {market.premiumDistricts.slice(0, 4).map((district) => (
                   <span key={district} className="filter-pill">{district}</span>
                 ))}
               </div>
@@ -271,41 +277,43 @@ export default function Home() {
       </section>
 
       <section className="container-app py-4 lg:py-8">
-        <div className="section-shell px-6 py-8 lg:px-8 lg:py-10">
-          <div className="mb-8 max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Why IraqProperty</p>
-            <h2 className="mt-2 text-2xl lg:text-3xl font-extrabold">Built for Iraqi buyer psychology, not generic marketplace traffic</h2>
+        <div className="section-shell px-5 py-7 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+          <div className="mb-6 max-w-3xl sm:mb-8">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">Why IraqProperty</p>
+            <h2 className="mt-2 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-3xl">Built for Iraqi buyer psychology, not generic marketplace traffic</h2>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {TRUST_ITEMS.map((item) => (
-              <div key={item.title} className="content-panel p-5">
-                <item.icon className="h-6 w-6 text-primary" />
-                <h3 className="mt-4 text-lg font-extrabold">{item.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-muted-foreground">{item.copy}</p>
+              <div key={item.title} className="rounded-2xl border border-slate-200/80 bg-white p-5 transition hover:border-primary/30 hover:shadow-[0_12px_32px_rgba(15,23,42,0.06)]">
+                <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <item.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-4 text-base font-extrabold sm:text-lg">{item.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.copy}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="container-app py-12 lg:py-16">
-        <div className="content-panel p-6 lg:p-8">
-          <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+      <section className="container-app py-10 sm:py-12 lg:py-16">
+        <div className="content-panel p-5 sm:p-6 lg:p-8">
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Join as Seller / Browse Properties</p>
-              <h2 className="mt-2 text-2xl lg:text-4xl font-extrabold">Own the decision before the next buyer does</h2>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground lg:text-base">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">Join as Seller · Browse Properties</p>
+              <h2 className="mt-2 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-4xl">Own the decision before the next buyer does</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:leading-7 lg:text-base">
                 Get instant alerts on verified listings or join as an agency to unlock premium placement, trust upgrades, lead capture, and performance analytics across Iraq.
               </p>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-              <Button asChild size="lg" className="rounded-2xl px-6">
+            <div className="flex flex-col gap-2.5 sm:flex-row lg:flex-col">
+              <Button asChild size="lg" className="rounded-xl px-6 sm:rounded-2xl">
                 <Link to="/buy">
                   <Download className="h-4 w-4" />
                   Browse Properties
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="rounded-2xl border-slate-200 bg-white px-6">
+              <Button asChild size="lg" variant="outline" className="rounded-xl border-slate-200 bg-white px-6 sm:rounded-2xl">
                 <Link to="/seller/dashboard">
                   <UserRoundPlus className="h-4 w-4" />
                   Join as Seller
@@ -313,9 +321,9 @@ export default function Home() {
               </Button>
             </div>
           </div>
-          <div className="mt-6 grid gap-3 md:grid-cols-3">
+          <div className="mt-5 grid gap-2.5 sm:grid-cols-3 sm:gap-3">
             {iraqCities.slice(0, 3).map((cityItem) => (
-              <Link key={cityItem.id} to={`/${cityItem.id}-properties`} className="rounded-2xl border border-border bg-secondary/40 px-4 py-3 text-sm font-medium transition hover:border-primary/30 hover:bg-primary/5">
+              <Link key={cityItem.id} to={`/${cityItem.id}-properties`} className="rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm font-medium transition hover:border-primary/30 hover:bg-primary/5">
                 {cityItem.nameAr} · {cityItem.nameEn}
               </Link>
             ))}
