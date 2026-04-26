@@ -6,10 +6,26 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import RequireAuth from "@/components/guards/RequireAuth";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 import "@/i18n";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime:  5 * 60 * 1000,  // 5 min
+      gcTime:     10 * 60 * 1000, // 10 min
+      retry: (failureCount, error: unknown) => {
+        // Don't retry 4xx errors
+        if (error && typeof error === "object" && "status" in error) {
+          const status = (error as { status: number }).status;
+          if (status >= 400 && status < 500) return false;
+        }
+        return failureCount < 2;
+      },
+    },
+  },
+});
 const Home = lazy(() => import("@/pages/Home"));
 const Buy = lazy(() => import("@/pages/Buy"));
 const Investment = lazy(() => import("@/pages/Investment"));
@@ -52,6 +68,7 @@ const LoadingShell = () => (
 );
 
 const App = () => (
+  <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -120,6 +137,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
