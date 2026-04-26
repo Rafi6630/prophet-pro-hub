@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ShieldCheck, TrendingUp, AlertTriangle, Info } from "lucide-react";
+import { ShieldCheck, AlertTriangle, Info, Sparkles, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import { addRole } from "@/hooks/useUserRoles";
 import { useRoles } from "@/contexts/RolesContext";
 import { useActiveRoleCtx } from "@/contexts/ActiveRoleContext";
 import { useIntelligence } from "@/hooks/useIntelligence";
+import { useListingWriter } from "@/hooks/useListingWriter";
 import { useToast } from "@/hooks/use-toast";
 import SellerAccessGate from "@/components/SellerAccessGate";
 import { listingSchema, type ListingFormData } from "@/lib/validation/listingSchema";
@@ -45,6 +46,7 @@ export default function CreateListing() {
   const { switchRole } = useActiveRoleCtx();
   const { toast } = useToast();
   const { compute: computeIntelligence, result: intelligence, loading: intelligenceLoading } = useIntelligence();
+  const { generate: generateCopy, loading: writerLoading } = useListingWriter();
   const [submitting, setSubmitting] = useState(false);
 
   const {
@@ -52,6 +54,7 @@ export default function CreateListing() {
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isValid },
   } = useForm<ListingFormData>({
     resolver: zodResolver(listingSchema),
@@ -62,6 +65,46 @@ export default function CreateListing() {
       bathrooms: 0,
     },
   });
+
+  const handleAIWrite = async () => {
+    const price = watch("price");
+    const area_m2 = watch("area_m2");
+    const city = watch("city");
+    const kind = watch("kind");
+    if (!price || !area_m2 || !city || !kind) {
+      toast({
+        title: t("listing.aiNeedsBasics", "Add basics first"),
+        description: t("listing.aiNeedsBasicsDesc", "We need price, area, city, and type to write a great listing."),
+        variant: "destructive",
+      });
+      return;
+    }
+    const data = await generateCopy({
+      property_kind: kind,
+      city,
+      district: watch("district") ?? undefined,
+      area_m2,
+      bedrooms: watch("bedrooms") ?? undefined,
+      bathrooms: watch("bathrooms") ?? undefined,
+      price,
+      notes: watch("description") ?? undefined,
+    });
+    if (!data) {
+      toast({
+        title: t("listing.aiFailed", "AI write failed"),
+        description: t("listing.aiFailedDesc", "Please try again in a moment."),
+        variant: "destructive",
+      });
+      return;
+    }
+    setValue("title", data.title_en, { shouldValidate: true });
+    setValue("title_ar", data.title_ar, { shouldValidate: true });
+    setValue("description", data.description_en, { shouldValidate: true });
+    toast({
+      title: t("listing.aiWriteSuccess", "AI copy ready"),
+      description: t("listing.aiWriteSuccessDesc", "Review the suggestions and edit before publishing."),
+    });
+  };
 
   const { data: cities = [] } = useQuery({
     queryKey: ["cities-create"],
@@ -197,6 +240,34 @@ export default function CreateListing() {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-card border border-border rounded-2xl p-5 lg:p-6 shadow-card">
+          {/* AI Writer */}
+          <div className="flex flex-col gap-2 rounded-2xl border border-primary/20 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  {t("listing.aiWriteTitle", "Let AI write your listing")}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {t("listing.aiWriteDesc", "We'll draft a bilingual title and description from your details.")}
+                </p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="default"
+              size="sm"
+              onClick={handleAIWrite}
+              disabled={writerLoading}
+              className="shrink-0 gap-2"
+            >
+              {writerLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+              {writerLoading
+                ? t("listing.aiWriting", "Writing…")
+                : t("listing.aiWriteCta", "Generate with AI")}
+            </Button>
+          </div>
+
           {/* Titles */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -213,7 +284,7 @@ export default function CreateListing() {
           {/* Description */}
           <div>
             <Label className="mb-1.5 block">{t("listing.description")}</Label>
-            <Textarea {...register("description")} rows={4} />
+            <Textarea {...register("description")} rows={5} />
             {errors.description && (
               <p className="mt-1 text-xs text-destructive">{errors.description.message}</p>
             )}

@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
-import { MapPinned, RotateCcw, ShieldCheck, Sparkles, X } from "lucide-react";
+import { MapPinned, RotateCcw, ShieldCheck, Sparkles, X, Search, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { PropertyKind, PropertyWithMedia } from "@/lib/property";
 import PropertyCard, { PropertyCardSkeleton } from "@/components/PropertyCard";
 import FilterDrawer from "@/components/FilterDrawer";
 import { Button } from "@/components/ui/button";
+import { parseSearchQuery, buildFilterFromParsedQuery, SUGGESTED_SEARCHES } from "@/lib/ai/searchParser";
 
 const SORTS = ["newest", "priceLow", "priceHigh", "investmentScore", "verifiedFirst"] as const;
 type Sort = typeof SORTS[number];
@@ -40,6 +41,28 @@ export default function Buy() {
   const clearAll = useCallback(() => {
     setParams(new URLSearchParams(), { replace: true });
   }, [setParams]);
+
+  const [nlQuery, setNlQuery] = useState("");
+  const [nlBusy, setNlBusy] = useState(false);
+
+  const applyNlQuery = useCallback((query: string) => {
+    if (!query.trim()) return;
+    setNlBusy(true);
+    try {
+      const parsed = parseSearchQuery(query);
+      const filters = buildFilterFromParsedQuery(parsed);
+      const next = new URLSearchParams(params);
+      if (filters.city) next.set("city", String(filters.city));
+      if (filters.propertyType) next.set("kind", String(filters.propertyType));
+      if (filters.priceMin) next.set("min", String(filters.priceMin));
+      if (filters.priceMax) next.set("max", String(filters.priceMax));
+      if (filters.bedrooms) next.set("bedrooms", String(filters.bedrooms));
+      if (filters.verified) next.set("verified", "1");
+      setParams(next, { replace: true });
+    } finally {
+      setTimeout(() => setNlBusy(false), 300);
+    }
+  }, [params, setParams]);
 
   const { data: cities = [] } = useQuery({
     queryKey: ["buy-cities"],
@@ -203,6 +226,37 @@ export default function Buy() {
               <p className="mt-3 max-w-2xl text-sm leading-7 text-white/74 lg:text-base">
                 Filter by trust, pricing, and investment quality before you spend time on the wrong inventory.
               </p>
+
+              <form
+                onSubmit={(e) => { e.preventDefault(); applyNlQuery(nlQuery); }}
+                className="mt-5 flex flex-col gap-2 rounded-2xl border border-white/15 bg-white/10 p-2 backdrop-blur sm:flex-row sm:items-center"
+              >
+                <div className="relative flex-1">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
+                  <input
+                    value={nlQuery}
+                    onChange={(e) => setNlQuery(e.target.value)}
+                    placeholder="Try: villa in Erbil under 250k, 3 bedrooms, verified"
+                    className="h-11 w-full rounded-xl border-0 bg-transparent pl-9 pr-3 text-sm text-white placeholder:text-white/55 focus:outline-none"
+                  />
+                </div>
+                <Button type="submit" size="sm" className="h-11 gap-2" disabled={nlBusy || !nlQuery.trim()}>
+                  {nlBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                  AI Search
+                </Button>
+              </form>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {SUGGESTED_SEARCHES.slice(0, 4).map((s) => (
+                  <button
+                    key={s.query}
+                    type="button"
+                    onClick={() => { setNlQuery(s.query); applyNlQuery(s.query); }}
+                    className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/80 hover:bg-white/15"
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="soft-panel p-4">
