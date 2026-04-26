@@ -10,8 +10,9 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { useUserRoles, addRole } from "@/hooks/useUserRoles";
-import { useActiveRole } from "@/hooks/useActiveRole";
+import { addRole } from "@/hooks/useUserRoles";
+import { useRoles } from "@/contexts/RolesContext";
+import { useActiveRoleCtx } from "@/contexts/ActiveRoleContext";
 import { useToast } from "@/hooks/use-toast";
 import PageMeta from "@/components/common/PageMeta";
 import { getSearchAlerts, getSavedSearches } from "@/lib/savedSearches";
@@ -56,8 +57,8 @@ function QuickAction({ icon: Icon, label, to, accent = false }: {
 export default function BuyerDashboard() {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
-  const { isSeller, loading: rolesLoading, refetchRoles } = useUserRoles();
-  const { switchRole } = useActiveRole();
+  const { isSeller, loading: rolesLoading, refetchRoles } = useRoles();
+  const { switchRole } = useActiveRoleCtx();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [savedSearches, setSavedSearches] = useState<ReturnType<typeof getSavedSearches>>([]);

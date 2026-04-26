@@ -11,7 +11,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
-import { useUserRoles, addRole } from "@/hooks/useUserRoles";
+import { addRole } from "@/hooks/useUserRoles";
+import { useRoles } from "@/contexts/RolesContext";
+import { useActiveRoleCtx } from "@/contexts/ActiveRoleContext";
 import { useIntelligence } from "@/hooks/useIntelligence";
 import { useToast } from "@/hooks/use-toast";
 import SellerAccessGate from "@/components/SellerAccessGate";
@@ -39,7 +41,8 @@ export default function CreateListing() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { isSeller, loading: rolesLoading, refetchRoles } = useUserRoles();
+  const { isSeller, loading: rolesLoading, refetchRoles } = useRoles();
+  const { switchRole } = useActiveRoleCtx();
   const { toast } = useToast();
   const { compute: computeIntelligence, result: intelligence, loading: intelligenceLoading } = useIntelligence();
   const [submitting, setSubmitting] = useState(false);
@@ -138,12 +141,13 @@ export default function CreateListing() {
   const activateSellerMode = async () => {
     if (!user) return;
     const { error } = await addRole(user.id, "seller");
-    if (error && !error.message.includes("duplicate")) {
+    if (error) {
       toast({ title: t("common.error"), description: error.message, variant: "destructive" });
       return;
     }
+    await refetchRoles();
+    switchRole("seller");
     toast({ title: t("dashboard.sellerActivated") });
-    refetchRoles();
   };
 
   return (

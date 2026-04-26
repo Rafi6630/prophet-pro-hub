@@ -9,8 +9,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { useUserRoles, addRole } from "@/hooks/useUserRoles";
-import { useActiveRole } from "@/hooks/useActiveRole";
+import { addRole } from "@/hooks/useUserRoles";
+import { useRoles } from "@/contexts/RolesContext";
+import { useActiveRoleCtx } from "@/contexts/ActiveRoleContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { getSearchAlerts, getSavedSearches, type SavedSearch, type SearchAlert } from "@/lib/savedSearches";
@@ -33,8 +34,8 @@ function StatCard({ icon: Icon, label, value, to }: {
 export default function Dashboard() {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
-  const { isAdmin, isSeller, refetchRoles } = useUserRoles();
-  const { switchRole } = useActiveRole();
+  const { isAdmin, isSeller, refetchRoles } = useRoles();
+  const { switchRole } = useActiveRoleCtx();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
