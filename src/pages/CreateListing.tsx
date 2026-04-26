@@ -240,6 +240,34 @@ export default function CreateListing() {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-card border border-border rounded-2xl p-5 lg:p-6 shadow-card">
+          {/* AI Writer */}
+          <div className="flex flex-col gap-2 rounded-2xl border border-primary/20 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  {t("listing.aiWriteTitle", "Let AI write your listing")}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {t("listing.aiWriteDesc", "We'll draft a bilingual title and description from your details.")}
+                </p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="default"
+              size="sm"
+              onClick={handleAIWrite}
+              disabled={writerLoading}
+              className="shrink-0 gap-2"
+            >
+              {writerLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+              {writerLoading
+                ? t("listing.aiWriting", "Writing…")
+                : t("listing.aiWriteCta", "Generate with AI")}
+            </Button>
+          </div>
+
           {/* Titles */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -256,7 +284,7 @@ export default function CreateListing() {
           {/* Description */}
           <div>
             <Label className="mb-1.5 block">{t("listing.description")}</Label>
-            <Textarea {...register("description")} rows={4} />
+            <Textarea {...register("description")} rows={5} />
             {errors.description && (
               <p className="mt-1 text-xs text-destructive">{errors.description.message}</p>
             )}
