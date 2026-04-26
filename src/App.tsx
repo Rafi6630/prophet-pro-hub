@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import RequireAuth from "@/components/guards/RequireAuth";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { RolesProvider } from "@/contexts/RolesContext";
+import { ActiveRoleProvider } from "@/contexts/ActiveRoleContext";
 
 import "@/i18n";
 
@@ -74,6 +76,8 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <RolesProvider>
+        <ActiveRoleProvider>
         <Suspense fallback={<LoadingShell />}>
           <Routes>
             <Route path="/auth" element={<Auth />} />
@@ -134,6 +138,8 @@ const App = () => (
             <Route path="*" element={<Layout><NotFound /></Layout>} />
           </Routes>
         </Suspense>
+        </ActiveRoleProvider>
+        </RolesProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
