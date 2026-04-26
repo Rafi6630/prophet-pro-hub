@@ -42,6 +42,28 @@ export default function Buy() {
     setParams(new URLSearchParams(), { replace: true });
   }, [setParams]);
 
+  const [nlQuery, setNlQuery] = useState("");
+  const [nlBusy, setNlBusy] = useState(false);
+
+  const applyNlQuery = useCallback((query: string) => {
+    if (!query.trim()) return;
+    setNlBusy(true);
+    try {
+      const parsed = parseSearchQuery(query);
+      const filters = buildFilterFromParsedQuery(parsed);
+      const next = new URLSearchParams(params);
+      if (filters.city) next.set("city", String(filters.city));
+      if (filters.propertyType) next.set("kind", String(filters.propertyType));
+      if (filters.priceMin) next.set("min", String(filters.priceMin));
+      if (filters.priceMax) next.set("max", String(filters.priceMax));
+      if (filters.bedrooms) next.set("bedrooms", String(filters.bedrooms));
+      if (filters.verified) next.set("verified", "1");
+      setParams(next, { replace: true });
+    } finally {
+      setTimeout(() => setNlBusy(false), 300);
+    }
+  }, [params, setParams]);
+
   const { data: cities = [] } = useQuery({
     queryKey: ["buy-cities"],
     queryFn: async () => (await supabase.from("cities").select("*").eq("active", true).order("sort_order")).data ?? [],
