@@ -39,8 +39,9 @@ export function useUserRoles() {
   }, [user]);
 
   // Call after addRole to avoid a full page reload
-  const refetchRoles = useCallback(() => {
-    if (user) fetchRoles(user.id);
+  const refetchRoles = useCallback((): Promise<void> => {
+    if (user) return fetchRoles(user.id);
+    return Promise.resolve();
   }, [user, fetchRoles]);
 
   return {
