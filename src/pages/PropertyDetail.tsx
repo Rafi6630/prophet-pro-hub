@@ -21,6 +21,7 @@ import PropertyGallery from "@/components/PropertyGallery";
 import PropertySidebarCTA from "@/components/PropertySidebarCTA";
 import TrustBadge from "@/components/TrustBadge";
 import InvestmentScoreRing from "@/components/InvestmentScoreRing";
+import { AIDealCard } from "@/components/ai/AIDealCard";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -203,6 +204,12 @@ export default function PropertyDetail() {
               </div>
             </div>
           </div>
+
+          <AIDealCard
+            propertyId={property.id}
+            isAuthed={!!user}
+            onAuthRequired={() => navigate("/auth")}
+          />
 
           <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
             <div className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Area Intelligence</div>
