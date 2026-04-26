@@ -45,7 +45,14 @@
     "dashboard": "Dashboard",
     "signIn": "Sign in",
     "signUp": "Sign up",
-    "menu": "Menu"
+    "menu": "Menu",
+    "browseInfo": "Browse verified listings, fair pricing context, and investment-ready opportunities."
+  },
+  "roleSwitch": {
+    "buyer": "Buyer",
+    "seller": "Seller",
+    "buyerMode": "Buyer Mode",
+    "sellerMode": "Seller Mode"
   },
   "home": {
     "tagline": "Know Everything Before You Buy",
@@ -81,22 +88,10 @@
     },
     "trust": {
       "title": "Why trust us",
-      "verified": {
-        "title": "Verified sellers",
-        "desc": "Every seller's identity and documents are reviewed before listing."
-      },
-      "fairPrice": {
-        "title": "Fair price estimate",
-        "desc": "Pricing model built on real market data."
-      },
-      "ownership": {
-        "title": "Ownership confidence",
-        "desc": "Ownership and legal status reviewed for every property."
-      },
-      "intelligence": {
-        "title": "Market intelligence",
-        "desc": "Area data, safety and amenities — all in one place."
-      }
+      "verified": { "title": "Verified sellers", "desc": "Every seller's identity and documents are reviewed before listing." },
+      "fairPrice": { "title": "Fair price estimate", "desc": "Pricing model built on real market data." },
+      "ownership": { "title": "Ownership confidence", "desc": "Ownership and legal status reviewed for every property." },
+      "intelligence": { "title": "Market intelligence", "desc": "Area data, safety and amenities — all in one place." }
     },
     "cta": {
       "title": "Start your journey with confidence",
@@ -209,6 +204,29 @@
     "empty": "You haven't saved any property yet",
     "browse": "Browse properties"
   },
+  "buyerDashboard": {
+    "title": "My Dashboard",
+    "welcome": "Welcome back",
+    "quickActions": "Quick Actions",
+    "browse": "Browse",
+    "myFavorites": "Favorites",
+    "myOffers": "My Offers",
+    "myAlerts": "Alerts",
+    "recentlyViewed": "Recently Viewed",
+    "savedSearches": "Saved Searches",
+    "noSavedSearches": "No saved searches yet. Create one from Map Search.",
+    "verifiedMatches": "New Verified Matches",
+    "becomeSellerCTA": "Sell on IraqProperty",
+    "becomeSellerDesc": "List your properties and reach thousands of verified buyers.",
+    "noActivity": "No recent activity",
+    "activateSeller": "Activate Seller Account",
+    "profile": "Profile",
+    "settings": "Settings",
+    "subscription": "Subscription",
+    "profileDesc": "Manage your public identity and contact details.",
+    "settingsDesc": "Control language, city, and notification preferences.",
+    "subscriptionDesc": "Choose the plan that matches your growth stage."
+  },
   "dashboard": {
     "title": "Dashboard",
     "overview": "Overview",
@@ -217,9 +235,9 @@
     "subscription": "Subscription",
     "buyer": {
       "title": "Buyer dashboard",
-      "saved": "Saved properties",
-      "offers": "Offers sent",
-      "viewed": "Recently viewed",
+      "saved": "Saved",
+      "offers": "Offers",
+      "viewed": "Viewed",
       "alerts": "Alerts"
     },
     "seller": {
@@ -247,6 +265,46 @@
     "viewPlans": "View plans",
     "switchToBuyer": "Buyer view",
     "switchToSeller": "Seller view"
+  },
+  "sellerPortal": {
+    "title": "Seller Portal",
+    "subtitle": "Your seller workspace",
+    "overview": "Overview",
+    "myListings": "My Listings",
+    "newListing": "New Listing",
+    "leads": "Leads",
+    "messages": "Messages",
+    "analytics": "Analytics",
+    "verification": "Verification",
+    "settings": "Settings",
+    "backToBuyer": "Back to browsing",
+    "noListings": "No listings yet",
+    "noListingsDesc": "Publish your first property listing to start attracting buyers.",
+    "createFirst": "Create your first listing",
+    "noLeads": "No leads yet",
+    "noLeadsDesc": "Once buyers contact you, their details will appear here.",
+    "noMessages": "No messages yet",
+    "noMessagesDesc": "Buyer messages will appear here once you have active listings.",
+    "statsListings": "Listings",
+    "statsLeads": "Leads",
+    "statsViews": "Views",
+    "statsScore": "Trust Score",
+    "onboarding": "Seller checklist",
+    "step1": "Complete your profile",
+    "step2": "Submit verification",
+    "step3": "Publish your first listing",
+    "step4": "Activate subscription",
+    "verificationCTA": "Get Verified",
+    "verificationDesc": "Verified sellers get 3× more leads and premium placement.",
+    "activateSeller": "Activate Seller Mode",
+    "activateDesc": "Publish listings, manage leads, and unlock agency tools.",
+    "benefit1": "Create and manage property listings",
+    "benefit2": "Track leads, offers, and response performance",
+    "benefit3": "Activate verification and subscription upgrades",
+    "comingSoon": "Coming soon",
+    "comingSoonDesc": "This section is being built. Check back soon.",
+    "subscription": "Subscription Plan",
+    "subscriptionDesc": "Choose Featured Listing, Verified Agency, or premium visibility upgrades."
   },
   "account": {
     "profileTitle": "User profile",
