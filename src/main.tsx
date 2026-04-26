@@ -1,13 +1,61 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import { AuthProvider } from "./hooks/useAuth";
-import "./styles.css";
+import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
+import "./i18n";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  </React.StrictMode>
-);
+createRoot(document.getElementById("root")!).render(<App />);
+
+// ── Register Service Worker (PWA) ──
+const hostname = window.location.hostname;
+const baseUrl = import.meta.env.BASE_URL;
+const isPreviewHost =
+  hostname === "localhost" ||
+  hostname === "127.0.0.1" ||
+  hostname.endsWith(".lovable.app") ||
+  hostname.endsWith(".lovableproject.com");
+
+const unregisterServiceWorkers = async () => {
+  if (!("serviceWorker" in navigator)) return;
+
+  const registrations = await navigator.serviceWorker.getRegistrations();
+  await Promise.all(registrations.map((registration) => registration.unregister()));
+};
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    if (isPreviewHost || !import.meta.env.PROD) {
+      unregisterServiceWorkers().catch((err) =>
+        console.warn("[AqarAI] SW unregister failed:", err),
+      );
+      return;
+    }
+
+    navigator.serviceWorker
+      .register(`${baseUrl}sw.js`, { scope: baseUrl })
+      .then((registration) => {
+        console.log("[AqarAI] SW registered:", registration.scope);
+
+        setInterval(() => registration.update(), 60_000);
+
+        registration.addEventListener("updatefound", () => {
+          const newWorker = registration.installing;
+          newWorker?.addEventListener("statechange", () => {
+            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+              console.log("[AqarAI] New version available. Refresh to update.");
+            }
+          });
+        });
+      })
+      .catch((err) => console.warn("[AqarAI] SW registration failed:", err));
+  });
+}
+
+// ── Install prompt (Add to Home Screen) ──
+let deferredInstallPrompt: any = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  if (isPreviewHost) return;
+
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  (window as any).__tvInstallPrompt = deferredInstallPrompt;
+});
