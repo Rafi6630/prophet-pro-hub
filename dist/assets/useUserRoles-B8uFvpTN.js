@@ -1,0 +1,1 @@
+import"./vendor-ui-DP60Oea3.js";import{s as a}from"./index-B8tFGzEj.js";async function l(o,s){var e;const{error:r}=await a.rpc("grant_self_role",{_role:s});return r&&!r.message.includes("duplicate")&&!((e=r.code)!=null&&e.includes("23505"))?{error:r}:{error:null}}export{l as a};
