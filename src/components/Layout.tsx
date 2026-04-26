@@ -2,13 +2,13 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   Home, Search, TrendingUp, Map, BarChart3, ShieldCheck, Heart,
-  LayoutGrid, LogIn, Menu, X, Building2, ChevronLeft, ChevronRight,
+  LayoutGrid, LogIn, Menu, X, Building2,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import LanguageToggle from "./LanguageToggle";
 import { useAuth } from "@/hooks/useAuth";
-import { useUserRoles } from "@/hooks/useUserRoles";
-import { useActiveRole } from "@/hooks/useActiveRole";
+import { useRoles } from "@/contexts/RolesContext";
+import { useActiveRoleCtx } from "@/contexts/ActiveRoleContext";
 import { Button } from "./ui/button";
 import { iraqCities } from "@/data/iraqCities";
 
@@ -31,33 +31,44 @@ const MOBILE_NAV = [
   { to: "/dashboard",  icon: LayoutGrid, key: "dashboard" },
 ] as const;
 
-// ─── Role switcher ────────────────────────────────────────────────────────────
+// ─── Role switcher (topbar + drawer) ─────────────────────────────────────────
 
-function RoleSwitcher() {
+function RoleSwitcher({ dark = false }: { dark?: boolean }) {
   const { t } = useTranslation();
-  const { isSeller, loading } = useUserRoles();
-  const { activeRole, switchRole } = useActiveRole();
+  const { isSeller, loading } = useRoles();
+  const { activeRole, switchRole } = useActiveRoleCtx();
   const navigate = useNavigate();
 
   if (loading || !isSeller) return null;
 
   const handleSwitch = (role: "buyer" | "seller") => {
     switchRole(role);
-    if (role === "seller") navigate("/seller/dashboard");
-    else navigate("/dashboard");
+    navigate(role === "seller" ? "/seller/dashboard" : "/dashboard");
   };
 
+  const base = dark
+    ? "flex items-center rounded-xl border border-[hsl(var(--sidebar-border))] bg-[hsl(var(--sidebar-accent))] p-0.5 text-xs font-semibold"
+    : "flex items-center rounded-full border border-border/80 bg-secondary/60 p-0.5 text-xs font-semibold";
+
+  const activeClass = dark
+    ? "bg-[hsl(var(--sidebar-primary))] text-[hsl(var(--sidebar-background))] shadow-sm"
+    : "bg-foreground text-background shadow-sm";
+
+  const inactiveClass = dark
+    ? "text-[hsl(var(--sidebar-foreground))]/55 hover:text-[hsl(var(--sidebar-foreground))]"
+    : "text-muted-foreground hover:text-foreground";
+
+  const btnShape = dark ? "rounded-lg" : "rounded-full";
+
   return (
-    <div className="flex items-center rounded-full border border-border/80 bg-secondary/60 p-0.5 text-xs font-semibold">
+    <div className={base}>
       {(["buyer", "seller"] as const).map(role => (
         <button
           key={role}
           onClick={() => handleSwitch(role)}
           aria-pressed={activeRole === role}
-          className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all ${
-            activeRole === role
-              ? "bg-foreground text-background shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
+          className={`flex items-center gap-1.5 ${btnShape} px-3 py-1.5 transition-all ${
+            activeRole === role ? activeClass : inactiveClass
           }`}
         >
           {role === "buyer" ? <Heart className="h-3 w-3" /> : <Building2 className="h-3 w-3" />}
@@ -68,230 +79,78 @@ function RoleSwitcher() {
   );
 }
 
-function SidebarRoleSwitcher() {
-  const { t } = useTranslation();
-  const { isSeller, loading } = useUserRoles();
-  const { activeRole, switchRole } = useActiveRole();
-  const navigate = useNavigate();
-
-  if (loading || !isSeller) return null;
-
-  const handleSwitch = (role: "buyer" | "seller") => {
-    switchRole(role);
-    if (role === "seller") navigate("/seller/dashboard");
-    else navigate("/dashboard");
-  };
-
-  return (
-    <div className="flex rounded-xl border border-[hsl(var(--sidebar-border))] bg-[hsl(var(--sidebar-accent))] p-1">
-      {(["buyer", "seller"] as const).map(role => (
-        <button
-          key={role}
-          onClick={() => handleSwitch(role)}
-          className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition-all ${
-            activeRole === role
-              ? "bg-[hsl(var(--sidebar-primary))] text-[hsl(var(--sidebar-background))] shadow-sm"
-              : "text-[hsl(var(--sidebar-foreground))]/55 hover:text-[hsl(var(--sidebar-foreground))]"
-          }`}
-        >
-          {role === "buyer" ? <Heart className="h-3.5 w-3.5" /> : <Building2 className="h-3.5 w-3.5" />}
-          {role === "buyer" ? t("roleSwitch.buyerMode") : t("roleSwitch.sellerMode")}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-// ─── Desktop Sidebar ──────────────────────────────────────────────────────────
-
-function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
-  const { t, i18n } = useTranslation();
-  const location = useLocation();
-  const { user } = useAuth();
-  const isRTL = i18n.dir() === "rtl";
-
-  return (
-    <aside
-      className={[
-        "sidebar-shell fixed inset-y-0 z-50 hidden lg:flex flex-col",
-        "bg-[hsl(var(--sidebar-background))]",
-        isRTL ? "right-0 border-l border-[hsl(var(--sidebar-border))]"
-               : "left-0 border-r border-[hsl(var(--sidebar-border))]",
-        "transition-all duration-300 ease-in-out",
-        collapsed ? "sidebar-collapsed" : "",
-      ].join(" ")}
-    >
-      {/* Logo */}
-      <div
-        className={[
-          "flex items-center border-b border-[hsl(var(--sidebar-border))] h-[60px]",
-          collapsed ? "justify-center px-3" : "px-4 gap-3",
-        ].join(" ")}
-      >
-        <Link to="/" className="flex items-center gap-2.5 min-w-0">
-          <div className="flex-shrink-0 grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-[hsl(var(--sidebar-primary))] to-amber-300 text-[hsl(var(--sidebar-background))] font-bold text-sm shadow-[0_8px_24px_rgba(245,158,11,0.38)]">
-            ع
-          </div>
-          {!collapsed && (
-            <div className="min-w-0 leading-tight">
-              <div className="font-extrabold text-sm tracking-tight text-[hsl(var(--sidebar-foreground))] truncate">
-                {t("common.appName")}
-              </div>
-              <div className="text-[9px] text-[hsl(var(--sidebar-foreground))]/40 truncate">
-                {t("common.tagline")}
-              </div>
-            </div>
-          )}
-        </Link>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
-        {NAV.map(item => {
-          const active =
-            location.pathname === item.to ||
-            (item.to !== "/" && location.pathname.startsWith(item.to));
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              title={collapsed ? t(`nav.${item.key}`) : undefined}
-              className={[
-                "relative flex items-center rounded-xl text-sm font-semibold transition-all duration-150",
-                collapsed ? "h-10 w-10 justify-center mx-auto" : "gap-3 px-3 py-2.5",
-                active
-                  ? "bg-[hsl(var(--sidebar-primary))]/12 text-[hsl(var(--sidebar-primary))]"
-                  : "text-[hsl(var(--sidebar-foreground))]/55 hover:bg-[hsl(var(--sidebar-accent))] hover:text-[hsl(var(--sidebar-foreground))]",
-              ].join(" ")}
-            >
-              {active && !collapsed && <span className="sidebar-active-bar" />}
-              <item.icon className="flex-shrink-0 w-[18px] h-[18px]" />
-              {!collapsed && <span className="truncate">{t(`nav.${item.key}`)}</span>}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Footer */}
-      <div
-        className={[
-          "border-t border-[hsl(var(--sidebar-border))]",
-          collapsed ? "p-2 flex flex-col items-center gap-2" : "p-3 space-y-2",
-        ].join(" ")}
-      >
-        {!collapsed && (
-          <>
-            <SidebarRoleSwitcher />
-            <div className="flex items-center gap-2">
-              <LanguageToggle compact />
-              {user ? (
-                <Link to="/dashboard" className="flex-1">
-                  <Button
-                    size="sm"
-                    className="w-full rounded-lg bg-[hsl(var(--sidebar-primary))] text-[hsl(var(--sidebar-background))] text-xs hover:opacity-90"
-                  >
-                    {t("nav.dashboard")}
-                  </Button>
-                </Link>
-              ) : (
-                <Link to="/auth" className="flex-1">
-                  <Button
-                    size="sm"
-                    className="w-full gap-1 rounded-lg bg-[hsl(var(--sidebar-primary))] text-[hsl(var(--sidebar-background))] text-xs hover:opacity-90"
-                  >
-                    <LogIn className="w-3.5 h-3.5" />
-                    {t("nav.signIn")}
-                  </Button>
-                </Link>
-              )}
-            </div>
-          </>
-        )}
-
-        {collapsed && (
-          <button
-            className="grid h-9 w-9 place-items-center rounded-xl text-[hsl(var(--sidebar-foreground))]/45 hover:bg-[hsl(var(--sidebar-accent))] hover:text-[hsl(var(--sidebar-foreground))] transition-all"
-            title={user ? t("nav.dashboard") : t("nav.signIn")}
-          >
-            {user
-              ? <Link to="/dashboard"><LayoutGrid className="w-4 h-4" /></Link>
-              : <Link to="/auth"><LogIn className="w-4 h-4" /></Link>
-            }
-          </button>
-        )}
-
-        {/* Collapse toggle */}
-        <button
-          onClick={onToggle}
-          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className={[
-            "flex items-center rounded-xl transition-all",
-            "text-[hsl(var(--sidebar-foreground))]/30 hover:text-[hsl(var(--sidebar-foreground))]/70 hover:bg-[hsl(var(--sidebar-accent))]",
-            collapsed ? "h-9 w-9 justify-center" : "w-full gap-2 px-3 py-2",
-          ].join(" ")}
-        >
-          {collapsed
-            ? (isRTL ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />)
-            : (isRTL ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />)
-          }
-        </button>
-      </div>
-    </aside>
-  );
-}
-
-// ─── Topbar ───────────────────────────────────────────────────────────────────
+// ─── Desktop topbar ───────────────────────────────────────────────────────────
 
 export function Header({ onMenuOpen }: { onMenuOpen?: () => void }) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-30 h-[60px] flex items-center border-b border-border/60 bg-background/85 backdrop-blur-2xl px-4 gap-3">
-      {/* Mobile logo */}
-      <Link to="/" className="flex items-center gap-2 lg:hidden">
-        <div className="grid h-8 w-8 place-items-center rounded-xl border border-primary/20 bg-gradient-to-br from-primary to-amber-300 text-white shadow-[0_6px_18px_rgba(245,158,11,0.28)] text-sm font-bold">
-          ع
-        </div>
-        <span className="font-extrabold text-base tracking-tight">{t("common.appName")}</span>
-      </Link>
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-2xl">
+      <div className="container-app flex min-h-[4.5rem] items-center gap-3 py-2">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2 me-2 shrink-0">
+          <div className="grid h-10 w-10 place-items-center rounded-2xl border border-primary/20 bg-gradient-to-br from-primary to-amber-300 text-white shadow-[0_12px_30px_rgba(245,158,11,0.32)] font-bold">
+            ع
+          </div>
+          <div className="leading-tight hidden sm:block">
+            <div className="font-extrabold text-lg tracking-tight">{t("common.appName")}</div>
+            <div className="text-[10px] text-muted-foreground hidden xl:block">{t("common.tagline")}</div>
+          </div>
+        </Link>
 
-      {/* Spacer — desktop page area is handled by sidebar */}
-      <div className="flex-1" />
+        {/* Desktop nav */}
+        <nav className="hidden lg:flex items-center gap-0.5 flex-1 justify-center">
+          {NAV.map(item => {
+            const active =
+              location.pathname === item.to ||
+              (item.to !== "/" && location.pathname.startsWith(item.to));
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`nav-link-shell ${
+                  active
+                    ? "bg-foreground text-background shadow-[0_10px_30px_rgba(15,23,42,0.18)]"
+                    : "text-muted-foreground hover:bg-white hover:text-foreground"
+                }`}
+              >
+                {t(`nav.${item.key}`)}
+              </Link>
+            );
+          })}
+        </nav>
 
-      <div className="flex items-center gap-2">
-        {/* Role switcher — topbar on mobile/tablet; sidebar handles it on desktop */}
-        <div className="hidden sm:block lg:hidden">
+        {/* Right: role switcher, language, auth */}
+        <div className="flex items-center gap-2 ms-auto">
           <RoleSwitcher />
-        </div>
-
-        {/* Language toggle visible on mobile; sidebar has it on desktop */}
-        <div className="lg:hidden">
           <LanguageToggle compact />
+          {user ? (
+            <Link to="/dashboard" className="hidden sm:block">
+              <Button size="sm" className="rounded-full px-4">{t("nav.dashboard")}</Button>
+            </Link>
+          ) : (
+            <Link to="/auth">
+              <Button
+                size="sm"
+                variant="default"
+                className="gap-1.5 rounded-full px-4 shadow-[0_12px_30px_rgba(245,158,11,0.24)]"
+              >
+                <LogIn className="w-4 h-4" />
+                <span className="hidden sm:inline">{t("nav.signIn")}</span>
+              </Button>
+            </Link>
+          )}
+          {/* Mobile hamburger */}
+          <button
+            onClick={onMenuOpen}
+            className="grid h-10 w-10 place-items-center rounded-2xl border border-border/60 bg-white/80 hover:bg-secondary transition-colors lg:hidden"
+            aria-label={t("nav.menu")}
+          >
+            <Menu className="w-5 h-5" />
+          </button>
         </div>
-
-        {/* Auth button on desktop (sidebar also has it, this is a shortcut) */}
-        {!user && (
-          <Link to="/auth" className="hidden lg:block">
-            <Button
-              size="sm"
-              variant="default"
-              className="gap-1.5 rounded-full px-4 shadow-[0_8px_20px_rgba(245,158,11,0.22)]"
-            >
-              <LogIn className="w-3.5 h-3.5" />
-              {t("nav.signIn")}
-            </Button>
-          </Link>
-        )}
-
-        {/* Mobile hamburger */}
-        <button
-          onClick={onMenuOpen}
-          className="grid h-9 w-9 place-items-center rounded-xl border border-border/60 bg-white/80 hover:bg-secondary transition-colors lg:hidden"
-          aria-label={t("nav.menu")}
-        >
-          <Menu className="w-5 h-5" />
-        </button>
       </div>
     </header>
   );
@@ -329,7 +188,7 @@ export function MobileBottomNav() {
   );
 }
 
-// ─── Mobile drawer ────────────────────────────────────────────────────────────
+// ─── Mobile drawer (dark sidebar) ────────────────────────────────────────────
 
 function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { t } = useTranslation();
@@ -394,10 +253,10 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
           })}
         </nav>
 
-        {/* Footer */}
+        {/* Footer: role switcher + auth */}
         <div className="border-t border-[hsl(var(--sidebar-border))] p-4 space-y-3">
-          <SidebarRoleSwitcher />
-          <div className="flex items-center gap-3">
+          <RoleSwitcher dark />
+          <div className="flex items-center gap-2">
             <LanguageToggle compact />
             {user ? (
               <Link to="/dashboard" className="flex-1" onClick={onClose}>
@@ -429,94 +288,71 @@ function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void })
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
-    try { return localStorage.getItem("sidebar-collapsed") === "true"; } catch { return false; }
-  });
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 
-  const toggleSidebar = () => {
-    setSidebarCollapsed(prev => {
-      const next = !prev;
-      try { localStorage.setItem("sidebar-collapsed", String(next)); } catch { /* noop */ }
-      return next;
-    });
-  };
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Desktop sidebar */}
-      <Sidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} />
-
-      {/* Mobile drawer */}
+    <div className="min-h-screen flex flex-col bg-background">
+      <Header onMenuOpen={() => setMobileOpen(true)} />
       <MobileDrawer open={mobileOpen} onClose={() => setMobileOpen(false)} />
 
-      {/* Content area — offset by sidebar on desktop */}
-      <div
-        className={[
-          "flex flex-col min-h-screen sidebar-main-offset",
-          sidebarCollapsed ? "sidebar-collapsed-offset" : "",
-        ].join(" ")}
-      >
-        <Header onMenuOpen={() => setMobileOpen(true)} />
+      <main className="flex-1 pb-nav lg:pb-0">
+        <div className="mx-auto w-full max-w-[1600px]">{children}</div>
+      </main>
 
-        <main className="flex-1 pb-nav lg:pb-0">
-          <div className="mx-auto w-full max-w-[1600px]">{children}</div>
-        </main>
-
-        <footer className="mt-14 border-t border-slate-200/80 bg-white/80 py-14 text-foreground backdrop-blur-sm">
-          <div className="container-app">
-            <div className="grid gap-8 md:grid-cols-[1.2fr_0.8fr_0.8fr_1fr]">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">IraqProperty</p>
-                <h3 className="mt-3 text-2xl font-bold">Know Everything Before You Buy</h3>
-                <p className="mt-2 text-sm font-medium text-emerald-700">اعرف كل شيء قبل أن تشتري</p>
-                <p className="mt-4 max-w-xl text-sm leading-7 text-foreground/72">
-                  Iraq's trust-first property marketplace for serious buyers and investors, built around verified sellers,
-                  pricing clarity, and stronger decision confidence.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">Company</h4>
-                <ul className="space-y-2 text-sm text-foreground/72">
-                  <li><Link to="/about">About</Link></li>
-                  <li><Link to="/privacy">Privacy</Link></li>
-                  <li><Link to="/terms">Terms</Link></li>
-                  <li><Link to="/contact">Contact</Link></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">Network</h4>
-                <ul className="space-y-2 text-sm text-foreground/72">
-                  <li><Link to="/cities">Cities</Link></li>
-                  <li><Link to="/agencies">Agencies</Link></li>
-                  <li><Link to="/developers">Developers</Link></li>
-                  <li><Link to="/sellers">Verified Sellers</Link></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">Core Cities</h4>
-                <ul className="grid grid-cols-2 gap-y-2 text-sm text-foreground/72">
-                  {iraqCities.slice(0, 6).map((city) => (
-                    <li key={city.id}><Link to={`/buy?city=${city.nameEn}`}>{city.nameEn}</Link></li>
-                  ))}
-                </ul>
-              </div>
+      <footer className="mt-14 border-t border-slate-200/80 bg-white/80 py-10 text-foreground backdrop-blur-sm">
+        <div className="container-app">
+          {/* Desktop: full 4-column grid — hidden on mobile */}
+          <div className="hidden md:grid gap-8 md:grid-cols-[1.2fr_0.8fr_0.8fr_1fr]">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">IraqProperty</p>
+              <h3 className="mt-3 text-2xl font-bold">Know Everything Before You Buy</h3>
+              <p className="mt-2 text-sm font-medium text-emerald-700">اعرف كل شيء قبل أن تشتري</p>
+              <p className="mt-4 max-w-xl text-sm leading-7 text-foreground/72">
+                Iraq's trust-first property marketplace for serious buyers and investors, built around verified sellers,
+                pricing clarity, and stronger decision confidence.
+              </p>
             </div>
 
-            <div className="mt-8 border-t border-slate-200 pt-6 text-sm text-foreground/56">
-              © 2026 IraqProperty. Built for Iraq first, with a path to regional investors into Iraq.
+            <div>
+              <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">Company</h4>
+              <ul className="space-y-2 text-sm text-foreground/72">
+                <li><Link to="/about">About</Link></li>
+                <li><Link to="/privacy">Privacy</Link></li>
+                <li><Link to="/terms">Terms</Link></li>
+                <li><Link to="/contact">Contact</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">Network</h4>
+              <ul className="space-y-2 text-sm text-foreground/72">
+                <li><Link to="/cities">Cities</Link></li>
+                <li><Link to="/agencies">Agencies</Link></li>
+                <li><Link to="/developers">Developers</Link></li>
+                <li><Link to="/sellers">Verified Sellers</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">Core Cities</h4>
+              <ul className="grid grid-cols-2 gap-y-2 text-sm text-foreground/72">
+                {iraqCities.slice(0, 6).map((city) => (
+                  <li key={city.id}><Link to={`/buy?city=${city.nameEn}`}>{city.nameEn}</Link></li>
+                ))}
+              </ul>
             </div>
           </div>
-        </footer>
 
-        <MobileBottomNav />
-      </div>
+          <div className="mt-6 border-t border-slate-200 pt-5 text-sm text-foreground/56">
+            © 2026 IraqProperty. Built for Iraq first, with a path to regional investors into Iraq.
+          </div>
+        </div>
+      </footer>
+
+      <MobileBottomNav />
     </div>
   );
 }
