@@ -1,12 +1,12 @@
 /**
- * TerraVista AI — Service Worker
+ * IraqProperty — Service Worker
  * Strategy:
  *   - Static assets & pages: Cache-first (fast loads, offline shell)
  *   - API / Supabase requests: Network-first (always fresh data)
  *   - Images: Cache-first with stale-while-revalidate
  */
 
-const CACHE_VERSION = "terravista-v2";
+const CACHE_VERSION = "iraqproperty-v1";
 const STATIC_CACHE  = `${CACHE_VERSION}-static`;
 const IMAGE_CACHE   = `${CACHE_VERSION}-images`;
 const API_CACHE     = `${CACHE_VERSION}-api`;
@@ -34,7 +34,7 @@ self.addEventListener("activate", (event) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys
-          .filter((k) => k.startsWith("terravista-") && ![STATIC_CACHE, IMAGE_CACHE, API_CACHE].includes(k))
+          .filter((k) => k.startsWith("iraqproperty-") && ![STATIC_CACHE, IMAGE_CACHE, API_CACHE].includes(k))
           .map((k) => caches.delete(k))
       )
     ).then(() => self.clients.claim())
@@ -130,9 +130,9 @@ async function staleWhileRevalidate(request, cacheName) {
 self.addEventListener("push", (event) => {
   if (!event.data) return;
   let data;
-  try { data = event.data.json(); } catch { data = { title: "TerraVista", body: event.data.text() }; }
+  try { data = event.data.json(); } catch { data = { title: "IraqProperty", body: event.data.text() }; }
   event.waitUntil(
-    self.registration.showNotification(data.title || "TerraVista", {
+    self.registration.showNotification(data.title || "IraqProperty", {
       body: data.body || "",
       icon: `${BASE_PATH}favicon.ico`,
       badge: `${BASE_PATH}favicon.ico`,
