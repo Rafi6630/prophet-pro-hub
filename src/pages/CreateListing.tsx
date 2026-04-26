@@ -17,7 +17,7 @@ export default function CreateListing() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { isSeller } = useUserRoles();
+  const { isSeller, loading: rolesLoading, refetchRoles } = useUserRoles();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -77,11 +77,11 @@ export default function CreateListing() {
       return;
     }
     toast({ title: t("dashboard.sellerActivated") });
-    navigate("/listings/new");
+    refetchRoles();
   };
 
   return (
-    <SellerAccessGate isSeller={isSeller} onActivate={activateSellerMode}>
+    <SellerAccessGate isSeller={isSeller} loading={rolesLoading} onActivate={activateSellerMode}>
       <div className="container-app py-6 lg:py-10 max-w-2xl">
         <h1 className="text-2xl lg:text-3xl font-extrabold mb-6">{t("listing.create")}</h1>
 

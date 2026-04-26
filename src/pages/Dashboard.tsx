@@ -93,7 +93,7 @@ export default function Dashboard() {
     { id: "buyer", show: true, label: t("dashboard.buyer.title") },
     { id: "seller", show: isSeller, label: t("dashboard.seller.title") },
     { id: "admin", show: isAdmin, label: t("dashboard.admin.title") },
-  ].filter(t => t.show);
+  ].filter(tab => tab.show);
 
   return (
     <div className="container-app py-6 lg:py-10">
