@@ -1,46 +1,75 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ShieldCheck, Clock } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { verificationSchema, type VerificationFormData } from "@/lib/validation/listingSchema";
 
 export default function Verification() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ full_name: "", national_id: "", document_url: "" });
-  useEffect(() => { document.title = `${t("verification.title")} — ${t("common.appName")}`; }, [t]);
+
+  useEffect(() => {
+    document.title = `${t("verification.title")} — ${t("common.appName")}`;
+  }, [t]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<VerificationFormData>({
+    resolver: zodResolver(verificationSchema),
+    mode: "onBlur",
+  });
 
   const { data: existing, refetch } = useQuery({
     queryKey: ["verification", user?.id],
     enabled: !!user,
     queryFn: async () => {
       const { data } = await supabase
-        .from("verification_requests").select("*")
-        .eq("user_id", user!.id).order("created_at", { ascending: false }).limit(1).maybeSingle();
+        .from("verification_requests")
+        .select("*")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
       return data;
     },
+    staleTime: 60_000,
   });
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: VerificationFormData) => {
     if (!user) return;
-    setLoading(true);
+
+    // Prevent duplicate pending submissions
+    if (existing && existing.status === "pending") {
+      toast({ title: t("verification.alreadyPending"), variant: "destructive" });
+      return;
+    }
+
     const { error } = await supabase.from("verification_requests").insert({
-      user_id: user.id,
-      full_name: form.full_name,
-      national_id: form.national_id || null,
-      document_url: form.document_url || null,
+      user_id:      user.id,
+      full_name:    data.full_name.trim(),
+      national_id:  data.national_id || null,
+      document_url: data.document_url || null,
     });
-    setLoading(false);
-    if (error) toast({ title: t("common.error"), description: error.message, variant: "destructive" });
-    else { toast({ title: t("common.success") }); refetch(); }
+
+    if (error) {
+      toast({ title: t("common.error"), description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: t("common.success") });
+      reset();
+      refetch();
+    }
   };
 
   return (
@@ -57,35 +86,74 @@ export default function Verification() {
         <div className="bg-card border border-border rounded-2xl p-6 shadow-card">
           <div className="flex items-center gap-3 mb-4">
             {existing.status === "approved" ? (
-              <span className="trust-badge"><ShieldCheck className="w-4 h-4" />{t("verification.approved")}</span>
+              <span className="trust-badge">
+                <ShieldCheck className="w-4 h-4" />{t("verification.approved")}
+              </span>
             ) : existing.status === "rejected" ? (
-              <span className="text-xs font-bold bg-destructive/10 text-destructive px-2.5 py-1 rounded-full">{t("verification.rejected")}</span>
+              <span className="text-xs font-bold bg-destructive/10 text-destructive px-2.5 py-1 rounded-full">
+                {t("verification.rejected")}
+              </span>
             ) : (
-              <span className="gold-badge"><Clock className="w-3.5 h-3.5" />{t("verification.pending")}</span>
+              <span className="gold-badge">
+                <Clock className="w-3.5 h-3.5" />{t("verification.pending")}
+              </span>
             )}
           </div>
           <div className="space-y-2 text-sm">
-            <div><span className="text-muted-foreground">{t("verification.fullName")}: </span>{existing.full_name}</div>
+            <div>
+              <span className="text-muted-foreground">{t("verification.fullName")}: </span>
+              {existing.full_name}
+            </div>
             {existing.reviewer_note && (
               <div className="p-3 bg-secondary/50 rounded-xl mt-3">{existing.reviewer_note}</div>
             )}
           </div>
+          {existing.status === "rejected" && (
+            <Button
+              variant="outline"
+              className="mt-4 w-full"
+              onClick={() => refetch()}
+            >
+              {t("verification.resubmit")}
+            </Button>
+          )}
         </div>
       ) : (
-        <form onSubmit={submit} className="space-y-4 bg-card border border-border rounded-2xl p-6 shadow-card">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4 bg-card border border-border rounded-2xl p-6 shadow-card"
+        >
           <div>
             <Label className="mb-1.5 block">{t("verification.fullName")}</Label>
-            <Input required value={form.full_name} onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))} />
+            <Input {...register("full_name")} />
+            {errors.full_name && (
+              <p className="mt-1 text-xs text-destructive">{errors.full_name.message}</p>
+            )}
           </div>
+
           <div>
-            <Label className="mb-1.5 block">{t("verification.nationalId")}</Label>
-            <Input value={form.national_id} onChange={e => setForm(f => ({ ...f, national_id: e.target.value }))} />
+            <Label className="mb-1.5 block">
+              {t("verification.nationalId")}
+              <span className="ml-1 text-xs text-muted-foreground">(12 digits)</span>
+            </Label>
+            <Input {...register("national_id")} inputMode="numeric" maxLength={12} dir="ltr" />
+            {errors.national_id && (
+              <p className="mt-1 text-xs text-destructive">{errors.national_id.message}</p>
+            )}
           </div>
+
           <div>
             <Label className="mb-1.5 block">{t("verification.documentUrl")}</Label>
-            <Input value={form.document_url} onChange={e => setForm(f => ({ ...f, document_url: e.target.value }))} placeholder="https://…" dir="ltr" />
+            <Input {...register("document_url")} placeholder="https://…" dir="ltr" />
+            {errors.document_url && (
+              <p className="mt-1 text-xs text-destructive">{errors.document_url.message}</p>
+            )}
+            <p className="mt-1 text-xs text-muted-foreground">{t("verification.documentHint")}</p>
           </div>
-          <Button type="submit" disabled={loading} className="w-full">{t("verification.submit")}</Button>
+
+          <Button type="submit" disabled={isSubmitting} className="w-full">
+            {isSubmitting ? t("common.loading") : t("verification.submit")}
+          </Button>
         </form>
       )}
     </div>
