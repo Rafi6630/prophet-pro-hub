@@ -53,7 +53,7 @@ export default function SellerLayout() {
 
   const handleBackToBuying = () => {
     switchRole("buyer");
-    navigate("/");
+    navigate("/dashboard");
   };
 
   return (
