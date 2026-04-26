@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
-import { MapPinned, RotateCcw, ShieldCheck, Sparkles, X } from "lucide-react";
+import { MapPinned, RotateCcw, ShieldCheck, Sparkles, X, Search, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { PropertyKind, PropertyWithMedia } from "@/lib/property";
 import PropertyCard, { PropertyCardSkeleton } from "@/components/PropertyCard";
 import FilterDrawer from "@/components/FilterDrawer";
 import { Button } from "@/components/ui/button";
+import { parseSearchQuery, buildFilterFromParsedQuery, SUGGESTED_SEARCHES } from "@/lib/ai/searchParser";
 
 const SORTS = ["newest", "priceLow", "priceHigh", "investmentScore", "verifiedFirst"] as const;
 type Sort = typeof SORTS[number];
