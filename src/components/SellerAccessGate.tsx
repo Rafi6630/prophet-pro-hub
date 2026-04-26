@@ -3,15 +3,30 @@ import { CheckCircle2, Rocket, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-export function SellerAccessGate({
-  isSeller,
-  onActivate,
-  children,
-}: {
+interface SellerAccessGateProps {
   isSeller: boolean;
+  /** Pass useUserRoles().loading so the gate never flashes for real sellers */
+  loading?: boolean;
   onActivate: () => void;
   children: ReactNode;
-}) {
+}
+
+export function SellerAccessGate({
+  isSeller,
+  loading = false,
+  onActivate,
+  children,
+}: SellerAccessGateProps) {
+  // While role state is still loading, show a neutral spinner — never flash
+  // the "activate seller" screen at a user who already has the role.
+  if (loading) {
+    return (
+      <div className="min-h-[50vh] grid place-items-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
   if (isSeller) {
     return <>{children}</>;
   }

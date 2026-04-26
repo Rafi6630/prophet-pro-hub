@@ -1,9 +1,11 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Home, Search, TrendingUp, Map, BarChart3, ShieldCheck, Heart, LayoutGrid, LogIn, Menu, Sparkles, X } from "lucide-react";
+import { Home, Search, TrendingUp, Map, BarChart3, ShieldCheck, Heart, LayoutGrid, LogIn, Menu, Sparkles, X, Building2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import LanguageToggle from "./LanguageToggle";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRoles } from "@/hooks/useUserRoles";
+import { useActiveRole } from "@/hooks/useActiveRole";
 import { Button } from "./ui/button";
 import { iraqCities } from "@/data/iraqCities";
 
@@ -26,6 +28,51 @@ const MOBILE_NAV = [
   { to: "/favorites", icon: Heart, key: "favorites" },
   { to: "/dashboard", icon: LayoutGrid, key: "dashboard" },
 ] as const;
+
+/**
+ * Segmented "Buyer | Seller" toggle shown in the header for users who hold
+ * the seller role. Switches the active UI context instantly without a reload.
+ */
+function RoleSwitcher() {
+  const { isSeller, loading } = useUserRoles();
+  const { activeRole, switchRole } = useActiveRole();
+  const navigate = useNavigate();
+
+  if (loading || !isSeller) return null;
+
+  const handleSwitch = (role: "buyer" | "seller") => {
+    switchRole(role);
+    if (role === "seller") navigate("/seller/dashboard");
+  };
+
+  return (
+    <div className="hidden sm:flex items-center rounded-full border border-border/80 bg-secondary/60 p-0.5 text-xs font-semibold">
+      <button
+        onClick={() => handleSwitch("buyer")}
+        className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all ${
+          activeRole === "buyer"
+            ? "bg-foreground text-background shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+        aria-pressed={activeRole === "buyer"}
+      >
+        <Heart className="h-3 w-3" />
+        Buyer
+      </button>
+      <button
+        onClick={() => handleSwitch("seller")}
+        className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all ${
+          activeRole === "seller"
+            ? "bg-foreground text-background shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+        aria-pressed={activeRole === "seller"}>
+        <Building2 className="h-3 w-3" />
+        Seller
+      </button>
+    </div>
+  );
+}
 
 export function Header() {
   const { t } = useTranslation();
@@ -70,6 +117,8 @@ export function Header() {
 
         <div className="flex items-center gap-2 ms-auto">
           <LanguageToggle compact />
+          {/* Role switcher — only visible when user is a seller */}
+          <RoleSwitcher />
           <div className="hidden xl:flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-foreground/72">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
             Trusted property intelligence
@@ -115,10 +164,44 @@ export function Header() {
                 </Link>
               ))}
             </nav>
+            {/* Mobile role switcher */}
+            <MobileRoleSwitcher />
           </div>
         </div>
       )}
     </header>
+  );
+}
+
+function MobileRoleSwitcher() {
+  const { isSeller, loading } = useUserRoles();
+  const { activeRole, switchRole } = useActiveRole();
+  const navigate = useNavigate();
+
+  if (loading || !isSeller) return null;
+
+  const handleSwitch = (role: "buyer" | "seller") => {
+    switchRole(role);
+    if (role === "seller") navigate("/seller/dashboard");
+  };
+
+  return (
+    <div className="mt-3 flex rounded-2xl border border-border/70 bg-white p-1 shadow-sm">
+      {(["buyer", "seller"] as const).map(role => (
+        <button
+          key={role}
+          onClick={() => handleSwitch(role)}
+          className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-all ${
+            activeRole === role
+              ? "bg-foreground text-background shadow-sm"
+              : "text-muted-foreground"
+          }`}
+        >
+          {role === "buyer" ? <Heart className="h-4 w-4" /> : <Building2 className="h-4 w-4" />}
+          {role === "buyer" ? "Buyer Mode" : "Seller Mode"}
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -166,7 +249,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <h3 className="mt-3 text-2xl font-bold">Know Everything Before You Buy</h3>
               <p className="mt-2 text-sm font-medium text-emerald-700">اعرف كل شيء قبل أن تشتري</p>
               <p className="mt-4 max-w-xl text-sm leading-7 text-foreground/72">
-                Iraq’s trust-first property marketplace for serious buyers and investors, built around verified sellers,
+                Iraq's trust-first property marketplace for serious buyers and investors, built around verified sellers,
                 pricing clarity, and stronger decision confidence.
               </p>
             </div>
