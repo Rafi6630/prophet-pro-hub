@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import RequireAuth from "@/components/guards/RequireAuth";
 
@@ -84,6 +84,8 @@ const App = () => (
             <Route path="/dashboard/profile" element={<RequireAuth><Layout><DashboardProfilePage /></Layout></RequireAuth>} />
             <Route path="/dashboard/settings" element={<RequireAuth><Layout><DashboardSettingsPage /></Layout></RequireAuth>} />
             <Route path="/dashboard/subscription" element={<RequireAuth><Layout><DashboardSubscriptionPage /></Layout></RequireAuth>} />
+            {/* /seller is a common bookmark — redirect to the real dashboard */}
+            <Route path="/seller" element={<Navigate to="/seller/dashboard" replace />} />
             <Route path="/seller/dashboard" element={<RequireAuth><Layout><SellerDashboardPage /></Layout></RequireAuth>} />
             <Route path="/listings/new" element={<RequireAuth><Layout><CreateListing /></Layout></RequireAuth>} />
             <Route path="/verification" element={<RequireAuth><Layout><Verification /></Layout></RequireAuth>} />
