@@ -31,11 +31,11 @@ export function MetricCard({
   }, [value]);
 
   return (
-    <div className={cn("soft-panel p-4 lg:p-5", className)}>
-      <div className="text-2xl font-extrabold text-white lg:text-3xl">
+    <div className={cn("soft-panel p-3 sm:p-4 lg:p-5", className)}>
+      <div className="text-xl font-extrabold text-white sm:text-2xl lg:text-3xl">
         {displayValue.toLocaleString()}{suffix}
       </div>
-      <div className="mt-1 text-xs text-white/66 lg:text-sm">{label}</div>
+      <div className="mt-0.5 text-[11px] text-white/60 sm:mt-1 sm:text-xs lg:text-sm">{label}</div>
     </div>
   );
 }
