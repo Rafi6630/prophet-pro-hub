@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserRoles, addRole } from "@/hooks/useUserRoles";
 import { useToast } from "@/hooks/use-toast";
 import type { PropertyKind } from "@/lib/property";
+import SellerAccessGate from "@/components/SellerAccessGate";
 
 export default function CreateListing() {
   const { t } = useTranslation();
@@ -68,72 +69,85 @@ export default function CreateListing() {
     }
   };
 
-  return (
-    <div className="container-app py-6 lg:py-10 max-w-2xl">
-      <h1 className="text-2xl lg:text-3xl font-extrabold mb-6">{t("listing.create")}</h1>
+  const activateSellerMode = async () => {
+    if (!user) return;
+    const { error } = await addRole(user.id, "seller");
+    if (error && !error.message.includes("duplicate")) {
+      toast({ title: t("common.error"), description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: t("dashboard.sellerActivated") });
+    navigate("/listings/new");
+  };
 
-      <form onSubmit={submit} className="space-y-4 bg-card border border-border rounded-2xl p-5 lg:p-6 shadow-card">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <Label className="mb-1.5 block">{t("listing.title")} (EN)</Label>
-            <Input value={form.title} onChange={e => set("title", e.target.value)} required />
+  return (
+    <SellerAccessGate isSeller={isSeller} onActivate={activateSellerMode}>
+      <div className="container-app py-6 lg:py-10 max-w-2xl">
+        <h1 className="text-2xl lg:text-3xl font-extrabold mb-6">{t("listing.create")}</h1>
+
+        <form onSubmit={submit} className="space-y-4 bg-card border border-border rounded-2xl p-5 lg:p-6 shadow-card">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label className="mb-1.5 block">{t("listing.title")} (EN)</Label>
+              <Input value={form.title} onChange={e => set("title", e.target.value)} required />
+            </div>
+            <div>
+              <Label className="mb-1.5 block">{t("listing.title")} (AR)</Label>
+              <Input value={form.title_ar} onChange={e => set("title_ar", e.target.value)} />
+            </div>
           </div>
           <div>
-            <Label className="mb-1.5 block">{t("listing.title")} (AR)</Label>
-            <Input value={form.title_ar} onChange={e => set("title_ar", e.target.value)} />
+            <Label className="mb-1.5 block">{t("listing.description")}</Label>
+            <Textarea value={form.description} onChange={e => set("description", e.target.value)} rows={4} />
           </div>
-        </div>
-        <div>
-          <Label className="mb-1.5 block">{t("listing.description")}</Label>
-          <Textarea value={form.description} onChange={e => set("description", e.target.value)} rows={4} />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="mb-1.5 block">{t("listing.price")}</Label>
+              <Input type="number" required value={form.price} onChange={e => set("price", e.target.value)} />
+            </div>
+            <div>
+              <Label className="mb-1.5 block">{t("listing.area")}</Label>
+              <Input type="number" required value={form.area_m2} onChange={e => set("area_m2", e.target.value)} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="col-span-2">
+              <Label className="mb-1.5 block">{t("listing.kind")}</Label>
+              <select value={form.kind} onChange={e => set("kind", e.target.value)} className="w-full h-10 px-3 rounded-md bg-background border border-input">
+                {(["house","apartment","villa","land","commercial","office","shop"] as const).map(k => (
+                  <option key={k} value={k}>{t(`property.kind.${k}`)}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <Label className="mb-1.5 block">{t("listing.bedrooms")}</Label>
+              <Input type="number" value={form.bedrooms} onChange={e => set("bedrooms", e.target.value)} />
+            </div>
+            <div>
+              <Label className="mb-1.5 block">{t("listing.bathrooms")}</Label>
+              <Input type="number" value={form.bathrooms} onChange={e => set("bathrooms", e.target.value)} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="mb-1.5 block">{t("listing.city")}</Label>
+              <select required value={form.city} onChange={e => set("city", e.target.value)} className="w-full h-10 px-3 rounded-md bg-background border border-input">
+                <option value="">—</option>
+                {cities.map(c => <option key={c.id} value={c.name_en}>{c.name_ar} · {c.name_en}</option>)}
+              </select>
+            </div>
+            <div>
+              <Label className="mb-1.5 block">{t("listing.district")}</Label>
+              <Input value={form.district} onChange={e => set("district", e.target.value)} />
+            </div>
+          </div>
           <div>
-            <Label className="mb-1.5 block">{t("listing.price")}</Label>
-            <Input type="number" required value={form.price} onChange={e => set("price", e.target.value)} />
+            <Label className="mb-1.5 block">{t("listing.imageUrl")}</Label>
+            <Input value={form.image_url} onChange={e => set("image_url", e.target.value)} placeholder="https://…" dir="ltr" />
           </div>
-          <div>
-            <Label className="mb-1.5 block">{t("listing.area")}</Label>
-            <Input type="number" required value={form.area_m2} onChange={e => set("area_m2", e.target.value)} />
-          </div>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="col-span-2">
-            <Label className="mb-1.5 block">{t("listing.kind")}</Label>
-            <select value={form.kind} onChange={e => set("kind", e.target.value)} className="w-full h-10 px-3 rounded-md bg-background border border-input">
-              {(["house","apartment","villa","land","commercial","office","shop"] as const).map(k => (
-                <option key={k} value={k}>{t(`property.kind.${k}`)}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <Label className="mb-1.5 block">{t("listing.bedrooms")}</Label>
-            <Input type="number" value={form.bedrooms} onChange={e => set("bedrooms", e.target.value)} />
-          </div>
-          <div>
-            <Label className="mb-1.5 block">{t("listing.bathrooms")}</Label>
-            <Input type="number" value={form.bathrooms} onChange={e => set("bathrooms", e.target.value)} />
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label className="mb-1.5 block">{t("listing.city")}</Label>
-            <select required value={form.city} onChange={e => set("city", e.target.value)} className="w-full h-10 px-3 rounded-md bg-background border border-input">
-              <option value="">—</option>
-              {cities.map(c => <option key={c.id} value={c.name_en}>{c.name_ar} · {c.name_en}</option>)}
-            </select>
-          </div>
-          <div>
-            <Label className="mb-1.5 block">{t("listing.district")}</Label>
-            <Input value={form.district} onChange={e => set("district", e.target.value)} />
-          </div>
-        </div>
-        <div>
-          <Label className="mb-1.5 block">{t("listing.imageUrl")}</Label>
-          <Input value={form.image_url} onChange={e => set("image_url", e.target.value)} placeholder="https://…" dir="ltr" />
-        </div>
-        <Button type="submit" disabled={loading} className="w-full">{loading ? t("common.loading") : t("listing.publish")}</Button>
-      </form>
-    </div>
+          <Button type="submit" disabled={loading} className="w-full">{loading ? t("common.loading") : t("listing.publish")}</Button>
+        </form>
+      </div>
+    </SellerAccessGate>
   );
 }

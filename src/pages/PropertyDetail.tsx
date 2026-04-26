@@ -1,61 +1,69 @@
-import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import {
-  ShieldCheck, MapPin, BedDouble, Bath, Maximize, Heart, Share2,
-  Phone, MessageCircle, FileText, AlertTriangle, TrendingUp, Coins,
-  GraduationCap, Hospital, Car, Zap, Droplet, Shield, Calendar, Send, Expand, Map,
+  Bath,
+  BedDouble,
+  Calendar,
+  CarFront,
+  Coins,
+  LineChart,
+  MapPin,
+  Maximize,
+  MessageCircle,
+  Phone,
+  Send,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import PageMeta from "@/components/common/PageMeta";
+import PropertyGallery from "@/components/PropertyGallery";
+import PropertySidebarCTA from "@/components/PropertySidebarCTA";
+import TrustBadge from "@/components/TrustBadge";
+import InvestmentScoreRing from "@/components/InvestmentScoreRing";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useFavorites } from "@/hooks/useFavorites";
 import {
-  type PropertyWithMedia, propertyImage, pricePerM2, formatPrice,
-  fairPrice, discountToFair, priceVerdict, investmentScore,
-  fraudRisk, legalStatus, areaGrowthPct, areaScore,
+  areaGrowthPct,
+  areaScore,
+  discountToFair,
+  fairPrice,
+  formatPrice,
+  fraudRisk,
+  investmentScore,
+  legalStatus,
+  propertyImage,
+  pricePerM2,
+  type PropertyWithMedia,
 } from "@/lib/property";
 import { seededPropertyById } from "@/lib/sampleInventory";
 
 const AREA = [
-  { key: "schools", icon: GraduationCap, field: "schools_score" as const },
-  { key: "hospitals", icon: Hospital, field: "hospitals_score" as const },
-  { key: "roads", icon: Car, field: "roads_score" as const },
-  { key: "electricity", icon: Zap, field: "electricity_score" as const },
-  { key: "water", icon: Droplet, field: "water_score" as const },
-  { key: "safety", icon: Shield, field: "safety_score" as const },
+  { key: "schools", label: "Schools", field: "schools_score" as const },
+  { key: "hospitals", label: "Hospitals", field: "hospitals_score" as const },
+  { key: "roads", label: "Roads", field: "roads_score" as const },
+  { key: "power", label: "Power", field: "electricity_score" as const },
+  { key: "water", label: "Water", field: "water_score" as const },
+  { key: "safety", label: "Safety", field: "safety_score" as const },
 ];
-
-function Stars({ n }: { n: number }) {
-  return (
-    <div className="flex gap-0.5">
-      {[1,2,3,4,5].map(i => (
-        <span key={i} className={`w-1.5 h-3 rounded-sm ${i <= Math.round(n) ? "bg-gold" : "bg-secondary"}`} />
-      ))}
-    </div>
-  );
-}
 
 export default function PropertyDetail() {
   const { id } = useParams();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const { isFavorite, toggle } = useFavorites();
-  const navigate = useNavigate();
-  const [imgIdx, setImgIdx] = useState(0);
   const [offerOpen, setOfferOpen] = useState(false);
-  const [inspectOpen, setInspectOpen] = useState(false);
+  const [visitOpen, setVisitOpen] = useState(false);
 
-  const { data: p, isLoading } = useQuery({
+  const { data: property, isLoading } = useQuery({
     queryKey: ["property", id],
     enabled: !!id,
     queryFn: async () => {
@@ -64,330 +72,234 @@ export default function PropertyDetail() {
         .select("*, property_images(*)")
         .eq("id", id!)
         .maybeSingle();
-      if (!data) return seededPropertyById(id! as string) ?? null;
+
+      if (!data) {
+        return seededPropertyById(id! as string) ?? null;
+      }
+
       const { data: seller } = await supabase
-        .from("profiles").select("display_name, avatar_url, phone, whatsapp, user_id")
-        .eq("user_id", data.user_id).maybeSingle();
+        .from("profiles")
+        .select("display_name, avatar_url, phone, whatsapp, user_id")
+        .eq("user_id", data.user_id)
+        .maybeSingle();
+
       return { ...data, seller } as PropertyWithMedia;
     },
   });
 
   useEffect(() => {
-    if (p) document.title = `${p.title_ar || p.title} — ${t("common.appName")}`;
-  }, [p, t]);
+    if (property) document.title = `${property.title_ar || property.title} — ${t("common.appName")}`;
+  }, [property, t]);
 
-  if (isLoading) return <div className="container-app py-12 text-center text-muted-foreground">{t("common.loading")}</div>;
-  if (!p) return <div className="container-app py-12 text-center">{t("common.noResults")}</div>;
+  if (isLoading) {
+    return <div className="container-app py-12 text-center text-muted-foreground">{t("common.loading")}</div>;
+  }
 
-  const score = investmentScore(p);
-  const verdict = priceVerdict(p);
-  const disc = discountToFair(p);
-  const fp = fairPrice(p);
-  const risk = fraudRisk(p);
-  const ls = legalStatus(p);
-  const fav = user ? isFavorite(p.id) : false;
-  const images = p.property_images?.length ? p.property_images : [{ id: "ph", url: propertyImage(p), sort_order: 0 } as never];
+  if (!property) {
+    return <div className="container-app py-12 text-center text-muted-foreground">{t("common.noResults")}</div>;
+  }
 
-  const share = async () => {
-    const url = window.location.href;
-    if (navigator.share) await navigator.share({ title: p.title, url });
-    else { await navigator.clipboard.writeText(url); toast({ title: t("common.success") }); }
+  const score = investmentScore(property);
+  const fairEstimate = fairPrice(property);
+  const underpricedBy = Math.max(0, discountToFair(property));
+  const risk = fraudRisk(property);
+  const legal = legalStatus(property);
+  const growth = areaGrowthPct(property);
+  const demandScore = Math.round(
+    (AREA.reduce((sum, item) => sum + areaScore(property, item.field), 0) / AREA.length) * 20,
+  );
+  const roiPotential = Math.min(18, Math.max(6, Math.round((score / 100) * 18)));
+  const favoriteActive = user ? isFavorite(property.id) : false;
+  const mapEmbedUrl =
+    typeof property.latitude === "number" && typeof property.longitude === "number"
+      ? `https://www.openstreetmap.org/export/embed.html?bbox=${property.longitude - 0.01}%2C${property.latitude - 0.01}%2C${property.longitude + 0.01}%2C${property.latitude + 0.01}&layer=mapnik&marker=${property.latitude}%2C${property.longitude}`
+      : null;
+  const images = property.property_images?.length
+    ? property.property_images.map((item) => ({ id: item.id, url: item.url }))
+    : [{ id: "fallback", url: propertyImage(property) }];
+  const videoAsset = property.property_images?.find((item) => (item as { is_video?: boolean }).is_video);
+  const whatsappLink = property.seller?.whatsapp ? `https://wa.me/${property.seller.whatsapp.replace(/\D/g, "")}` : null;
+  const listedDate = new Date(property.created_at).toLocaleDateString();
+  const parkingLabel = property.property_kind === "villa" || property.property_kind === "house" ? "2 spaces" : property.property_kind === "land" ? "N/A" : "1 space";
+
+  const handleFavorite = () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+    toggle(property.id);
   };
 
-  const whatsappLink = p.seller?.whatsapp ? `https://wa.me/${p.seller.whatsapp.replace(/\D/g, "")}` : null;
-  const mapEmbedUrl =
-    typeof p.latitude === "number" && typeof p.longitude === "number"
-      ? `https://www.openstreetmap.org/export/embed.html?bbox=${p.longitude - 0.01}%2C${p.latitude - 0.01}%2C${p.longitude + 0.01}%2C${p.latitude + 0.01}&layer=mapnik&marker=${p.latitude}%2C${p.longitude}`
-      : null;
-  const propertyAge = new Date().getFullYear() - new Date(p.created_at).getFullYear();
-  const parkingEstimate = p.property_kind === "villa" || p.property_kind === "house" ? "2 spaces" : p.property_kind === "land" ? "N/A" : "1 space";
-
   return (
-    <div className="pb-24 lg:pb-12">
+    <div className="animate-fade-in pb-24 lg:pb-12">
       <PageMeta
-        title={`${p.title_ar || p.title} | IraqProperty`}
-        description={p.description_ar || p.description || "Elite Iraq property detail with trust, pricing, and area intelligence."}
-        image={propertyImage(p)}
+        title={`${property.title_ar || property.title} | IraqProperty`}
+        description={property.description_ar || property.description || "Premium Iraq property detail with trust, pricing, and area intelligence."}
+        image={propertyImage(property)}
       />
-      {/* Gallery */}
-      <div className="bg-secondary/30">
-        <div className="container-app py-4 lg:py-6">
-          <div className="mb-3 flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" className="rounded-full bg-white/90" onClick={() => window.open(images[imgIdx].url, "_blank", "noopener,noreferrer")}>
-              <Expand className="h-4 w-4" />
-              Fullscreen
-            </Button>
-            {mapEmbedUrl ? (
-              <Button variant="outline" size="sm" className="rounded-full bg-white/90" onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${p.latitude},${p.longitude}`, "_blank", "noopener,noreferrer")}>
-                <Map className="h-4 w-4" />
-                Open map
-              </Button>
-            ) : null}
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 lg:gap-3">
-            <div className="lg:col-span-3 aspect-[4/3] lg:aspect-[16/10] rounded-2xl overflow-hidden bg-muted">
-              <img src={images[imgIdx].url} alt={p.title} className="w-full h-full object-cover" />
+
+      <section className="container-app py-6 lg:py-10">
+        <PropertyGallery
+          title={property.title_ar || property.title}
+          images={images}
+          videoUrl={videoAsset?.url ?? null}
+          mapEmbedUrl={mapEmbedUrl}
+        />
+      </section>
+
+      <section className="container-app grid gap-8 pb-12 lg:grid-cols-[minmax(0,1fr)_360px] lg:pb-16">
+        <div className="space-y-6">
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+            <div className="flex flex-wrap gap-2">
+              <TrustBadge variant="verified-seller" />
+              {property.ownership_reviewed ? <TrustBadge variant="ownership-reviewed" /> : null}
+              {legal !== "disputed" ? <TrustBadge variant="legal-checked" /> : null}
+              {risk === "low" ? <TrustBadge variant="low-risk" /> : null}
             </div>
-            <div className="hidden lg:flex flex-col gap-2 max-h-[60vh] overflow-y-auto">
-              {images.slice(0, 6).map((img, i) => (
-                <button key={img.id} onClick={() => setImgIdx(i)}
-                  className={`aspect-[4/3] rounded-xl overflow-hidden border-2 ${i === imgIdx ? "border-primary" : "border-transparent"}`}>
-                  <img src={img.url} className="w-full h-full object-cover" />
-                </button>
+
+            <div className="mt-5 grid gap-6 xl:grid-cols-[1fr_auto] xl:items-start">
+              <div>
+                <h1 className="text-3xl font-extrabold tracking-tight lg:text-5xl">{property.title_ar || property.title}</h1>
+                <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+                  <MapPin className="h-4 w-4 text-primary" />
+                  {property.district ? `${property.district}, ` : ""}{property.city}
+                </div>
+                <div className="mt-5 text-4xl font-extrabold lg:text-5xl">{formatPrice(property.price)}</div>
+              </div>
+              <InvestmentScoreRing score={score} size={84} />
+            </div>
+
+            <div className="mt-6 grid grid-cols-2 gap-3 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 md:grid-cols-4">
+              <InfoMetric icon={Maximize} label="Size" value={`${property.area_m2} sqm`} />
+              <InfoMetric icon={BedDouble} label="Rooms" value={`${property.bedrooms}`} />
+              <InfoMetric icon={Bath} label="Baths" value={`${property.bathrooms}`} />
+              <InfoMetric icon={CarFront} label="Parking" value={parkingLabel} />
+              <InfoMetric icon={Coins} label="Price / sqm" value={`$${pricePerM2(property)}`} />
+              <InfoMetric icon={Calendar} label="Listed" value={listedDate} />
+              <InfoMetric icon={LineChart} label="Growth Outlook" value={`+${growth.toFixed(1)}%`} />
+              <InfoMetric icon={MapPin} label="Demand Score" value={`${demandScore}/100`} />
+            </div>
+          </div>
+
+          <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
+            <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+              <div className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Description</div>
+              <h2 className="mt-2 text-2xl font-extrabold">Readable, decision-ready property overview</h2>
+              <p className="mt-5 whitespace-pre-line text-sm leading-8 text-foreground/76">
+                {property.description_ar || property.description || "No description provided yet."}
+              </p>
+            </div>
+
+            <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+              <div className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Investment Panel</div>
+              <h2 className="mt-2 text-2xl font-extrabold">Premium investor snapshot</h2>
+              <div className="mt-6 space-y-4">
+                <SidebarMetric label="Fair Price Estimate" value={formatPrice(fairEstimate)} />
+                <SidebarMetric label="Underpriced by %" value={`${underpricedBy.toFixed(1)}%`} tone={underpricedBy > 0 ? "emerald" : "slate"} />
+                <SidebarMetric label="Investment Score /100" value={`${score}/100`} tone="gold" />
+                <SidebarMetric label="Growth Outlook" value={`+${growth.toFixed(1)}%`} />
+                <SidebarMetric label="Demand Score" value={`${demandScore}/100`} />
+                <SidebarMetric label="ROI Potential" value={`${roiPotential}%`} tone="emerald" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Area Intelligence</div>
+            <h2 className="mt-2 text-2xl font-extrabold">Nearby essentials and infrastructure confidence</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {AREA.map((item) => (
+                <div key={item.key} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
+                  <div className="text-sm font-semibold text-slate-900">{item.label}</div>
+                  <div className="mt-3 text-2xl font-extrabold">{areaScore(property, item.field).toFixed(1)}/5</div>
+                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200">
+                    <div className="h-full rounded-full bg-[linear-gradient(90deg,#0f2747,#10b981)]" style={{ width: `${Math.min(100, areaScore(property, item.field) * 20)}%` }} />
+                  </div>
+                </div>
               ))}
             </div>
           </div>
-          <div className="lg:hidden flex gap-2 overflow-x-auto py-3">
-            {images.map((img, i) => (
-              <button key={img.id} onClick={() => setImgIdx(i)}
-                className={`shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${i === imgIdx ? "border-primary" : "border-transparent"}`}>
-                <img src={img.url} className="w-full h-full object-cover" />
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="container-app py-6 grid grid-cols-1 lg:grid-cols-[1fr,360px] gap-8">
-        {/* Main */}
-        <div className="space-y-6">
-          {/* Title block */}
-          <div>
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              {(p.verification_level === "verified" || p.verification_level === "premium") && (
-                <span className="trust-badge"><ShieldCheck className="w-3 h-3" />{t("property.verified")}</span>
-              )}
-              {p.investment_deal && <span className="gold-badge"><TrendingUp className="w-3 h-3" />{t("property.investmentDeal")}</span>}
-            </div>
-            <h1 className="text-2xl lg:text-3xl font-extrabold">{p.title_ar || p.title}</h1>
-            <div className="flex items-center gap-1.5 text-muted-foreground mt-2">
-              <MapPin className="w-4 h-4" /> {p.district ? `${p.district}، ` : ""}{p.city}
-            </div>
-            <div className="mt-4 flex items-baseline gap-3">
-              <span className="text-3xl lg:text-4xl font-extrabold">{formatPrice(p.price)}</span>
-              <span className="text-sm text-muted-foreground">${pricePerM2(p)}{t("common.perM2")}</span>
-            </div>
-          </div>
-
-          {/* Quick facts */}
-          <div className="grid grid-cols-3 gap-3">
-            {p.bedrooms > 0 && (
-              <div className="bg-card border border-border rounded-xl p-3 text-center">
-                <BedDouble className="w-5 h-5 mx-auto text-muted-foreground mb-1" />
-                <div className="font-bold">{p.bedrooms}</div>
-                <div className="text-xs text-muted-foreground">{t("property.details.bedrooms")}</div>
-              </div>
-            )}
-            {p.bathrooms > 0 && (
-              <div className="bg-card border border-border rounded-xl p-3 text-center">
-                <Bath className="w-5 h-5 mx-auto text-muted-foreground mb-1" />
-                <div className="font-bold">{p.bathrooms}</div>
-                <div className="text-xs text-muted-foreground">{t("property.details.bathrooms")}</div>
-              </div>
-            )}
-            <div className="bg-card border border-border rounded-xl p-3 text-center">
-              <Maximize className="w-5 h-5 mx-auto text-muted-foreground mb-1" />
-              <div className="font-bold">{p.area_m2}</div>
-              <div className="text-xs text-muted-foreground">{t("common.m2")}</div>
-            </div>
-          </div>
-
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            <div className="bg-card border border-border rounded-2xl p-4">
-              <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Price / sqm</div>
-              <div className="mt-2 text-xl font-extrabold">${pricePerM2(p)}</div>
-            </div>
-            <div className="bg-card border border-border rounded-2xl p-4">
-              <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Property age</div>
-              <div className="mt-2 text-xl font-extrabold">{Math.max(propertyAge, 0)} yrs</div>
-            </div>
-            <div className="bg-card border border-border rounded-2xl p-4">
-              <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Parking</div>
-              <div className="mt-2 text-xl font-extrabold">{parkingEstimate}</div>
-            </div>
-            <div className="bg-card border border-border rounded-2xl p-4">
-              <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Exit liquidity</div>
-              <div className="mt-2 text-xl font-extrabold">{Math.min(99, Math.max(58, score - 4))}/100</div>
-            </div>
-          </div>
-
-          <Tabs defaultValue="overview">
-            <TabsList className="grid grid-cols-4 w-full">
-              <TabsTrigger value="overview">{t("property.details.overview")}</TabsTrigger>
-              <TabsTrigger value="trust">{t("property.details.trust")}</TabsTrigger>
-              <TabsTrigger value="invest">{t("property.details.investment")}</TabsTrigger>
-              <TabsTrigger value="area">{t("property.details.area")}</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="overview" className="bg-card border border-border rounded-2xl p-5 mt-4">
-              <p className="text-sm leading-relaxed whitespace-pre-line">{p.description_ar || p.description || "—"}</p>
-              {p.features && p.features.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border">
-                  {p.features.map(f => (
-                    <span key={f} className="text-xs bg-secondary px-2.5 py-1 rounded-full font-medium">{f}</span>
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="trust" className="space-y-3 mt-4">
-              <div className="bg-card border border-border rounded-2xl p-5">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-trust" />{t("property.verified")}</span>
-                  <span className="text-sm font-bold capitalize">{t(`property.${p.verification_level === "premium" ? "premium" : p.verification_level === "verified" ? "verified" : "unverified"}`)}</span>
-                </div>
-                <div className="flex items-center justify-between mb-2 pt-2 border-t border-border">
-                  <span className="font-semibold flex items-center gap-2"><FileText className="w-4 h-4" />{t("property.ownershipReviewed")}</span>
-                  <span className="text-sm font-bold">{p.ownership_reviewed ? t("common.yes") : t("common.no")}</span>
-                </div>
-                <div className="flex items-center justify-between mb-2 pt-2 border-t border-border">
-                  <span className="font-semibold flex items-center gap-2"><FileText className="w-4 h-4" />{t("property.legalStatus")}</span>
-                  <span className={`text-sm font-bold capitalize ${ls === "clear" ? "text-trust" : ls === "disputed" ? "text-destructive" : "text-warning"}`}>{ls}</span>
-                </div>
-                <div className="flex items-center justify-between pt-2 border-t border-border">
-                  <span className="font-semibold flex items-center gap-2"><AlertTriangle className="w-4 h-4" />{t("property.fraudRisk")}</span>
-                  <span className={`text-sm font-bold ${risk === "low" ? "text-trust" : risk === "high" ? "text-destructive" : "text-warning"}`}>{t(`property.risk.${risk}`)}</span>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="invest" className="space-y-3 mt-4">
-              <div className="bg-card border border-border rounded-2xl p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm text-muted-foreground">{t("property.investmentScore")}</span>
-                  <span className="text-2xl font-extrabold text-gradient-gold">{score}<span className="text-sm text-muted-foreground">/100</span></span>
-                </div>
-                <div className="h-2 rounded-full bg-secondary overflow-hidden mb-4">
-                  <div className="h-full bg-gradient-gold" style={{ width: `${score}%` }} />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="p-3 rounded-xl bg-secondary/50">
-                    <div className="text-xs text-muted-foreground flex items-center gap-1"><Coins className="w-3 h-3" />{t("property.fairPriceEstimate")}</div>
-                    <div className="font-bold mt-1">{formatPrice(fp)}</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-secondary/50">
-                    <div className="text-xs text-muted-foreground">{t(verdict === "under" ? "property.undervalued" : verdict === "over" ? "property.overpriced" : "property.atFairPrice")}</div>
-                    <div className={`font-bold mt-1 ${verdict === "under" ? "text-trust" : verdict === "over" ? "text-destructive" : ""}`}>
-                      {disc > 0 ? "−" : disc < 0 ? "+" : ""}{Math.abs(disc).toFixed(1)}%
-                    </div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-secondary/50">
-                    <div className="text-xs text-muted-foreground flex items-center gap-1"><TrendingUp className="w-3 h-3" />{t("property.areaGrowth")}</div>
-                    <div className="font-bold mt-1 text-trust">+{areaGrowthPct(p).toFixed(1)}%</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-secondary/50">
-                    <div className="text-xs text-muted-foreground">{t("property.incomePotential")}</div>
-                    <div className="font-bold mt-1">{p.income_potential || "—"}</div>
-                  </div>
-                </div>
-                <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
-                  <div className="font-semibold">Investor Summary</div>
-                  <p className="mt-2 leading-7">
-                    {verdict === "under"
-                      ? "Priced below modeled fair value with healthy area fundamentals and cleaner exit potential than most comparable listings."
-                      : verdict === "over"
-                        ? "Premium ask needs stronger justification, so buyers should negotiate using fair price and neighborhood benchmarks."
-                        : "Balanced pricing with stable trust signals and a reasonable path for owner-users or disciplined investors."}
-                  </p>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="area" className="bg-card border border-border rounded-2xl p-5 mt-4">
-              <h3 className="font-bold mb-4">{t("property.areaIntelligence")}</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {AREA.map(a => (
-                  <div key={a.key} className="flex items-center gap-3 p-3 rounded-xl bg-secondary/40">
-                    <div className="w-10 h-10 rounded-lg bg-card grid place-items-center"><a.icon className="w-5 h-5 text-primary" /></div>
-                    <div className="flex-1">
-                      <div className="text-sm font-semibold">{t(`property.${a.key}`)}</div>
-                      <Stars n={areaScore(p, a.field)} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {mapEmbedUrl ? (
-                <div className="mt-4 overflow-hidden rounded-2xl border border-border">
-                  <iframe title="Property map" src={mapEmbedUrl} className="h-72 w-full" loading="lazy" />
-                </div>
-              ) : null}
-            </TabsContent>
-          </Tabs>
         </div>
 
-        {/* Side panel */}
-        <aside className="lg:sticky lg:top-20 self-start space-y-4">
-          <div className="bg-card border border-border rounded-2xl p-5 shadow-card">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-navy text-white grid place-items-center font-extrabold">
-                {p.seller?.display_name?.[0]?.toUpperCase() ?? "?"}
-              </div>
-              <div className="min-w-0">
-                <div className="font-bold truncate">{p.seller?.display_name ?? "—"}</div>
-                <div className="text-xs text-muted-foreground">{t("property.details.seller")}</div>
-              </div>
-            </div>
-            <div className="space-y-2">
-              {p.seller?.phone && (
-                <a href={`tel:${p.seller.phone}`} className="block">
-                  <Button className="w-full gap-2"><Phone className="w-4 h-4" />{t("property.actions.contactSeller")}</Button>
-                </a>
-              )}
-              {whatsappLink && (
-                <a href={whatsappLink} target="_blank" rel="noopener" className="block">
-                  <Button variant="outline" className="w-full gap-2 border-trust/30 text-trust hover:bg-trust/10 hover:text-trust">
-                    <MessageCircle className="w-4 h-4" />{t("property.actions.whatsapp")}
-                  </Button>
-                </a>
-              )}
-              <div className="grid grid-cols-3 gap-2 pt-2">
-                <Button variant="outline" size="sm" onClick={() => user ? toggle(p.id) : navigate("/auth")} className={fav ? "text-destructive border-destructive" : ""}>
-                  <Heart className={`w-4 h-4 ${fav ? "fill-destructive" : ""}`} />
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => user ? setOfferOpen(true) : navigate("/auth")}>
-                  <Send className="w-4 h-4" />
-                </Button>
-                <Button variant="outline" size="sm" onClick={share}>
-                  <Share2 className="w-4 h-4" />
-                </Button>
-              </div>
-              <Button variant="ghost" className="w-full gap-2" onClick={() => user ? setInspectOpen(true) : navigate("/auth")}>
-                <Calendar className="w-4 h-4" />{t("property.actions.requestInspection")}
-              </Button>
-            </div>
-          </div>
-        </aside>
-      </div>
+        <PropertySidebarCTA
+          phone={property.seller?.phone}
+          whatsappLink={whatsappLink}
+          favoriteActive={favoriteActive}
+          onFavorite={handleFavorite}
+          onOffer={() => user ? setOfferOpen(true) : navigate("/auth")}
+          onSchedule={() => user ? setVisitOpen(true) : navigate("/auth")}
+          sellerName={property.seller?.display_name ?? "Verified Seller"}
+          sellerSubtitle={`${legal === "clear" ? "Legal checked" : "Legal review pending"} • ${risk === "low" ? "Low risk" : "Needs closer review"}`}
+        />
+      </section>
 
-      {/* Sticky mobile CTA */}
-      <div className="sticky-cta">
-        <div className="bg-card rounded-2xl shadow-xl border border-border p-2 grid grid-cols-2 gap-2 md:grid-cols-4">
-          {p.seller?.phone && (
-            <a href={`tel:${p.seller.phone}`} className="col-span-1">
-              <Button className="w-full gap-2"><Phone className="w-4 h-4" />{t("property.actions.contactSeller")}</Button>
+      <div className="sticky-cta lg:hidden">
+        <div className="grid grid-cols-2 gap-2 rounded-[1.4rem] border border-slate-200 bg-white p-2 shadow-[0_20px_60px_rgba(15,23,42,0.12)] md:grid-cols-4">
+          {property.seller?.phone ? (
+            <a href={`tel:${property.seller.phone}`}>
+              <Button className="w-full gap-2 rounded-xl"><Phone className="h-4 w-4" />Call</Button>
             </a>
-          )}
-          {whatsappLink && (
-            <a href={whatsappLink} target="_blank" rel="noopener" className="col-span-1">
-              <Button className="w-full gap-2 bg-trust hover:bg-trust/90 text-trust-foreground">
-                <MessageCircle className="w-4 h-4" />{t("property.actions.whatsapp")}
-              </Button>
+          ) : null}
+          {whatsappLink ? (
+            <a href={whatsappLink} target="_blank" rel="noopener">
+              <Button className="w-full gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700"><MessageCircle className="h-4 w-4" />WhatsApp</Button>
             </a>
-          )}
-          <Button variant="outline" className="w-full gap-2" onClick={() => user ? toggle(p.id) : navigate("/auth")}>
-            <Heart className={`w-4 h-4 ${fav ? "fill-destructive text-destructive" : ""}`} />
+          ) : null}
+          <Button variant="outline" className="w-full gap-2 rounded-xl border-slate-200 bg-white" onClick={handleFavorite}>
             Save
           </Button>
-          <Button className="w-full gap-2" onClick={() => user ? setOfferOpen(true) : navigate("/auth")}>
-            <Send className="w-4 h-4" />
-            Make Offer
+          <Button className="w-full gap-2 rounded-xl" onClick={() => user ? setOfferOpen(true) : navigate("/auth")}>
+            <Send className="h-4 w-4" />
+            Offer
           </Button>
         </div>
       </div>
 
-      <OfferDialog open={offerOpen} onClose={() => setOfferOpen(false)} property={p} />
-      <InspectionDialog open={inspectOpen} onClose={() => setInspectOpen(false)} property={p} />
+      <OfferDialog open={offerOpen} onClose={() => setOfferOpen(false)} property={property} />
+      <VisitDialog open={visitOpen} onClose={() => setVisitOpen(false)} property={property} />
+    </div>
+  );
+}
+
+function InfoMetric({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof MapPin;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div>
+      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+        <Icon className="h-4 w-4 text-primary" />
+        {label}
+      </div>
+      <div className="mt-2 text-lg font-bold">{value}</div>
+    </div>
+  );
+}
+
+function SidebarMetric({
+  label,
+  value,
+  tone = "slate",
+}: {
+  label: string;
+  value: string;
+  tone?: "slate" | "emerald" | "gold";
+}) {
+  const toneClasses = {
+    slate: "bg-slate-50 text-slate-900",
+    emerald: "bg-emerald-50 text-emerald-800",
+    gold: "bg-amber-50 text-amber-900",
+  };
+
+  return (
+    <div className={`rounded-[1.3rem] p-4 ${toneClasses[tone]}`}>
+      <div className="text-xs uppercase tracking-[0.18em] opacity-70">{label}</div>
+      <div className="mt-2 text-xl font-extrabold">{value}</div>
     </div>
   );
 }
@@ -400,40 +312,50 @@ function OfferDialog({ open, onClose, property }: { open: boolean; onClose: () =
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
     if (!user) return;
     setLoading(true);
     const { error } = await supabase.from("offers").insert({
-      property_id: property.id, buyer_id: user.id, seller_id: property.user_id,
-      offer_price: Number(price), message,
+      property_id: property.id,
+      buyer_id: user.id,
+      seller_id: property.user_id,
+      offer_price: Number(price),
+      message,
     });
     setLoading(false);
     if (error) toast({ title: t("common.error"), description: error.message, variant: "destructive" });
-    else { toast({ title: t("offer.success") }); onClose(); }
+    else {
+      toast({ title: t("offer.success") });
+      onClose();
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader><DialogTitle>{t("offer.title")}</DialogTitle></DialogHeader>
+      <DialogContent className="rounded-[1.75rem] border-slate-200 bg-white">
+        <DialogHeader>
+          <DialogTitle>{t("offer.title")}</DialogTitle>
+        </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div>
-            <Label className="mb-1.5 block">{t("offer.price")}</Label>
-            <Input type="number" required value={price} onChange={e => setPrice(e.target.value)} />
+            <Label className="mb-2 block">{t("offer.price")}</Label>
+            <Input type="number" required value={price} onChange={(event) => setPrice(event.target.value)} />
           </div>
           <div>
-            <Label className="mb-1.5 block">{t("offer.message")}</Label>
-            <Textarea value={message} onChange={e => setMessage(e.target.value)} rows={3} />
+            <Label className="mb-2 block">{t("offer.message")}</Label>
+            <Textarea rows={4} value={message} onChange={(event) => setMessage(event.target.value)} />
           </div>
-          <Button type="submit" disabled={loading} className="w-full">{t("offer.submit")}</Button>
+          <Button type="submit" disabled={loading} className="w-full rounded-xl">
+            {loading ? t("common.loading") : t("offer.submit")}
+          </Button>
         </form>
       </DialogContent>
     </Dialog>
   );
 }
 
-function InspectionDialog({ open, onClose, property }: { open: boolean; onClose: () => void; property: PropertyWithMedia }) {
+function VisitDialog({ open, onClose, property }: { open: boolean; onClose: () => void; property: PropertyWithMedia }) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -441,33 +363,43 @@ function InspectionDialog({ open, onClose, property }: { open: boolean; onClose:
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
     if (!user) return;
     setLoading(true);
     const { error } = await supabase.from("inspection_requests").insert({
-      property_id: property.id, buyer_id: user.id, seller_id: property.user_id,
-      preferred_at: when ? new Date(when).toISOString() : null, message,
+      property_id: property.id,
+      buyer_id: user.id,
+      seller_id: property.user_id,
+      preferred_at: when ? new Date(when).toISOString() : null,
+      message,
     });
     setLoading(false);
     if (error) toast({ title: t("common.error"), description: error.message, variant: "destructive" });
-    else { toast({ title: t("inspection.success") }); onClose(); }
+    else {
+      toast({ title: t("inspection.success") });
+      onClose();
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader><DialogTitle>{t("inspection.title")}</DialogTitle></DialogHeader>
+      <DialogContent className="rounded-[1.75rem] border-slate-200 bg-white">
+        <DialogHeader>
+          <DialogTitle>Schedule Visit</DialogTitle>
+        </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div>
-            <Label className="mb-1.5 block">{t("inspection.preferredAt")}</Label>
-            <Input type="datetime-local" value={when} onChange={e => setWhen(e.target.value)} />
+            <Label className="mb-2 block">{t("inspection.preferredAt")}</Label>
+            <Input type="datetime-local" value={when} onChange={(event) => setWhen(event.target.value)} />
           </div>
           <div>
-            <Label className="mb-1.5 block">{t("inspection.message")}</Label>
-            <Textarea value={message} onChange={e => setMessage(e.target.value)} rows={3} />
+            <Label className="mb-2 block">{t("inspection.message")}</Label>
+            <Textarea rows={4} value={message} onChange={(event) => setMessage(event.target.value)} />
           </div>
-          <Button type="submit" disabled={loading} className="w-full">{t("common.submit")}</Button>
+          <Button type="submit" disabled={loading} className="w-full rounded-xl">
+            {loading ? t("common.loading") : "Schedule Visit"}
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

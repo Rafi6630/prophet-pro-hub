@@ -4,18 +4,37 @@ import PageMeta from "@/components/common/PageMeta";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { sampleProperties } from "@/data/sampleProperties";
+import SellerAccessGate from "@/components/SellerAccessGate";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { useUserRoles, addRole } from "@/hooks/useUserRoles";
 
 export function SellerDashboardPage() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const { isSeller } = useUserRoles();
   const listings = sampleProperties.slice(0, 4);
 
+  const activateSellerMode = async () => {
+    if (!user) return;
+    const { error } = await addRole(user.id, "seller");
+    if (error && !error.message.includes("duplicate")) {
+      toast({ title: "Unable to activate seller mode", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Seller mode activated" });
+    window.location.reload();
+  };
+
   return (
-    <div className="container mx-auto px-4 pb-24 pt-28">
-      <PageMeta title="Seller Dashboard | IraqProperty" description="Manage listings, leads, verification, and performance." noIndex />
-      <section className="section-shell px-6 py-10 md:px-8">
-        <div className="max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Seller Dashboard</p>
-          <h1 className="mt-4 text-4xl font-extrabold md:text-5xl">Manage listings, leads, upgrades, and verification from one workspace</h1>
-        </div>
+    <SellerAccessGate isSeller={isSeller} onActivate={activateSellerMode}>
+      <div className="container mx-auto px-4 pb-24 pt-28">
+        <PageMeta title="Seller Dashboard | IraqProperty" description="Manage listings, leads, verification, and performance." noIndex />
+        <section className="section-shell px-6 py-10 md:px-8">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Seller Dashboard</p>
+            <h1 className="mt-4 text-4xl font-extrabold md:text-5xl">Manage listings, leads, upgrades, and verification from one workspace</h1>
+          </div>
         <div className="mt-10 grid gap-6 lg:grid-cols-4">
           {[
             ["My Listings", `${listings.length}`],
@@ -97,6 +116,26 @@ export function SellerDashboardPage() {
           </Card>
         </div>
         <div className="mt-6">
+          <Card className="premium-card">
+            <CardContent className="p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Seller onboarding checklist</p>
+              <div className="mt-5 grid gap-3 md:grid-cols-2">
+                {[
+                  "Complete public profile and contact details",
+                  "Submit verification documents",
+                  "Publish your first premium-quality listing",
+                  "Activate a subscription plan for stronger placement",
+                ].map((item, index) => (
+                  <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-foreground/74">
+                    <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{index + 1}</span>
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="mt-6">
           <Card className="premium-card border-emerald-200 bg-emerald-50">
             <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
               <div className="flex items-start gap-3">
@@ -112,7 +151,8 @@ export function SellerDashboardPage() {
             </CardContent>
           </Card>
         </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </SellerAccessGate>
   );
 }
