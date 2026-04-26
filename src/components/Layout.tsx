@@ -34,6 +34,7 @@ const MOBILE_NAV = [
  * the seller role. Switches the active UI context instantly without a reload.
  */
 function RoleSwitcher() {
+  const { t } = useTranslation();
   const { isSeller, loading } = useUserRoles();
   const { activeRole, switchRole } = useActiveRole();
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ function RoleSwitcher() {
         aria-pressed={activeRole === "buyer"}
       >
         <Heart className="h-3 w-3" />
-        Buyer
+        {t("roleSwitch.buyer")}
       </button>
       <button
         onClick={() => handleSwitch("seller")}
@@ -68,7 +69,7 @@ function RoleSwitcher() {
         }`}
         aria-pressed={activeRole === "seller"}>
         <Building2 className="h-3 w-3" />
-        Seller
+        {t("roleSwitch.seller")}
       </button>
     </div>
   );
@@ -121,7 +122,7 @@ export function Header() {
           <RoleSwitcher />
           <div className="hidden xl:flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-foreground/72">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
-            Trusted property intelligence
+            {t("common.tagline")}
           </div>
           {user ? (
             <Link to="/dashboard">
@@ -150,7 +151,7 @@ export function Header() {
         <div className="animate-fade-in border-t border-border bg-card/95 backdrop-blur-xl lg:hidden">
           <div className="container-app py-3">
             <div className="mb-3 rounded-2xl border border-primary/15 bg-primary/5 px-4 py-3 text-sm text-foreground/72">
-              Browse verified listings, fair pricing context, and investment-ready opportunities.
+              {t("nav.browseInfo")}
             </div>
             <nav className="grid grid-cols-2 gap-2">
               {NAV.map(item => (
@@ -174,6 +175,7 @@ export function Header() {
 }
 
 function MobileRoleSwitcher() {
+  const { t } = useTranslation();
   const { isSeller, loading } = useUserRoles();
   const { activeRole, switchRole } = useActiveRole();
   const navigate = useNavigate();
@@ -198,7 +200,7 @@ function MobileRoleSwitcher() {
           }`}
         >
           {role === "buyer" ? <Heart className="h-4 w-4" /> : <Building2 className="h-4 w-4" />}
-          {role === "buyer" ? "Buyer Mode" : "Seller Mode"}
+          {role === "buyer" ? t("roleSwitch.buyerMode") : t("roleSwitch.sellerMode")}
         </button>
       ))}
     </div>
