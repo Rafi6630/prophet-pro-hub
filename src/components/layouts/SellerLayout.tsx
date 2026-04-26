@@ -6,8 +6,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useUserRoles } from "@/hooks/useUserRoles";
-import { useActiveRole } from "@/hooks/useActiveRole";
+import { useRoles } from "@/contexts/RolesContext";
+import { useActiveRoleCtx } from "@/contexts/ActiveRoleContext";
 import LanguageToggle from "@/components/LanguageToggle";
 
 const SELLER_NAV = [
@@ -38,8 +38,8 @@ function LoadingShell() {
 export default function SellerLayout() {
   const { t } = useTranslation();
   const { signOut } = useAuth();
-  const { isSeller, loading } = useUserRoles();
-  const { switchRole } = useActiveRole();
+  const { isSeller, loading } = useRoles();
+  const { switchRole } = useActiveRoleCtx();
   const navigate = useNavigate();
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
