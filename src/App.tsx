@@ -45,9 +45,15 @@ const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const CityLandingPage = lazy(() => import("@/pages/CityLandingPage").then((module) => ({ default: module.CityLandingPage })));
 const StaticContentPage = lazy(() => import("@/pages/StaticContentPage").then((module) => ({ default: module.StaticContentPage })));
-const SellerDashboardPage = lazy(() => import("@/pages/SellerDashboardPage").then((module) => ({ default: module.SellerDashboardPage })));
-const SellerLeadsPage = lazy(() => import("@/pages/SellerLeadsPage").then((module) => ({ default: module.SellerLeadsPage })));
-const SellerMessagesPage = lazy(() => import("@/pages/SellerMessagesPage").then((module) => ({ default: module.SellerMessagesPage })));
+const SellerDashboardPage = lazy(() => import("@/pages/SellerDashboard").then((m) => ({ default: m.SellerDashboardPage })));
+const MyListingsPage = lazy(() => import("@/pages/MyListings").then((m) => ({ default: m.MyListingsPage })));
+const EditListingPage = lazy(() => import("@/pages/EditListing").then((m) => ({ default: m.EditListingPage })));
+const SellerLeadsPage = lazy(() => import("@/pages/SellerLeads").then((m) => ({ default: m.SellerLeadsPage })));
+const SellerMessagesPage = lazy(() => import("@/pages/SellerMessagesPage").then((m) => ({ default: m.SellerMessagesPage })));
+const SellerVerificationPage = lazy(() => import("@/pages/SellerVerification").then((m) => ({ default: m.SellerVerificationPage })));
+const SellerAnalyticsPage = lazy(() => import("@/pages/SellerAnalytics").then((m) => ({ default: m.SellerAnalyticsPage })));
+const SellerSubscriptionPage = lazy(() => import("@/pages/SellerSubscription").then((m) => ({ default: m.SellerSubscriptionPage })));
+const SellerSettingsPage = lazy(() => import("@/pages/SellerSettings").then((m) => ({ default: m.SellerSettingsPage })));
 const SellerProfilePage = lazy(() => import("@/pages/SellerProfilePage").then((module) => ({ default: module.SellerProfilePage })));
 const SellerLayout = lazy(() => import("@/components/layouts/SellerLayout"));
 const DashboardProfilePage = lazy(() => import("@/pages/DashboardProfilePage"));
@@ -70,14 +76,14 @@ const LoadingShell = () => (
 );
 
 const App = () => (
-  <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
+  <BrowserRouter basename={import.meta.env.BASE_URL}>
+  <RolesProvider>
+  <ActiveRoleProvider>
+  <ErrorBoundary>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter basename={import.meta.env.BASE_URL}>
-        <RolesProvider>
-        <ActiveRoleProvider>
         <Suspense fallback={<LoadingShell />}>
           <Routes>
             <Route path="/auth" element={<Auth />} />
@@ -114,11 +120,15 @@ const App = () => (
             <Route path="/seller" element={<RequireAuth><SellerLayout /></RequireAuth>}>
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<SellerDashboardPage />} />
+              <Route path="listings" element={<MyListingsPage />} />
               <Route path="listings/new" element={<CreateListing />} />
+              <Route path="listings/edit/:id" element={<EditListingPage />} />
               <Route path="leads" element={<SellerLeadsPage />} />
               <Route path="messages" element={<SellerMessagesPage />} />
-              <Route path="verification" element={<Verification />} />
-              <Route path="settings" element={<DashboardSettingsPage />} />
+              <Route path="verification" element={<SellerVerificationPage />} />
+              <Route path="analytics" element={<SellerAnalyticsPage />} />
+              <Route path="subscription" element={<SellerSubscriptionPage />} />
+              <Route path="settings" element={<SellerSettingsPage />} />
             </Route>
 
             {/* Legacy routes — keep working as redirects */}
@@ -138,12 +148,12 @@ const App = () => (
             <Route path="*" element={<Layout><NotFound /></Layout>} />
           </Routes>
         </Suspense>
-        </ActiveRoleProvider>
-        </RolesProvider>
-      </BrowserRouter>
     </TooltipProvider>
-  </QueryClientProvider>
   </ErrorBoundary>
+  </ActiveRoleProvider>
+  </RolesProvider>
+  </BrowserRouter>
+  </QueryClientProvider>
 );
 
 export default App;
