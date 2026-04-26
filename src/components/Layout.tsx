@@ -44,6 +44,7 @@ function RoleSwitcher() {
   const handleSwitch = (role: "buyer" | "seller") => {
     switchRole(role);
     if (role === "seller") navigate("/seller/dashboard");
+    else navigate("/dashboard");
   };
 
   return (
@@ -78,6 +79,7 @@ function SidebarRoleSwitcher() {
   const handleSwitch = (role: "buyer" | "seller") => {
     switchRole(role);
     if (role === "seller") navigate("/seller/dashboard");
+    else navigate("/dashboard");
   };
 
   return (
@@ -258,8 +260,8 @@ export function Header({ onMenuOpen }: { onMenuOpen?: () => void }) {
       <div className="flex-1" />
 
       <div className="flex items-center gap-2">
-        {/* Role switcher — compact, topbar only */}
-        <div className="hidden sm:block">
+        {/* Role switcher — topbar on mobile/tablet; sidebar handles it on desktop */}
+        <div className="hidden sm:block lg:hidden">
           <RoleSwitcher />
         </div>
 
