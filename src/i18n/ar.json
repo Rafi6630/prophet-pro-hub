@@ -32,7 +32,32 @@
     "m2": "م²",
     "rooms": "غرف",
     "baths": "حمّامات",
-    "signOut": "تسجيل الخروج"
+    "signOut": "تسجيل الخروج",
+    "required": "مطلوب",
+    "optional": "اختياري",
+    "filter": "تصفية",
+    "reset": "إعادة تعيين",
+    "apply": "تطبيق",
+    "clear": "مسح",
+    "update": "تحديث",
+    "create": "إنشاء",
+    "view": "عرض",
+    "download": "تحميل",
+    "upload": "رفع",
+    "send": "إرسال",
+    "receive": "استلام",
+    "accept": "قبول",
+    "reject": "رفض",
+    "searchPlaceholder": "اكتب ما تبحث عنه...",
+    "noData": "لا توجد بيانات",
+    "tryAgain": "حاول مرة أخرى",
+    "contactUs": "تواصل معنا",
+    "learnMore": "اعرف المزيد",
+    "getStarted": "ابدأ الآن",
+    "signInNow": "سجّل الدخول الآن",
+    "signUpNow": "سجّل حساب جديد",
+    "welcome": "أهلاً بك",
+    "goodbye": "مع السلامة"
   },
   "nav": {
     "home": "الرئيسية",
@@ -46,7 +71,21 @@
     "signIn": "دخول",
     "signUp": "إنشاء حساب",
     "menu": "القائمة",
-    "browseInfo": "تصفّح الإعلانات الموثّقة، وسياق التسعير العادل، وفرص الاستثمار."
+    "browseInfo": "تصفّح الإعلانات الموثّقة، وسياق التسعير العادل، وفرص الاستثمار.",
+    "about": "من نحن",
+    "contact": "تواصل معنا",
+    "terms": "الشروط والأحكام",
+    "privacy": "سياسة الخصوصية",
+    "agencies": "الوكالات",
+    "developers": "المطوّرين",
+    "cities": "المدن",
+    "myProfile": "ملفي الشخصي",
+    "mySettings": "إعداداتي",
+    "mySubscription": "اشتراكي",
+    "sellerDashboard": "لوحة البائع",
+    "adminPanel": "لوحة الإدارة",
+    "notifications": "الإشعارات",
+    "messages": "الرسائل"
   },
   "roleSwitch": {
     "buyer": "مشتري",
@@ -58,6 +97,8 @@
     "tagline": "اعرف كل شيء قبل أن تشتري",
     "subtitle": "بوابة العقار الموثوق في العراق — تقييم عادل، بائعون موثّقون، وفرص استثمار حقيقية.",
     "hero": {
+      "title": "اعرف كل شيء قبل أن تشتري",
+      "subtitle": "أذكى سوق عقاري في العراق",
       "city": "المدينة",
       "area": "المنطقة",
       "type": "نوع العقار",
@@ -67,37 +108,72 @@
       "anyType": "أيّ نوع",
       "anyBudget": "بدون حد",
       "search": "بحث",
+      "searchPlaceholder": "اكتب ما تبحث عنه... مثال: شقة في إربيل تحت 150 ألف",
       "buyHouse": "شراء منزل",
       "buyLand": "شراء أرض",
       "investmentDeals": "فرص استثمار",
-      "commercial": "تجاري"
+      "commercial": "تجاري",
+      "smartSearch": "بحث ذكي",
+      "smartSearchDesc": "اكتب ما تحتاجه وسنجده لك"
     },
     "stats": {
       "verifiedListings": "إعلانات موثّقة",
       "citiesCovered": "مدن مغطّاة",
       "activeBuyers": "مشترٍ نشط",
-      "dealsClosed": "صفقة منجزة"
+      "dealsClosed": "صفقة منجزة",
+      "verifiedSellers": "بائع موثّق",
+      "avgResponseTime": "متوسط وقت الاستجابة",
+      "propertiesListed": "عقار مُدرج",
+      "userSatisfaction": "رضا المستخدمين"
     },
     "featured": {
       "title": "عقارات مميّزة",
-      "subtitle": "أحدث العقارات الموثّقة المختارة بعناية"
+      "subtitle": "أحدث العقارات الموثّقة المختارة بعناية",
+      "viewAll": "عرض كل العقارات"
     },
     "investment": {
       "title": "فرص استثمار قوية",
-      "subtitle": "أسعار أقل من السوق وعوائد متوقّعة عالية"
+      "subtitle": "أسعار أقل من السوق وعوائد متوقّعة عالية",
+      "viewAll": "عرض كل الفرص"
     },
     "trust": {
       "title": "لماذا تثق بنا",
-      "verified": { "title": "بائعون موثّقون", "desc": "نتحقّق من هوية كل بائع ومستنداته قبل النشر." },
-      "fairPrice": { "title": "تقدير عادل للسعر", "desc": "نموذج تسعير مبني على بيانات السوق الحقيقية." },
-      "ownership": { "title": "ثقة في الملكية", "desc": "مراجعة الملكية والوضع القانوني لكل عقار." },
-      "intelligence": { "title": "ذكاء سوقي", "desc": "بيانات المنطقة، السلامة، والخدمات في مكان واحد." }
+      "subtitle": "نحن نبني الثقة في سوق العقارات العراقية",
+      "verified": {
+        "title": "بائعون موثّقون",
+        "desc": "نتحقّق من هوية كل بائع ومستنداته قبل النشر.",
+        "feature": "تحقق من الهوية والمستندات"
+      },
+      "fairPrice": {
+        "title": "تقدير عادل للسعر",
+        "desc": "نموذج تسعير مبني على بيانات السوق الحقيقية.",
+        "feature": "تحليل السوق بالذكاء الاصطناعي"
+      },
+      "ownership": {
+        "title": "ثقة في الملكية",
+        "desc": "مراجعة الملكية والوضع القانوني لكل عقار.",
+        "feature": "مراجعة قانونية شاملة"
+      },
+      "intelligence": {
+        "title": "ذكاء سوقي",
+        "desc": "بيانات المنطقة، السلامة، والخدمات في مكان واحد.",
+        "feature": "معلومات شاملة عن المنطقة"
+      }
     },
     "cta": {
       "title": "ابدأ رحلتك بثقة",
       "subtitle": "تصفّح آلاف العقارات الموثّقة في عموم العراق",
       "browse": "تصفّح العقارات",
       "list": "سجّل عقارك"
+    },
+    "cities": {
+      "title": "المدن الرئيسية",
+      "subtitle": "استكشف العقارات في أحياء محددة",
+      "viewAll": "عرض كل المدن"
+    },
+    "recentActivity": {
+      "title": "النشاط الأخير",
+      "subtitle": "أحدث العقارات المضافة"
     }
   },
   "property": {
@@ -131,14 +207,31 @@
       "office": "مكتب",
       "shop": "محل"
     },
+    "status": {
+      "active": "نشط",
+      "pending": "قيد الانتظار",
+      "sold": "مباع",
+      "expired": "منتهي"
+    },
+    "condition": {
+      "new": "جديد",
+      "good": "جيد",
+      "fair": "مقبول",
+      "needsWork": "يحتاج صيانة"
+    },
     "actions": {
       "contactSeller": "اتصل بالبائع",
       "whatsapp": "واتساب",
+      "call": "اتصال",
       "save": "حفظ",
       "saved": "محفوظ",
       "makeOffer": "تقديم عرض",
       "requestInspection": "طلب معاينة",
-      "share": "مشاركة"
+      "share": "مشاركة",
+      "compare": "مقارنة",
+      "viewOnMap": "عرض على الخريطة",
+      "calculateMortgage": "حساب الرهن",
+      "getDirections": "احصل على الاتجاهات"
     },
     "details": {
       "overview": "نظرة عامة",
@@ -154,9 +247,31 @@
       "city": "المدينة",
       "district": "المنطقة",
       "seller": "البائع",
-      "listed": "تاريخ النشر"
+      "listed": "تاريخ النشر",
+      "updated": "آخر تحديث",
+      "views": "المشاهدات",
+      "inquiries": "الاستفسارات",
+      "age": "عمر العقار",
+      "floor": "الطابق",
+      "totalFloors": "عدد الطوابق",
+      "parking": "موقف سيارات",
+      "furnished": "مفروش",
+      "description": "الوصف",
+      "features": "المميزات",
+      "amenities": "المرافق"
     },
-    "risk": { "low": "منخفض", "medium": "متوسط", "high": "مرتفع" }
+    "risk": {
+      "low": "منخفض",
+      "medium": "متوسط",
+      "high": "مرتفع",
+      "unknown": "غير معروف"
+    },
+    "verification": {
+      "title": "مستوى التوثيق",
+      "verified": "موثّق",
+      "premium": "مميّز",
+      "basic": "أساسي"
+    }
   },
   "buy": {
     "title": "شراء عقار",
@@ -168,7 +283,20 @@
     "priceHigh": "السعر: من الأعلى",
     "investmentScore": "درجة الاستثمار",
     "verified": "موثّق فقط",
-    "noListings": "لا توجد عقارات مطابقة"
+    "noListings": "لا توجد عقارات مطابقة",
+    "clearFilters": "مسح الفلاتر",
+    "resultsCount": "نتائج",
+    "perPage": "لكل صفحة",
+    "showingResults": "عرض النتائج",
+    "sortOptions": {
+      "newest": "الأحدث",
+      "priceAsc": "السعر: تصاعدي",
+      "priceDesc": "السعر: تنازلي",
+      "investmentScore": "درجة الاستثمار",
+      "verifiedFirst": "الموثّق أولاً",
+      "mostViewed": "الأكثر مشاهدة",
+      "mostInquired": "الأكثر استفساراً"
+    }
   },
   "investment": {
     "title": "فرص استثمار",
@@ -176,12 +304,20 @@
     "score": "درجة الاستثمار",
     "discount": "أقل بـ",
     "growth": "النموّ المتوقّع",
-    "noDeals": "لا توجد فرص حالياً"
+    "noDeals": "لا توجد فرص حالياً",
+    "topPicks": "أفضل الاختيارات",
+    "undervaluedProperties": "عقارات أقل من القيمة",
+    "highReturnPotential": "عائد استثمار عالي",
+    "growthAreas": "مناطق النمو"
   },
   "map": {
     "title": "بحث الخريطة",
     "subtitle": "استكشف العقارات على الخريطة",
-    "comingSoon": "ميزة الخريطة التفاعلية قادمة قريباً"
+    "comingSoon": "ميزة الخريطة التفاعلية قادمة قريباً",
+    "searchThisArea": "بحث في هذه المنطقة",
+    "clearMap": "مسح الخريطة",
+    "viewList": "عرض القائمة",
+    "viewMap": "عرض الخريطة"
   },
   "market": {
     "title": "أسعار السوق",
@@ -190,19 +326,30 @@
     "type": "النوع",
     "median": "متوسّط السعر/م²",
     "yoy": "التغيّر السنوي",
-    "samples": "عدد العيّنات"
+    "samples": "عدد العيّنات",
+    "priceTrend": "اتجاه السعر",
+    "marketAnalysis": "تحليل السوق",
+    "historicalData": "البيانات التاريخية"
   },
   "sellers": {
     "title": "البائعون الموثّقون",
     "subtitle": "بائعون مرّوا بفحص الهوية والمستندات",
     "listings": "إعلان",
-    "view": "عرض الإعلانات"
+    "view": "عرض الإعلانات",
+    "contact": "تواصل",
+    "responseRate": "معدل الاستجابة",
+    "avgResponseTime": "متوسط وقت الاستجابة",
+    "memberSince": "عضو منذ",
+    "totalListings": "إجمالي الإعلانات",
+    "activeListings": "الإعلانات النشطة"
   },
   "favorites": {
     "title": "المفضّلة",
     "subtitle": "عقاراتك المحفوظة",
     "empty": "لم تحفظ أيّ عقار بعد",
-    "browse": "تصفّح العقارات"
+    "browse": "تصفّح العقارات",
+    "clearAll": "مسح الكل",
+    "shareList": "مشاركة القائمة"
   },
   "buyerDashboard": {
     "title": "لوحتي",
@@ -225,7 +372,10 @@
     "subscription": "الاشتراك",
     "profileDesc": "أدر هويّتك العامة ومعلومات الاتصال.",
     "settingsDesc": "تحكم باللغة والمدينة وتفضيلات الإشعارات.",
-    "subscriptionDesc": "اختر الخطة المناسبة لمرحلة نموّك."
+    "subscriptionDesc": "اختر الخطة المناسبة لمرحلة نموّك.",
+    "recentActivity": "النشاط الأخير",
+    "upcomingVisits": "زيارات قادمة",
+    "newMatches": "تطابقات جديدة"
   },
   "dashboard": {
     "title": "لوحتي",
@@ -238,21 +388,29 @@
       "saved": "المحفوظات",
       "offers": "العروض",
       "viewed": "المُشاهَد",
-      "alerts": "التنبيهات"
+      "alerts": "التنبيهات",
+      "searches": "عمليات البحث",
+      "inquiries": "الاستفسارات"
     },
     "seller": {
       "title": "لوحة البائع",
       "listings": "إعلاناتي",
       "leads": "العملاء المحتملون",
       "verification": "حالة التوثيق",
-      "newListing": "إعلان جديد"
+      "newListing": "إعلان جديد",
+      "messages": "الرسائل",
+      "analytics": "الإحصائيات",
+      "performance": "الأداء"
     },
     "admin": {
       "title": "لوحة الإدارة",
       "moderation": "إدارة الإعلانات",
       "verifications": "طلبات التوثيق",
       "reports": "البلاغات",
-      "analytics": "الإحصائيات"
+      "analytics": "الإحصائيات",
+      "users": "المستخدمين",
+      "revenue": "الإيرادات",
+      "support": "الدعم"
     },
     "becomeSeller": "أصبح بائعاً",
     "becomeSellerDesc": "فعّل وصول البائع، وانشر الإعلانات، وأدر العملاء المحتملين، وافتح أدوات الوكالات.",
@@ -304,7 +462,10 @@
     "comingSoon": "قريباً",
     "comingSoonDesc": "هذا القسم قيد الإنشاء. تابعنا قريباً.",
     "subscription": "خطة الاشتراك",
-    "subscriptionDesc": "اختر إعلاناً مميّزاً أو وكالة موثّقة أو ظهوراً مميّزاً للمستثمرين."
+    "subscriptionDesc": "اختر إعلاناً مميّزاً أو وكالة موثّقة أو ظهوراً مميّزاً للمستثمرين.",
+    "pricingTips": "نصائح التسعير",
+    "marketInsights": "رؤى السوق",
+    "conversionTips": "نصائح التحويل"
   },
   "account": {
     "profileTitle": "الملف الشخصي",
@@ -334,7 +495,11 @@
     "choosePlan": "اختيار الخطة",
     "planUpdated": "تم حفظ تفضيل الاشتراك",
     "profileSaved": "تم حفظ الملف",
-    "settingsSaved": "تم حفظ الإعدادات"
+    "settingsSaved": "تم حفظ الإعدادات",
+    "notifications": "الإشعارات",
+    "privacy": "الخصوصية",
+    "security": "الأمان",
+    "deleteAccount": "حذف الحساب"
   },
   "auth": {
     "signInTitle": "أهلاً بعودتك",
@@ -353,20 +518,28 @@
     "forgot": "نسيت كلمة المرور؟",
     "reset": "إرسال رابط الاسترداد",
     "resetTitle": "استرداد كلمة المرور",
-    "resetSent": "إذا كان البريد مسجّلاً، ستصلك رسالة الاسترداد"
+    "resetSent": "إذا كان البريد مسجّلاً، ستصلك رسالة الاسترداد",
+    "welcomeBack": "مرحباً بعودتك",
+    "createAccount": "إنشاء حساب جديد",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟ سجل دخولك"
   },
   "offer": {
     "title": "تقديم عرض",
     "price": "سعر العرض",
     "message": "رسالتك للبائع",
     "submit": "إرسال العرض",
-    "success": "تم إرسال العرض بنجاح"
+    "success": "تم إرسال العرض بنجاح",
+    "yourOffer": "عرضك",
+    "sellerPrice": "سعر البائع",
+    "negotiate": "تفاوض"
   },
   "inspection": {
     "title": "طلب معاينة",
     "preferredAt": "الوقت المفضّل",
     "message": "ملاحظات",
-    "success": "تم إرسال طلب المعاينة"
+    "success": "تم إرسال طلب المعاينة",
+    "schedule": "جدولة المعاينة",
+    "requestSent": "تم إرسال الطلب"
   },
   "listing": {
     "create": "إنشاء إعلان",
@@ -383,7 +556,11 @@
     "imageUrl": "رابط الصورة",
     "addImage": "إضافة صورة",
     "publish": "نشر الإعلان",
-    "successCreated": "تم نشر الإعلان"
+    "successCreated": "تم نشر الإعلان",
+    "draft": "مسودة",
+    "published": "منشور",
+    "paused": "متوقف مؤقتاً",
+    "sold": "مباع"
   },
   "verification": {
     "title": "توثيق الحساب",
@@ -394,6 +571,48 @@
     "submit": "إرسال طلب التوثيق",
     "pending": "قيد المراجعة",
     "approved": "تم التوثيق",
-    "rejected": "مرفوض"
+    "rejected": "مرفوض",
+    "getVerified": "احصل على التوثيق",
+    "verificationLevel": "مستوى التوثيق"
+  },
+  "ai": {
+    "fairPrice": "السعر العادل",
+    "fairPriceEstimate": "تقدير السعر العادل",
+    "confidence": "الثقة",
+    "high": "عالية",
+    "medium": "متوسطة",
+    "low": "منخفضة",
+    "investmentScore": "درجة الاستثمار",
+    "excellent": "ممتاز",
+    "strong": "قوي",
+    "average": "متوسط",
+    "weak": "ضعيف",
+    "avoid": "تجنب",
+    "lowRisk": "مخاطر منخفضة",
+    "mediumRisk": "مخاطر متوسطة",
+    "highRisk": "مخاطر عالية",
+    "riskAssessment": "تقييم المخاطر",
+    "riskLowDesc": "يبدو الإعلان شرعياً مع إشارات ثقة طبيعية.",
+    "riskMediumDesc": "بعض الإشارات تحتاج تحقق قبل الالتزام.",
+    "riskHighDesc": "تم اكتشاف عدة إشارات. يُنصح بمراجعة يدوية.",
+    "hot": "حار",
+    "warm": "دافئ",
+    "cold": "بارد",
+    "conversion": "التحويل",
+    "conversionProbability": "احتمال التحويل",
+    "estClose": "الإغلاق المتوقع",
+    "priority": "الأولوية",
+    "smartSearch": "بحث ذكي",
+    "aiDetected": "مرشحات مكتشفة بالذكاء الاصطناعي",
+    "suggestedSearches": "عمليات بحث مقترحة",
+    "recentSearches": "عمليات البحث الأخيرة",
+    "similarDeals": "صفقات مشابهة قريبة",
+    "listingPrice": "سعر الإعلان",
+    "vsMarket": "مقارنة بسوق",
+    "underpriced": "أقل من قيمة السوق - صفقة محتملة",
+    "overpriced": "أعلى من قيمة السوق - مساحة للتفاوض",
+    "fairlyPriced": "بسعر عادل مقارنة بالسوق",
+    "estimatedValue": "القيمة التقديرية",
+    "lastUpdated": "آخر تحديث"
   }
 }
