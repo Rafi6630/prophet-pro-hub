@@ -68,8 +68,12 @@ export function RolesProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useRoles() {
-  const ctx = useContext(RolesContext);
-  if (!ctx) throw new Error("useRoles must be used inside <RolesProvider>");
-  return ctx;
+const SAFE_DEFAULT: RolesState = {
+  roles: [], loading: true, isAdmin: false,
+  isSeller: false, isBuyer: false,
+  refetchRoles: async () => {},
+};
+
+export function useRoles(): RolesState {
+  return useContext(RolesContext) ?? SAFE_DEFAULT;
 }

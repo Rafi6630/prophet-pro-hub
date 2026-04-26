@@ -53,8 +53,11 @@ export function ActiveRoleProvider({ children }: { children: React.ReactNode }) 
   );
 }
 
+const SAFE_DEFAULT_ACTIVE = {
+  activeRole: "buyer" as ActiveRole,
+  switchRole: (_role: ActiveRole) => {},
+};
+
 export function useActiveRoleCtx() {
-  const ctx = useContext(ActiveRoleContext);
-  if (!ctx) throw new Error("useActiveRoleCtx must be used inside <ActiveRoleProvider>");
-  return ctx;
+  return useContext(ActiveRoleContext) ?? SAFE_DEFAULT_ACTIVE;
 }
