@@ -2,6 +2,7 @@ import { Phone, MessageCircle, Archive, Building2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { LeadStatus } from "@/hooks/useLeads";
+import { SellerReplyComposer } from "@/components/ai/SellerReplyComposer";
 
 export interface LeadCardLead {
   id: string;
@@ -20,6 +21,8 @@ interface LeadCardProps {
   onWhatsapp: (id: string) => void;
   onCall: (id: string) => void;
   onArchive: (id: string) => void;
+  sellerName?: string;
+  priceUsd?: number;
 }
 
 const STATUS_OPTIONS: { value: LeadStatus; label: string }[] = [
@@ -74,6 +77,8 @@ export default function LeadCard({
   onWhatsapp,
   onCall,
   onArchive,
+  sellerName,
+  priceUsd,
 }: LeadCardProps) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm flex flex-col gap-3">
@@ -158,6 +163,22 @@ export default function LeadCard({
           <Archive className="h-3.5 w-3.5" />
         </Button>
       </div>
+
+      {/* AI Reply Composer */}
+      <SellerReplyComposer
+        inquiry={{
+          buyerName: lead.buyerName,
+          message: lead.message,
+          source: lead.source,
+          propertyTitle: lead.propertyTitle,
+          sellerName,
+          priceUsd,
+        }}
+        onSend={(text) => {
+          const encoded = encodeURIComponent(text);
+          window.open(`https://wa.me/${lead.phone.replace(/\D/g, "")}?text=${encoded}`, "_blank");
+        }}
+      />
     </div>
   );
 }
