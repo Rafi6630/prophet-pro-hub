@@ -1,5 +1,6 @@
 export interface ParsedSearchQuery {
   city?: string;
+  neighborhood?: string;
   propertyType?: string;
   budget?: {
     min?: number;
@@ -28,38 +29,127 @@ export interface ParsedSearchQuery {
 
 const CITY_ALIASES: Record<string, string> = {
   baghdad: "Baghdad",
+  بغداد: "Baghdad",
   erbil: "Erbil",
+  اربيل: "Erbil",
+  إربيل: "Erbil",
+  hewler: "Erbil",
   basra: "Basra",
+  البصرة: "Basra",
   mosul: "Mosul",
+  الموصل: "Mosul",
   najaf: "Najaf",
+  النجف: "Najaf",
   karbala: "Karbala",
+  كربلاء: "Karbala",
   sulaymaniyah: "Sulaimaniyah",
+  slemani: "Sulaimaniyah",
+  السليمانية: "Sulaimaniyah",
   kirkuk: "Kirkuk",
-  Duhok: "Duhok",
-  " Duhok": "Duhok",
+  كركوك: "Kirkuk",
+  duhok: "Duhok",
+  دهوك: "Duhok",
+  amarah: "Amarah",
+  العمارة: "Amarah",
+  nasiriyah: "Nasiriyah",
+  الناصرية: "Nasiriyah",
+  hillah: "Hillah",
+  الحلة: "Hillah",
+  ramadi: "Ramadi",
+  الرمادي: "Ramadi",
+  fallujah: "Fallujah",
+  الفلوجة: "Fallujah",
+};
+
+// ── Neighborhoods / districts ────────────────────────────────────────────────
+export const NEIGHBORHOOD_ALIASES: Record<string, string> = {
+  // Baghdad
+  mansour: "Mansour",
+  المنصور: "Mansour",
+  karrada: "Karrada",
+  الكرادة: "Karrada",
+  "al-karrada": "Karrada",
+  jadiriyah: "Jadiriyah",
+  الجادرية: "Jadiriyah",
+  "al-jadiriyah": "Jadiriyah",
+  "camp sarah": "Camp Sarah",
+  saidiyah: "Saidiyah",
+  السيدية: "Saidiyah",
+  "al-saidiyah": "Saidiyah",
+  "new baghdad": "New Baghdad",
+  "بغداد الجديدة": "New Baghdad",
+  adhamiyah: "Adhamiyah",
+  الأعظمية: "Adhamiyah",
+  kadhimiya: "Kadhimiya",
+  الكاظمية: "Kadhimiya",
+  zayouna: "Zayouna",
+  الزيونة: "Zayouna",
+  "dora": "Dora",
+  الدورة: "Dora",
+  // Erbil
+  ankawa: "Ankawa",
+  عنكاوا: "Ankawa",
+  "dream city": "Dream City",
+  ainkawa: "Ankawa",
+  "italian village": "Italian Village",
+  // Basra
+  "al-ashar": "Ashar",
+  العشار: "Ashar",
+  "al-andalus": "Andalus",
+  الأندلس: "Andalus",
+  // Generic
+  "city center": "City Center",
+  "وسط المدينة": "City Center",
+  downtown: "City Center",
 };
 
 const PROPERTY_TYPE_ALIASES: Record<string, string> = {
   villa: "villa",
+  فيلا: "villa",
+  فلل: "villa",
   house: "house",
+  منزل: "house",
+  بيت: "house",
+  دار: "house",
   apartment: "apartment",
+  شقة: "apartment",
   flat: "apartment",
   land: "land",
+  أرض: "land",
+  قطعة: "land",
   plot: "land",
   commercial: "commercial",
+  تجاري: "commercial",
   shop: "commercial",
+  محل: "commercial",
   office: "commercial",
+  مكتب: "commercial",
   warehouse: "industrial",
   industrial: "industrial",
+  مستودع: "industrial",
+  chalet: "chalet",
+  شاليه: "chalet",
+  farm: "farm",
+  مزرعة: "farm",
 };
 
 const FEATURE_KEYWORDS: Record<string, string[]> = {
-  furnished: ["furnished", "مفروش", "furnished", "equipped"],
-  parking: ["parking", "garage", "car", "موقف", "parking"],
-  garden: ["garden", "yard", "outdoor", "حديقة", "garden", "lawn"],
-  pool: ["pool", "swimming", "مسبح", "pool"],
-  security: ["security", "guarded", "secure", "أمن", "security"],
-  elevator: ["elevator", "lift", "مصعد", "elevator"],
+  furnished: ["furnished", "مفروش", "equipped", "semi-furnished", "نصف مفروش"],
+  parking: ["parking", "garage", "car port", "موقف", "كراج", "موقف سيارات"],
+  garden: ["garden", "yard", "outdoor", "حديقة", "lawn", "backyard", "حوش"],
+  pool: ["pool", "swimming pool", "مسبح", "حوض سباحة"],
+  security: ["security", "guarded", "secure", "gated", "أمن", "مسوّر", "حراسة", "كمبوند"],
+  elevator: ["elevator", "lift", "مصعد"],
+  balcony: ["balcony", "terrace", "شرفة", "بلكون"],
+  gym: ["gym", "fitness", "صالة رياضية", "نادي رياضي"],
+  generator: ["generator", "مولد", "مولد كهربائي"],
+  solar: ["solar", "solar panels", "طاقة شمسية", "ألواح شمسية"],
+  water_tank: ["water tank", "خزان ماء", "خزان"],
+  maid_room: ["maid room", "maid's room", "غرفة خادمة", "غرفة شغالة"],
+  rooftop: ["rooftop", "roof", "سطح", "روف تيراس"],
+  smart_home: ["smart home", "smart", "منزل ذكي", "ذكي"],
+  sea_view: ["sea view", "river view", "waterfront", "إطلالة نهر", "إطلالة بحر", "كورنيش"],
+  new_construction: ["new", "brand new", "under construction", "جديد", "قيد الإنشاء", "حديث البناء"],
 };
 
 const AREA_KEYWORDS: Record<string, string> = {
@@ -75,11 +165,17 @@ const AREA_KEYWORDS: Record<string, string> = {
 };
 
 const BUDGET_PATTERNS = [
-  /(?:under|below|less than|max|up to)\s*(\d+)\s*(k|K|m|M)?/i,
-  /(\d+)\s*(k|K|m|M)\s*(?:or less|maximum|under)?/i,
-  /(?:budget|price|price range)\s*(?:of|is|:)?\s*(\d+)\s*(?:k|K|m|M)?/i,
-  /(\d+)\s*-\s*(\d+)\s*(?:k|K|m|M)?/i,
-  /between\s*(\d+)\s*(?:and)?\s*(\d+)/i,
+  // "under 150k", "below $200k", "less than 500000"
+  /(?:under|below|less than|max|up to|أقل من|بحد أقصى)\s*\$?\s*(\d[\d,]*)\s*(k|K|m|M|million|مليون|ألف)?/i,
+  // "100k or less", "200K maximum"
+  /\$?\s*(\d[\d,]*)\s*(k|K|m|M|million|مليون|ألف)\s*(?:or less|maximum|under|أو أقل)?/i,
+  // "budget of 150000"
+  /(?:budget|price|price range|ميزانية|سعر)\s*(?:of|is|:)?\s*\$?\s*(\d[\d,]*)\s*(?:k|K|m|M|million|مليون|ألف)?/i,
+  // range "100k - 200k", "100,000 to 200,000"
+  /\$?\s*(\d[\d,]*)\s*(k|K|m|M|million|مليون|ألف)?\s*(?:to|-|–|حتى)\s*\$?\s*(\d[\d,]*)\s*(k|K|m|M|million|مليون|ألف)?/i,
+  // "between 100k and 200k"
+  /between\s*\$?\s*(\d[\d,]*)\s*(?:and|to)?\s*\$?\s*(\d[\d,]*)/i,
+  // Arabic number-only "١٥٠" (handled via normalization below)
 ];
 
 const SIZE_PATTERNS = [
@@ -89,8 +185,27 @@ const SIZE_PATTERNS = [
   /(\d+)\s*(?:bedroom|bed|br)/i,
 ];
 
+// Normalize Arabic-Indic numerals and common abbreviations before parsing
+function normalizeQuery(query: string): string {
+  return query
+    .replace(/[٠١٢٣٤٥٦٧٨٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)))
+    .replace(/,/g, "")   // remove thousand separators
+    .trim()
+    .toLowerCase();
+}
+
+function extractNeighborhood(query: string): string | undefined {
+  const names = Object.keys(NEIGHBORHOOD_ALIASES);
+  for (const name of names) {
+    if (query.includes(name)) {
+      return NEIGHBORHOOD_ALIASES[name];
+    }
+  }
+  return undefined;
+}
+
 export function parseSearchQuery(query: string): ParsedSearchQuery {
-  const normalizedQuery = query.trim().toLowerCase();
+  const normalizedQuery = normalizeQuery(query);
   const result: ParsedSearchQuery = {
     keywords: [],
     features: [],
@@ -101,11 +216,11 @@ export function parseSearchQuery(query: string): ParsedSearchQuery {
     parking: false,
     garden: false,
     near: [],
-    currency: "USD",
     rawQuery: query,
   };
 
   result.city = extractCity(normalizedQuery);
+  result.neighborhood = extractNeighborhood(normalizedQuery);
   result.propertyType = extractPropertyType(normalizedQuery);
   result.budget = extractBudget(normalizedQuery);
   result.bedrooms = extractBedrooms(normalizedQuery);
@@ -117,6 +232,11 @@ export function parseSearchQuery(query: string): ParsedSearchQuery {
   result.investment = checkInvestmentQuery(normalizedQuery);
   result.urgent = checkUrgentQuery(normalizedQuery);
   result.sortBy = extractSortPreference(normalizedQuery);
+
+  // Convenience booleans from features array
+  result.furnished = result.features.includes("furnished");
+  result.parking   = result.features.includes("parking");
+  result.garden    = result.features.includes("garden");
 
   result.keywords = extractKeywords(normalizedQuery);
 
@@ -146,44 +266,51 @@ function extractPropertyType(query: string): string | undefined {
 function extractBudget(query: string): ParsedSearchQuery["budget"] | undefined {
   const budget: { min?: number; max?: number; currency: string } = { currency: "USD" };
 
-  for (const pattern of BUDGET_PATTERNS) {
-    const match = query.match(pattern);
-    if (match) {
-      if (match.length === 3 && match[2]) {
-        budget.min = parseAmount(match[1], match[2]);
-        budget.max = parseAmount(match[2], match[2]);
-      } else if (match[1]) {
-        const amount = parseAmount(match[1], match[1]);
-        const isUnder = query.includes("under") || query.includes("below") || query.includes("max");
-        if (isUnder) {
-          budget.max = amount;
-        } else {
-          budget.min = amount;
+  const isUnderKeyword = /under|below|less than|max|up to|أقل من|بحد أقصى/.test(query);
+
+  // Range pattern: "100k - 200k" or "100,000 to 200,000"
+  const rangePattern = /\$?\s*(\d+)\s*(k|m|million|مليون|ألف)?\s*(?:to|-|–|حتى)\s*\$?\s*(\d+)\s*(k|m|million|مليون|ألف)?/i;
+  const rangeMatch = query.match(rangePattern);
+  if (rangeMatch) {
+    budget.min = parseAmount(rangeMatch[1], rangeMatch[2] ?? "");
+    budget.max = parseAmount(rangeMatch[3], rangeMatch[4] ?? "");
+  } else {
+    for (const pattern of BUDGET_PATTERNS) {
+      const match = query.match(pattern);
+      if (match && match[1]) {
+        const amount = parseAmount(match[1].replace(/,/g, ""), match[2] ?? "");
+        if (amount > 0) {
+          if (isUnderKeyword) {
+            budget.max = amount;
+          } else {
+            budget.min = amount;
+          }
+          break;
         }
       }
-      break;
     }
   }
 
-  const currencyMatch = query.match(/(iqd|usd|dollar|dinar)/i);
+  // Currency detection
+  const currencyMatch = query.match(/(iqd|usd|dollar|دولار|دينار|دينار عراقي)/i);
   if (currencyMatch) {
-    budget.currency = currencyMatch[1].toLowerCase().startsWith("iqd") ? "IQD" : "USD";
+    const c = currencyMatch[1].toLowerCase();
+    budget.currency = c.startsWith("iqd") || c.includes("دينار") ? "IQD" : "USD";
   }
 
-  if (budget.min || budget.max) {
+  if (budget.min !== undefined || budget.max !== undefined) {
     return budget;
   }
   return undefined;
 }
 
 function parseAmount(value: string, suffix: string): number {
-  const num = parseInt(value, 10);
-  if (suffix.toLowerCase() === "k" || suffix === "K") {
-    return num * 1000;
-  }
-  if (suffix.toLowerCase() === "m" || suffix === "M") {
-    return num * 1000000;
-  }
+  const num = parseInt(value.replace(/,/g, ""), 10);
+  if (isNaN(num)) return 0;
+  const s = suffix.toLowerCase();
+  if (s === "k") return num * 1000;
+  if (s === "m" || s === "million" || s === "مليون") return num * 1_000_000;
+  if (s === "ألف") return num * 1000;
   return num;
 }
 
@@ -293,17 +420,15 @@ function extractNearbyAreas(query: string): string[] {
 }
 
 function checkVerifiedOnly(query: string): boolean {
-  return query.includes("verified") || query.includes("trusted") || query.includes("official");
+  return /verified|trusted|official|موثّق|موثق|رسمي/.test(query);
 }
 
 function checkInvestmentQuery(query: string): boolean {
-  return query.includes("investment") || query.includes("invest") || query.includes("ROI") || 
-         query.includes("rental") || query.includes("returns");
+  return /investment|invest|roi|rental|returns|استثمار|استثماري|عائد/.test(query);
 }
 
 function checkUrgentQuery(query: string): boolean {
-  return query.includes("urgent") || query.includes("immediate") || query.includes("asap") ||
-         query.includes("fast") || query.includes("quick");
+  return /urgent|immediate|asap|fast|quick|عاجل|سريع/.test(query);
 }
 
 function extractSortPreference(query: string): "price" | "date" | "size" | "score" | undefined {
@@ -343,6 +468,9 @@ export function buildFilterFromParsedQuery(parsed: ParsedSearchQuery): Record<st
 
   if (parsed.city) {
     filters.city = parsed.city;
+  }
+  if (parsed.neighborhood) {
+    filters.neighborhood = parsed.neighborhood;
   }
   if (parsed.propertyType) {
     filters.propertyType = parsed.propertyType;
