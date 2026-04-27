@@ -5,6 +5,7 @@ import PageMeta from "@/components/common/PageMeta";
 import { propertyIntelligence } from "@/data/propertyIntelligence";
 import { getAreaGrowthOutlook } from "@/lib/areaGrowth";
 import { getFraudRiskLevel } from "@/lib/fraudRisk";
+import { detectFraudRisk } from "@/lib/ai/fraudRisk";
 import { publicProperties } from "@/data/sampleProperties";
 import { enrichProperty } from "@/lib/propertyMetrics";
 import { toggleFavorite } from "@/lib/favorites";
@@ -15,9 +16,14 @@ import { OwnershipStatus } from "@/components/OwnershipStatus";
 import { StickyMobileContact } from "@/components/StickyMobileContact";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { WhatsAppCTA } from "@/components/WhatsAppCTA";
+import { FraudExplainerPanel } from "@/components/ai/FraudExplainerPanel";
+import { AIDealCard } from "@/components/ai/AIDealCard";
+import { MediaQualityScore } from "@/components/ai/MediaQualityScore";
+import { useAuth } from "@/hooks/useAuth";
 
 export function PropertyDetailPage() {
   const { slug } = useParams();
+  const { user } = useAuth();
   const property = useMemo(
     () => publicProperties.map(enrichProperty).find((item) => item.slug === slug),
     [slug]
@@ -32,6 +38,35 @@ export function PropertyDetailPage() {
         hasLegalIssues: property.hasLegalIssues,
       })
     : undefined;
+
+  const detailedFraudResult = useMemo(() => {
+    if (!property) return undefined;
+    return detectFraudRisk({
+      price: property.priceUsd,
+      pricePerSqm: property.pricePerSqm,
+      marketAverage: property.marketAverage,
+      sellerVerified: property.seller.verified,
+      sellerListingsCount: property.seller.listingsCount ?? 1,
+      sellerAccountAge: property.seller.accountAgeDays ?? 30,
+      hasAllDocuments: !property.hasMissingDocuments,
+      imagesCount: (property.gallery?.length ?? 0) + 1,
+      descriptionLength: property.description?.length ?? 0,
+      phoneNumbers: [property.seller.phone].filter(Boolean),
+      hasDuplicateImages: false,
+      propertyType: property.propertyType?.labelEn ?? "",
+      areaDemand: property.areaDemand,
+      daysOnMarket: property.daysOnMarket ?? 0,
+      priceHistory: property.priceHistory ?? [property.priceUsd],
+      title: property.title,
+      description: property.description ?? "",
+    });
+  }, [property]);
+
+  const allImages = useMemo(() => {
+    if (!property) return [];
+    return [property.image, ...(property.gallery ?? [])].filter(Boolean);
+  }, [property]);
+
   const [activeImage, setActiveImage] = useState(property?.image ?? "");
 
   useEffect(() => {
@@ -71,6 +106,14 @@ export function PropertyDetailPage() {
               </button>
             ))}
           </div>
+          {/* AI Media Quality Score */}
+          <div className="mt-4">
+            <MediaQualityScore
+              imageUrls={allImages}
+              hasDuplicateImages={false}
+            />
+          </div>
+
           {intelligence ? (
             <div className="mt-4 overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-950">
               <div className="aspect-video">
@@ -200,6 +243,26 @@ export function PropertyDetailPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* AI Fraud Explainer Panel */}
+          {detailedFraudResult && (
+            <FraudExplainerPanel
+              fraudResult={detailedFraudResult}
+              pricePerSqm={property.pricePerSqm}
+              marketAverage={property.marketAverage}
+              priceUsd={property.priceUsd}
+              fairPrice={property.fairPrice}
+            />
+          )}
+
+          {/* AI Deal Analysis with PDF/Excel export */}
+          <AIDealCard
+            propertyId={property.id}
+            isAuthed={!!user}
+            onAuthRequired={() => {}}
+            propertyTitle={property.title}
+            propertyAddress={property.address}
+          />
 
           <Card className="border-white/10 bg-card/70">
             <CardContent className="p-6">
