@@ -77,10 +77,13 @@ export function SmartSearchBar({
   const activeFiltersCount = parsedQuery
     ? [
         parsedQuery.city,
+        parsedQuery.neighborhood,
         parsedQuery.propertyType,
         parsedQuery.bedrooms,
         parsedQuery.budget,
         parsedQuery.features.length > 0,
+        parsedQuery.verifiedOnly,
+        parsedQuery.investment,
       ].filter(Boolean).length
     : 0;
 
@@ -180,7 +183,10 @@ export function SmartSearchBar({
               </p>
               <div className="flex flex-wrap gap-2">
                 {parsedQuery.city && (
-                  <FilterPill label={parsedQuery.city} icon="📍" />
+                  <FilterPill label={parsedQuery.city} icon="🏙️" />
+                )}
+                {parsedQuery.neighborhood && (
+                  <FilterPill label={parsedQuery.neighborhood} icon="📍" />
                 )}
                 {parsedQuery.propertyType && (
                   <FilterPill label={parsedQuery.propertyType} icon="🏠" />
@@ -188,11 +194,26 @@ export function SmartSearchBar({
                 {parsedQuery.bedrooms && (
                   <FilterPill label={`${parsedQuery.bedrooms} bed`} icon="🛏️" />
                 )}
-                {parsedQuery.budget?.max && (
+                {parsedQuery.budget?.min !== undefined && parsedQuery.budget?.max !== undefined && (
+                  <FilterPill
+                    label={`$${(parsedQuery.budget.min / 1000).toFixed(0)}K – $${(parsedQuery.budget.max / 1000).toFixed(0)}K`}
+                    icon="💰"
+                  />
+                )}
+                {parsedQuery.budget?.max !== undefined && parsedQuery.budget?.min === undefined && (
                   <FilterPill label={`under $${(parsedQuery.budget.max / 1000).toFixed(0)}K`} icon="💰" />
                 )}
+                {parsedQuery.budget?.min !== undefined && parsedQuery.budget?.max === undefined && (
+                  <FilterPill label={`from $${(parsedQuery.budget.min / 1000).toFixed(0)}K`} icon="💰" />
+                )}
+                {parsedQuery.features.slice(0, 3).map((f) => (
+                  <FilterPill key={f} label={f} icon="✨" />
+                ))}
                 {parsedQuery.verifiedOnly && (
-                  <FilterPill label="verified" icon="✓" />
+                  <FilterPill label={isRTL ? "موثّق" : "verified"} icon="✓" />
+                )}
+                {parsedQuery.investment && (
+                  <FilterPill label={isRTL ? "استثماري" : "investment"} icon="📈" />
                 )}
               </div>
             </div>

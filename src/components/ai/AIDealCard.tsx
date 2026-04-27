@@ -8,15 +8,20 @@ import {
   Coins,
   CheckCircle2,
   ShieldCheck,
+  FileDown,
+  TableProperties,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDealAnalysis, type DealAnalysisResult, type DealVerdict } from "@/hooks/useDealAnalysis";
 import { useTranslation } from "react-i18next";
+import { downloadDealReportPDF, downloadDealReportXLSX } from "@/lib/exportReport";
 
 interface AIDealCardProps {
   propertyId: string;
   isAuthed: boolean;
   onAuthRequired: () => void;
+  propertyTitle?: string;
+  propertyAddress?: string;
 }
 
 const VERDICT_TONE: Record<DealVerdict, { bg: string; ring: string; icon: typeof CheckCircle2 }> = {
@@ -27,7 +32,7 @@ const VERDICT_TONE: Record<DealVerdict, { bg: string; ring: string; icon: typeof
   avoid:      { bg: "bg-red-50 text-red-900",         ring: "border-red-200",     icon: AlertTriangle },
 };
 
-export function AIDealCard({ propertyId, isAuthed, onAuthRequired }: AIDealCardProps) {
+export function AIDealCard({ propertyId, isAuthed, onAuthRequired, propertyTitle = "Property", propertyAddress }: AIDealCardProps) {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === "ar";
   const { analyze, result, loading, error } = useDealAnalysis();
@@ -40,6 +45,28 @@ export function AIDealCard({ propertyId, isAuthed, onAuthRequired }: AIDealCardP
     }
     setRequested(true);
     await analyze(propertyId);
+  };
+
+  const [exporting, setExporting] = useState<"pdf" | "xlsx" | null>(null);
+
+  const handleExportPDF = async () => {
+    if (!result) return;
+    setExporting("pdf");
+    try {
+      await downloadDealReportPDF(result, { propertyTitle, propertyAddress }, isAr ? "ar" : "en");
+    } finally {
+      setExporting(null);
+    }
+  };
+
+  const handleExportXLSX = async () => {
+    if (!result) return;
+    setExporting("xlsx");
+    try {
+      await downloadDealReportXLSX(result, { propertyTitle, propertyAddress }, isAr ? "ar" : "en");
+    } finally {
+      setExporting(null);
+    }
   };
 
   if (!result) {
@@ -90,10 +117,20 @@ export function AIDealCard({ propertyId, isAuthed, onAuthRequired }: AIDealCardP
     );
   }
 
-  return <AIDealResult data={result} />;
+  return <AIDealResult data={result} onExportPDF={handleExportPDF} onExportXLSX={handleExportXLSX} exporting={exporting} />;
 }
 
-function AIDealResult({ data }: { data: DealAnalysisResult }) {
+function AIDealResult({
+  data,
+  onExportPDF,
+  onExportXLSX,
+  exporting,
+}: {
+  data: DealAnalysisResult;
+  onExportPDF?: () => void;
+  onExportXLSX?: () => void;
+  exporting?: "pdf" | "xlsx" | null;
+}) {
   const { i18n, t } = useTranslation();
   const isAr = i18n.language === "ar";
   const tone = VERDICT_TONE[data.verdict] ?? VERDICT_TONE.neutral;
@@ -172,6 +209,46 @@ function AIDealResult({ data }: { data: DealAnalysisResult }) {
           ))}
         </ul>
       </div>
+
+      {(onExportPDF || onExportXLSX) && (
+        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4">
+          <span className="text-xs text-muted-foreground">
+            {isAr ? "تصدير التقرير:" : "Export report:"}
+          </span>
+          {onExportPDF && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-50"
+              onClick={onExportPDF}
+              disabled={exporting === "pdf"}
+            >
+              {exporting === "pdf" ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <FileDown className="h-3.5 w-3.5 text-red-500" />
+              )}
+              {isAr ? "تنزيل PDF" : "Download PDF"}
+            </Button>
+          )}
+          {onExportXLSX && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-50"
+              onClick={onExportXLSX}
+              disabled={exporting === "xlsx"}
+            >
+              {exporting === "xlsx" ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <TableProperties className="h-3.5 w-3.5 text-emerald-600" />
+              )}
+              {isAr ? "تنزيل Excel" : "Download Excel"}
+            </Button>
+          )}
+        </div>
+      )}
 
       <p className="mt-4 text-[11px] text-muted-foreground">
         {isAr
