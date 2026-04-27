@@ -6,14 +6,13 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useApp } from "@/contexts/AppContext";
 
 const navItems = [
-  { path: "/", label: "Home", labelAr: "الرئيسية" },
-  { path: "/buy", label: "Buy Property", labelAr: "شراء عقار" },
-  { path: "/investment", label: "Investment Deals", labelAr: "فرص استثمارية" },
-  { path: "/map-search", label: "Map Search", labelAr: "بحث بالخريطة" },
-  { path: "/market-prices", label: "Market Prices", labelAr: "أسعار السوق" },
-  { path: "/verified-sellers", label: "Verified Sellers", labelAr: "بائعون موثوقون" },
-  { path: "/favorites", label: "Favorites", labelAr: "المفضلة" },
-  { path: "/dashboard", label: "Dashboard", labelAr: "لوحة التحكم" },
+  { path: "/", label: "Home", labelAr: "الرئيسية", labelKu: "سەرەکی" },
+  { path: "/deal", label: "Buy & Invest", labelAr: "شراء واستثمار", labelKu: "کڕین و وەبەرهێنان" },
+  { path: "/map-search", label: "Map Search", labelAr: "بحث بالخريطة", labelKu: "گەڕان بە نەخشە" },
+  { path: "/market-prices", label: "Market Prices", labelAr: "أسعار السوق", labelKu: "نرخی بازاڕ" },
+  { path: "/verified-sellers", label: "Verified Sellers", labelAr: "بائعون موثوقون", labelKu: "فرۆشیارە پشتڕاستکراوەکان" },
+  { path: "/favorites", label: "Favorites", labelAr: "المفضلة", labelKu: "دڵخوازەکان" },
+  { path: "/dashboard", label: "Dashboard", labelAr: "لوحة التحكم", labelKu: "داشبۆرد" },
 ];
 
 export function Navigation() {
@@ -31,8 +30,11 @@ export function Navigation() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const currentLabel = (item: (typeof navItems)[number]) =>
-    currentLanguage === "ar" ? item.labelAr : item.label;
+  const currentLabel = (item: (typeof navItems)[number]) => {
+    if (currentLanguage === "ar") return item.labelAr;
+    if (currentLanguage === "ku" || currentLanguage === "ckb") return item.labelKu ?? item.label;
+    return item.label;
+  };
 
   const renderNavButton = (item: (typeof navItems)[number], mobile = false) => {
     const active = location.pathname === item.path;
@@ -105,7 +107,7 @@ export function Navigation() {
             <LayoutDashboard className="h-4 w-4" />
             Dashboard
           </Button>
-          <Button className="hidden md:inline-flex" onClick={() => navigate("/buy")}>
+          <Button className="hidden md:inline-flex" onClick={() => navigate("/deal")}>
             Start Search
           </Button>
 
