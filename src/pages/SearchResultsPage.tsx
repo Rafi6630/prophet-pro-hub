@@ -15,6 +15,7 @@ import { createOrganizationSchema } from "@/lib/structuredData";
 
 interface SearchResultsPageProps {
   mode: "buy" | "investment" | "market" | "favorites";
+  topPadding?: string;
 }
 
 const content = {
@@ -36,7 +37,7 @@ const content = {
   },
 };
 
-export function SearchResultsPage({ mode }: SearchResultsPageProps) {
+export function SearchResultsPage({ mode, topPadding = "pt-28" }: SearchResultsPageProps) {
   const [searchParams] = useSearchParams();
   const [cityId, setCityId] = useState(searchParams.get("city") ?? "all");
   const [district, setDistrict] = useState(searchParams.get("district") ?? "");
@@ -90,7 +91,7 @@ export function SearchResultsPage({ mode }: SearchResultsPageProps) {
   const page = content[mode];
 
   return (
-    <div className="container mx-auto px-4 pb-24 pt-28">
+    <div className={`container mx-auto px-4 pb-24 ${topPadding}`}>
       <PageMeta
         title={`${page.title} | IraqProperty`}
         description={page.description}

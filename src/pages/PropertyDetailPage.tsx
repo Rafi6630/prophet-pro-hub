@@ -95,7 +95,7 @@ export function PropertyDetailPage() {
             <img src={activeImage || property.image} alt={property.title} className="h-[460px] w-full object-cover" />
           </div>
           <div className="mt-4 grid grid-cols-4 gap-3">
-            {[property.image, ...property.gallery].map((image) => (
+            {[property.image, ...(property.gallery ?? [])].map((image) => (
               <button
                 key={image}
                 type="button"

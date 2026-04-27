@@ -29,17 +29,17 @@ import { marketInsights } from "@/data/marketInsights";
 import { iraqCities } from "@/data/iraqCities";
 
 const QUICK = [
-  { kind: "house" as PropertyKind, icon: HomeIcon, label: "Buy House" },
-  { kind: "land" as PropertyKind, icon: TreePine, label: "Buy Land" },
-  { kind: null, icon: Building2, label: "Commercial" },
-  { kind: "villa" as PropertyKind, icon: TrendingUp, label: "Investment Deals", route: "/investment" },
+  { kind: "house" as PropertyKind, icon: HomeIcon, labelKey: "home.hero.buyHouse" },
+  { kind: "land" as PropertyKind, icon: TreePine, labelKey: "home.hero.buyLand" },
+  { kind: null, icon: Building2, labelKey: "home.hero.commercial" },
+  { kind: "villa" as PropertyKind, icon: TrendingUp, labelKey: "home.hero.investmentDeals", route: "/deal?tab=investment" },
 ];
 
 const TRUST_ITEMS = [
-  { icon: ShieldCheck, title: "Verified Seller", copy: "Start from who deserves trust before you commit time or money." },
-  { icon: Coins, title: "Fair Price Estimate", copy: "Benchmark asking prices against grounded market context in seconds." },
-  { icon: FileCheck, title: "Ownership Reviewed", copy: "Catch paperwork or legal gaps earlier in the decision journey." },
-  { icon: MapPinned, title: "Growth Outlook", copy: "Read neighborhood momentum, roads, hospitals, and safety together." },
+  { icon: ShieldCheck, titleKey: "home.trust.verified.title", copyKey: "home.trust.verified.desc" },
+  { icon: Coins, titleKey: "home.trust.fairPrice.title", copyKey: "home.trust.fairPrice.desc" },
+  { icon: FileCheck, titleKey: "home.trust.ownership.title", copyKey: "home.trust.ownership.desc" },
+  { icon: MapPinned, titleKey: "home.trust.intelligence.title", copyKey: "home.trust.intelligence.desc" },
 ];
 
 export default function Home() {
@@ -110,15 +110,15 @@ export default function Home() {
     if (budget) params.set("max", budget);
     if (area) params.set("district", area);
     if (bedrooms) params.set("bedrooms", bedrooms);
-    navigate(`/buy?${params.toString()}`);
+    navigate(`/deal?${params.toString()}`);
   };
 
   const statValues = useMemo(
     () => [
-      { value: stats?.verifiedListings ?? 0, label: "Verified Listings", suffix: "+" },
-      { value: 216, label: "Verified Agencies", suffix: "+" },
-      { value: 340, label: "Deals Closed", suffix: "+" },
-      { value: stats?.citiesCovered ?? 10, label: "Cities Covered", suffix: "" },
+      { value: stats?.verifiedListings ?? 0, labelKey: "home.stats.verifiedListings", suffix: "+" },
+      { value: 216, labelKey: "home.stats.verifiedAgencies", suffix: "+" },
+      { value: 340, labelKey: "home.stats.dealsClosed", suffix: "+" },
+      { value: stats?.citiesCovered ?? 10, labelKey: "home.stats.citiesCovered", suffix: "" },
     ],
     [stats],
   );
@@ -132,35 +132,34 @@ export default function Home() {
             <div className="lg:pt-6">
               <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/85 backdrop-blur sm:px-4 sm:py-2 sm:text-sm">
                 <Sparkles className="h-3.5 w-3.5 text-amber-300 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">Iraq's trust-first property marketplace</span>
-                <span className="sm:hidden">Trust-first marketplace</span>
+                <span className="hidden sm:inline">{t("home.tagline")}</span>
+                <span className="sm:hidden">{t("home.taglineShort", t("home.tagline"))}</span>
               </div>
               <div className="max-w-3xl">
                 <h1 className="mb-4 text-[2.25rem] font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl xl:text-7xl">
-                  Know Everything <br className="hidden sm:block" />
-                  <span className="bg-gradient-to-r from-amber-200 via-amber-300 to-amber-400 bg-clip-text text-transparent">Before You Buy</span>
+                  {t("home.hero.title")}
                 </h1>
                 <p className="mb-7 max-w-2xl text-sm leading-relaxed text-white/72 sm:text-base lg:text-lg">
-                  Verified sellers, fair price context, ownership confidence, and investment intelligence — built for serious Iraqi buyers and regional investors.
+                  {t("home.subtitle")}
                 </p>
               </div>
 
               <div className="mb-7 flex flex-wrap gap-2 sm:gap-3">
                 {[
-                  { icon: BadgeCheck, label: "Verified sellers" },
-                  { icon: Coins, label: "Fair Price" },
-                  { icon: MapPinned, label: "Area intelligence" },
+                  { icon: BadgeCheck, labelKey: "home.trust.verified.title" },
+                  { icon: Coins, labelKey: "home.trust.fairPrice.title" },
+                  { icon: MapPinned, labelKey: "home.trust.intelligence.title" },
                 ].map((item) => (
-                  <div key={item.label} className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1.5 text-xs text-white/85 backdrop-blur sm:gap-2 sm:px-4 sm:py-2 sm:text-sm">
+                  <div key={item.labelKey} className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.06] px-3 py-1.5 text-xs text-white/85 backdrop-blur sm:gap-2 sm:px-4 sm:py-2 sm:text-sm">
                     <item.icon className="h-3.5 w-3.5 text-amber-300 sm:h-4 sm:w-4" />
-                    {item.label}
+                    {t(item.labelKey)}
                   </div>
                 ))}
               </div>
 
               <div className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4">
                 {statValues.map((item) => (
-                  <MetricCard key={item.label} label={item.label} value={item.value} suffix={item.suffix} />
+                  <MetricCard key={item.labelKey} label={t(item.labelKey)} value={item.value} suffix={item.suffix} />
                 ))}
               </div>
             </div>
@@ -183,12 +182,12 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-2">
                 {QUICK.map((item) => (
                   <button
-                    key={item.label}
-                    onClick={() => item.route ? navigate(item.route) : navigate(`/buy?kind=${item.kind}`)}
+                    key={item.labelKey}
+                    onClick={() => item.route ? navigate(item.route) : navigate(`/deal?kind=${item.kind}`)}
                     className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.06] px-3 py-2.5 text-left text-xs font-semibold text-white/90 backdrop-blur transition hover:border-amber-300/40 hover:bg-white/10 hover:text-amber-200 sm:rounded-2xl sm:px-3.5 sm:py-3 sm:text-sm"
                   >
                     <item.icon className="h-4 w-4 text-amber-300" />
-                    {item.label}
+                    {t(item.labelKey)}
                   </button>
                 ))}
               </div>
@@ -206,11 +205,11 @@ export default function Home() {
       <section className="container-app py-10 sm:py-12 lg:py-16">
         <div className="mb-5 flex items-end justify-between gap-4 sm:mb-6">
           <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">Featured Listings</p>
-            <h2 className="mt-1.5 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-3xl">High-trust properties buyers can act on faster</h2>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">{t("home.featured.title")}</p>
+            <h2 className="mt-1.5 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-3xl">{t("home.featured.subtitle")}</h2>
           </div>
-          <Link to="/buy" className="hidden items-center gap-1 text-sm font-semibold text-primary hover:underline sm:flex shrink-0">
-            Browse <ArrowRight className="h-4 w-4" />
+          <Link to="/deal" className="hidden items-center gap-1 text-sm font-semibold text-primary hover:underline sm:flex shrink-0">
+            {t("common.viewAll")} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -220,7 +219,7 @@ export default function Home() {
         </div>
         <div className="mt-5 sm:hidden">
           <Button asChild variant="outline" className="w-full rounded-xl border-slate-200 bg-white">
-            <Link to="/buy">Browse all properties <ArrowRight className="h-4 w-4" /></Link>
+            <Link to="/deal">{t("home.cta.browse")} <ArrowRight className="h-4 w-4" /></Link>
           </Button>
         </div>
       </section>
@@ -229,11 +228,11 @@ export default function Home() {
         <div className="container-app">
           <div className="mb-5 flex items-end justify-between gap-4 sm:mb-6">
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">Investment Deals</p>
-              <h2 className="mt-1.5 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-3xl">Ranked opportunities with stronger exit logic</h2>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">{t("home.investment.title")}</p>
+              <h2 className="mt-1.5 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-3xl">{t("home.investment.subtitle")}</h2>
             </div>
-            <Link to="/investment" className="hidden items-center gap-1 text-sm font-semibold text-primary hover:underline sm:flex shrink-0">
-              View all <ArrowRight className="h-4 w-4" />
+            <Link to="/deal?tab=investment" className="hidden items-center gap-1 text-sm font-semibold text-primary hover:underline sm:flex shrink-0">
+              {t("common.viewAll")} <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -247,11 +246,11 @@ export default function Home() {
       <section className="container-app py-10 sm:py-12 lg:py-16">
         <div className="mb-5 flex items-end justify-between gap-4 sm:mb-6">
           <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">Market Prices</p>
-            <h2 className="mt-1.5 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-3xl">Latest benchmarks by city</h2>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">{t("market.title")}</p>
+            <h2 className="mt-1.5 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-3xl">{t("market.subtitle")}</h2>
           </div>
           <Link to="/market-prices" className="hidden items-center gap-1 text-sm font-semibold text-primary hover:underline sm:flex shrink-0">
-            View all <ArrowRight className="h-4 w-4" />
+            {t("common.viewAll")} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
         <div className="grid gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -279,17 +278,17 @@ export default function Home() {
       <section className="container-app py-4 lg:py-8">
         <div className="section-shell px-5 py-7 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
           <div className="mb-6 max-w-3xl sm:mb-8">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">Why IraqProperty</p>
-            <h2 className="mt-2 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-3xl">Built for Iraqi buyer psychology, not generic marketplace traffic</h2>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">{t("home.trust.title")}</p>
+            <h2 className="mt-2 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-3xl">{t("home.trust.subtitle")}</h2>
           </div>
           <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {TRUST_ITEMS.map((item) => (
-              <div key={item.title} className="rounded-2xl border border-slate-200/80 bg-white p-5 transition hover:border-primary/30 hover:shadow-[0_12px_32px_rgba(15,23,42,0.06)]">
+              <div key={item.titleKey} className="rounded-2xl border border-slate-200/80 bg-white p-5 transition hover:border-primary/30 hover:shadow-[0_12px_32px_rgba(15,23,42,0.06)]">
                 <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
                   <item.icon className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 text-base font-extrabold sm:text-lg">{item.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.copy}</p>
+                <h3 className="mt-4 text-base font-extrabold sm:text-lg">{t(item.titleKey)}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{t(item.copyKey)}</p>
               </div>
             ))}
           </div>
@@ -300,23 +299,23 @@ export default function Home() {
         <div className="content-panel p-5 sm:p-6 lg:p-8">
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">Join as Seller · Browse Properties</p>
-              <h2 className="mt-2 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-4xl">Own the decision before the next buyer does</h2>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary sm:text-xs">{t("home.cta.title")}</p>
+              <h2 className="mt-2 text-xl font-extrabold leading-tight tracking-tight sm:text-2xl lg:text-4xl">{t("home.cta.subtitle")}</h2>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:leading-7 lg:text-base">
-                Get instant alerts on verified listings or join as an agency to unlock premium placement, trust upgrades, lead capture, and performance analytics across Iraq.
+                {t("home.cta.desc", t("dashboard.becomeSellerDesc"))}
               </p>
             </div>
             <div className="flex flex-col gap-2.5 sm:flex-row lg:flex-col">
               <Button asChild size="lg" className="rounded-xl px-6 sm:rounded-2xl">
-                <Link to="/buy">
+                <Link to="/deal">
                   <Download className="h-4 w-4" />
-                  Browse Properties
+                  {t("home.cta.browse")}
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="rounded-xl border-slate-200 bg-white px-6 sm:rounded-2xl">
                 <Link to="/seller/dashboard">
                   <UserRoundPlus className="h-4 w-4" />
-                  Join as Seller
+                  {t("home.cta.list")}
                 </Link>
               </Button>
             </div>
