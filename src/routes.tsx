@@ -19,6 +19,7 @@ import { AdminRevenuePage } from "./pages/AdminRevenuePage";
 import { AdminCityAnalyticsPage } from "./pages/AdminCityAnalyticsPage";
 import { AdminLeadsPage } from "./pages/AdminLeadsPage";
 import { AdminSupportPage } from "./pages/AdminSupportPage";
+import { DealPage } from "./pages/DealPage";
 
 interface RouteConfig {
   name: string;
@@ -30,6 +31,7 @@ interface RouteConfig {
 
 const routes: RouteConfig[] = [
   { name: "Home", path: "/", element: <HomePage />, visible: true },
+  { name: "Deal", path: "/deal", element: <DealPage />, visible: true },
   { name: "Buy Property", path: "/buy", element: <SearchResultsPage mode="buy" />, visible: true },
   { name: "Investment Deals", path: "/investment", element: <SearchResultsPage mode="investment" />, visible: true },
   { name: "Map Search", path: "/map-search", element: <MapSearchPage />, visible: true },
