@@ -76,7 +76,8 @@
       "verifiedListings": "Verified listings",
       "citiesCovered": "Cities covered",
       "activeBuyers": "Active buyers",
-      "dealsClosed": "Deals closed"
+      "dealsClosed": "Deals closed",
+      "verifiedAgencies": "Verified Agencies"
     },
     "featured": {
       "title": "Featured properties",
@@ -86,8 +87,10 @@
       "title": "Strong investment opportunities",
       "subtitle": "Below-market prices with strong upside"
     },
+    "taglineShort": "Trust-first marketplace",
     "trust": {
       "title": "Why trust us",
+      "subtitle": "Built for Iraqi buyer psychology, not generic marketplace traffic",
       "verified": { "title": "Verified sellers", "desc": "Every seller's identity and documents are reviewed before listing." },
       "fairPrice": { "title": "Fair price estimate", "desc": "Pricing model built on real market data." },
       "ownership": { "title": "Ownership confidence", "desc": "Ownership and legal status reviewed for every property." },
@@ -96,6 +99,7 @@
     "cta": {
       "title": "Start your journey with confidence",
       "subtitle": "Browse thousands of verified properties across Iraq",
+      "desc": "Get instant alerts on verified listings or join as an agency to unlock premium placement, trust upgrades, and lead capture.",
       "browse": "Browse properties",
       "list": "List your property"
     }
@@ -182,6 +186,11 @@
     "title": "Map search",
     "subtitle": "Explore properties on the map",
     "comingSoon": "Interactive map coming soon"
+  },
+  "deal": {
+    "title": "Buy & Invest",
+    "tabBuy": "Buy Property",
+    "tabInvestment": "Investment Deals"
   },
   "market": {
     "title": "Market prices",
